@@ -113,6 +113,25 @@ Full setup for all of this is below.
   than permanent public URLs — nothing in the resources bucket is
   publicly accessible by default.
 
+**Phase 7 — Workshops (assignments, submissions, peer discussion)**
+- **Workshops** is now real: every assignment across the curriculum, with
+  your current status (Not submitted / Submitted / Under Review / Needs
+  Revision / Approved) shown at a glance.
+- Each assignment has its own page: description, submission format
+  instructions, a submission form (text and/or file upload), and your full
+  submission history — every past attempt is kept, not overwritten, so
+  nothing you've submitted before is ever lost.
+- **Submissions are private** — locked down so you can only ever see your
+  own, never another student's. **Peer discussion comments are public** —
+  every signed-in student can read and post in the discussion thread under
+  each assignment, which is the intended "peer" part of peer discussion.
+- Submission files live in per-student folders in Storage, enforced at the
+  database level — you genuinely cannot read another student's uploaded
+  file, even by guessing a URL.
+- No grading or review tool exists yet on purpose — that's the Mentor phase
+  (Phase 10). Every submission you make will just sit at "Submitted" until
+  then, which is correct, not a bug.
+
 ## How this is organized
 
 ```
@@ -432,6 +451,44 @@ finished, you're ready to test — no further redeploy required.
 7. Complete all 5 General Track lessons one by one, then check the
    dashboard shows "You've completed every lesson in the General Track. 🎉"
    instead of a broken "no lesson found" state.
+
+## Phase 7 — Setup and Testing
+
+**Setup — one database script, nothing else**
+
+1. Supabase → **SQL Editor → New Query**.
+2. Paste the full contents of `supabase/schema_phase7_workshops.sql`, click
+   **Run**.
+3. Confirm a green "Success" message. This creates the assignments,
+   submissions, and comments tables, sets up a private per-student storage
+   folder system, and seeds two sample assignments.
+4. No new environment variables, no Vercel changes.
+
+**Verifying it works**
+
+1. Go to **Workshops** — confirm you see two assignments ("Reflect on What
+   You Learned" and "Set Up Your Wallet"), both showing "Not submitted."
+2. Click into "Reflect on What You Learned." Type a short reflection,
+   attach any file as a test, click **Submit assignment**.
+3. Confirm it appears immediately under "Your submissions" with status
+   "Submitted," and clicking **View attached file** actually opens it.
+4. Go back to **Workshops** — confirm this assignment now shows "Submitted"
+   instead of "Not submitted."
+5. Submit the same assignment a second time with different text. Confirm
+   **both** submissions now show in your history (most recent first) — this
+   confirms resubmission keeps history instead of overwriting it.
+6. Post a comment in the peer discussion section. Confirm it appears
+   immediately, labeled "You."
+7. **The real privacy test:** sign in with a *second* Google account (or an
+   incognito window). Go to the same assignment. Confirm:
+   - You do NOT see the first account's submission or attached file
+     anywhere — the submission history should be empty for this new
+     account.
+   - You DO see the comment the first account posted in the peer
+     discussion — but it should show their real name, not "You" (since
+     you're not that user).
+8. In Supabase → **Table Editor** → `assignment_submissions`, confirm both
+   submissions exist with the correct `student_id` for each.
 
 ## On the "fourth subdomain" question
 
