@@ -95,6 +95,24 @@ Full setup for all of this is below.
   Settings) show a short placeholder naming which phase builds them, instead
   of a broken link.
 
+**Phase 6 — Classroom (lesson pages) + real progress tracking**
+- **My Courses** is now real: every track, module, and lesson from the
+  catalog, with a checkmark/circle showing what's completed.
+- Clicking any lesson opens a real **classroom page**: a generic video
+  player (handles YouTube, Vimeo, or a direct video file — no video is
+  seeded yet, so you'll see an honest "no video attached" state until one's
+  added), lesson notes, instructor name, downloadable resources, and a
+  right-rail list of the other lessons in that module.
+- **"Mark as completed" is now real and saved per-student** — it writes to
+  a `student_progress` table, locked down so you can only ever mark your
+  *own* progress, never anyone else's.
+- The main dashboard's progress bar and "Today's Lesson" card now use this
+  real data — the percentage will actually move as you complete lessons,
+  and "Today's Lesson" correctly advances to your next incomplete one.
+- Resources use secure, temporary signed download links (60 seconds) rather
+  than permanent public URLs — nothing in the resources bucket is
+  publicly accessible by default.
+
 ## How this is organized
 
 ```
@@ -376,6 +394,44 @@ finished, you're ready to test — no further redeploy required.
      a small note underneath honestly saying it's a placeholder.
 5. Click each of the other 7 sidebar links — each should show a short page
    naming which phase actually builds it, not a 404.
+
+## Phase 6 — Setup and Testing
+
+**Setup — one database script, nothing else**
+
+1. Supabase → **SQL Editor → New Query**.
+2. Paste the full contents of `supabase/schema_phase6_classroom.sql`, click
+   **Run**.
+3. Confirm a green "Success" message. This adds lesson notes/instructor
+   fields, creates the resources and progress tables, and adds sample notes
+   to two lessons so there's real content to test against.
+4. No new environment variables, no Vercel changes.
+
+**Verifying it works**
+
+1. Go to **My Courses** — confirm every track/module/lesson from Phase 5
+   shows up, each lesson marked with an empty circle (○) since nothing's
+   completed yet.
+2. Click **"What is Blockchain?"** — confirm you land on a real classroom
+   page showing: an empty-state video player ("No video attached to this
+   lesson yet" — this is correct, not a bug), the seeded lesson notes,
+   "Instructor: Oyetundun Taiwo," and "No resources attached to this lesson
+   yet" (also correct).
+3. Click **Mark as completed**. Confirm the button changes to "Mark as
+   incomplete," and the circle next to this lesson in the right rail turns
+   into a checkmark.
+4. Go back to the main **Dashboard** — confirm the progress bar now shows a
+   real percentage above 0%, and "Today's Lesson" has advanced to the next
+   lesson ("Bitcoin Basics").
+5. Go to **Supabase → Table Editor → student_progress** — confirm there's a
+   real row: your user ID, the lesson ID for "What is Blockchain?", and a
+   timestamp.
+6. Click **Mark as incomplete** on that same lesson, confirm the row
+   disappears from `student_progress` and the dashboard's progress/today's
+   lesson revert accordingly.
+7. Complete all 5 General Track lessons one by one, then check the
+   dashboard shows "You've completed every lesson in the General Track. 🎉"
+   instead of a broken "no lesson found" state.
 
 ## On the "fourth subdomain" question
 

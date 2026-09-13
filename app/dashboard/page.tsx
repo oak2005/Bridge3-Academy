@@ -3,18 +3,19 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabaseBrowser } from "@/lib/supabase/client";
+import { useProfile } from "@/lib/auth/useProfile";
 
 interface LessonInfo {
   id: string;
   title: string;
   duration_minutes: number | null;
   module_title: string;
-  track_title: string;
 }
 
 interface TrackProgress {
   track_title: string;
   total_lessons: number;
+  completed_lessons: number;
 }
 
 // Placeholder — no real activity/points system exists yet (that's Phase 9).
@@ -30,66 +31,90 @@ const DEADLINES_PLACEHOLDER = [
 ];
 
 export default function DashboardPage() {
+  const { session } = useProfile();
   const [loading, setLoading] = useState(true);
-  const [todaysLesson, setTodaysLesson] = useState<LessonInfo | null>(null);
+  const [nextLesson, setNextLesson] = useState<LessonInfo | null>(null);
+  const [allCaughtUp, setAllCaughtUp] = useState(false);
   const [progress, setProgress] = useState<TrackProgress | null>(null);
 
   useEffect(() => {
+    if (!session) return;
+
     (async () => {
-      // "Today's lesson" and the progress bar are both based on the
-      // General Track, since every student starts there. Real per-student
-      // completion tracking arrives in Phase 6 — until then this correctly
-      // shows 0% complete, since nobody has actually completed anything yet.
       const { data: track } = await supabaseBrowser
         .from("tracks")
         .select("id, title")
         .eq("slug", "general-track")
         .maybeSingle();
 
-      if (track) {
-        const { data: modules } = await supabaseBrowser
-          .from("modules")
-          .select("id, title, order_index")
-          .eq("track_id", track.id)
-          .order("order_index", { ascending: true });
+      if (!track) {
+        setLoading(false);
+        return;
+      }
 
-        if (modules && modules.length > 0) {
-          const moduleIds = modules.map((m) => m.id);
-          const { count } = await supabaseBrowser
-            .from("lessons")
-            .select("id", { count: "exact", head: true })
-            .in("module_id", moduleIds);
+      const { data: modules } = await supabaseBrowser
+        .from("modules")
+        .select("id, title, order_index")
+        .eq("track_id", track.id)
+        .order("order_index", { ascending: true });
 
-          setProgress({ track_title: track.title, total_lessons: count || 0 });
+      if (!modules || modules.length === 0) {
+        setLoading(false);
+        return;
+      }
 
-          const firstModule = modules[0];
-          const { data: firstLesson } = await supabaseBrowser
-            .from("lessons")
-            .select("id, title, duration_minutes")
-            .eq("module_id", firstModule.id)
-            .order("order_index", { ascending: true })
-            .limit(1)
-            .maybeSingle();
+      const moduleIds = modules.map((m) => m.id);
+      const { data: lessons } = await supabaseBrowser
+        .from("lessons")
+        .select("id, title, duration_minutes, module_id, order_index")
+        .in("module_id", moduleIds)
+        .order("order_index", { ascending: true });
 
-          if (firstLesson) {
-            setTodaysLesson({
-              id: firstLesson.id,
-              title: firstLesson.title,
-              duration_minutes: firstLesson.duration_minutes,
-              module_title: firstModule.title,
-              track_title: track.title,
-            });
-          }
-        }
+      const allLessons = lessons || [];
+
+      const { data: progressRows } = await supabaseBrowser
+        .from("student_progress")
+        .select("lesson_id")
+        .eq("student_id", session.user.id)
+        .in(
+          "lesson_id",
+          allLessons.map((l) => l.id)
+        );
+      const completedIds = new Set((progressRows || []).map((p) => p.lesson_id));
+
+      setProgress({
+        track_title: track.title,
+        total_lessons: allLessons.length,
+        completed_lessons: completedIds.size,
+      });
+
+      // "Today's lesson" = the first lesson (in course order) the student
+      // hasn't completed yet. If everything's done, say so honestly.
+      const modulesById = new Map(modules.map((m) => [m.id, m.title]));
+      const next = allLessons.find((l) => !completedIds.has(l.id));
+
+      if (next) {
+        setNextLesson({
+          id: next.id,
+          title: next.title,
+          duration_minutes: next.duration_minutes,
+          module_title: modulesById.get(next.module_id) || "",
+        });
+      } else if (allLessons.length > 0) {
+        setAllCaughtUp(true);
       }
 
       setLoading(false);
     })();
-  }, []);
+  }, [session]);
 
   if (loading) {
     return <p className="px-6 py-12 text-ink-muted">Loading your dashboard…</p>;
   }
+
+  const percent = progress && progress.total_lessons > 0
+    ? Math.round((progress.completed_lessons / progress.total_lessons) * 100)
+    : 0;
 
   return (
     <div className="mx-auto max-w-content px-6 py-10">
@@ -98,35 +123,35 @@ export default function DashboardPage() {
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         <div className="rounded border border-border bg-paper-raised p-6">
           <h2 className="font-sans text-sm font-semibold text-ink">
-            {progress?.track_title || "General Track"} — 0% completed
+            {progress?.track_title || "General Track"} — {percent}% completed
           </h2>
           <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-border">
-            <div className="h-full bg-accent" style={{ width: "0%" }} />
+            <div className="h-full bg-accent transition-all" style={{ width: `${percent}%` }} />
           </div>
           <p className="mt-2 text-xs text-ink-muted">
-            0 of {progress?.total_lessons ?? "…"} lessons completed. Real progress
-            tracking begins once lesson pages are built.
+            {progress?.completed_lessons ?? 0} of {progress?.total_lessons ?? "…"} lessons completed.
           </p>
         </div>
 
         <div className="rounded border border-border bg-paper-raised p-6">
           <h2 className="font-sans text-sm font-semibold text-ink">Today&rsquo;s lesson</h2>
-          {todaysLesson ? (
+          {nextLesson ? (
             <>
-              <p className="mt-3 font-display text-lg text-ink">{todaysLesson.title}</p>
+              <p className="mt-3 font-display text-lg text-ink">{nextLesson.title}</p>
               <p className="mt-1 text-sm text-ink-muted">
-                {todaysLesson.module_title} · {todaysLesson.duration_minutes ?? "—"} min
+                {nextLesson.module_title} · {nextLesson.duration_minutes ?? "—"} min
               </p>
               <Link
-                href="/dashboard/my-courses"
+                href={`/dashboard/classroom/${nextLesson.id}`}
                 className="mt-4 inline-block rounded bg-accent px-4 py-2 text-sm font-semibold text-accent-contrast hover:bg-accent-hover"
               >
                 Start lesson
               </Link>
-              <p className="mt-2 text-xs text-ink-muted">
-                (Lesson pages are built in Phase 6 — this links to My Courses for now.)
-              </p>
             </>
+          ) : allCaughtUp ? (
+            <p className="mt-3 text-sm text-ink-soft">
+              You&rsquo;ve completed every lesson in the General Track. 🎉
+            </p>
           ) : (
             <p className="mt-3 text-sm text-ink-muted">No lessons found yet.</p>
           )}
