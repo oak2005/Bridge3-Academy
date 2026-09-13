@@ -132,6 +132,33 @@ Full setup for all of this is below.
   (Phase 10). Every submission you make will just sit at "Submitted" until
   then, which is correct, not a bug.
 
+**Phase 8 — Assessments (quizzes, capstone, and real track completion)**
+- **Quizzes are graded entirely on the server, never in the browser.** This
+  matters: correct answers are never sent to your device in any form —
+  not hidden in the page, not fetchable by opening browser devtools and
+  poking at the network tab. The one seeded quiz (Level 1 — Foundations,
+  3 questions, 70% passing) only reveals your score after you submit.
+- **Assessments** page lists every quiz (with Passed / Not passed yet / Not
+  attempted) and every track that requires a capstone project, each linking
+  to its own page.
+- The quiz UI has a real progress indicator, one question at a time, and
+  lets you retake it — every attempt is recorded, and your best passing
+  attempt is what counts toward completion.
+- Capstone submissions (GitHub link, portfolio description, file upload)
+  follow the same "every attempt kept, never overwritten" pattern as
+  Workshop assignments.
+- **The real centerpiece of this phase**: `lib/progress/trackCompletion.ts`
+  — one shared function that decides whether a track is genuinely complete
+  (every lesson done, every quiz passed, every assignment approved, capstone
+  approved if required). My Courses now shows "Complete" or "In progress"
+  on every track using this exact function — and Certification (Phase 12)
+  will call this same function rather than re-implementing the logic, so
+  there's no risk of the two ever disagreeing.
+- **Honest limitation, by design**: since assignment/capstone approval
+  requires a mentor (Phase 10, not built yet), no track can show "Complete"
+  yet even if you finish every lesson and pass every quiz — that's expected
+  correctness, not a bug to chase down.
+
 ## How this is organized
 
 ```
@@ -489,6 +516,62 @@ finished, you're ready to test — no further redeploy required.
      you're not that user).
 8. In Supabase → **Table Editor** → `assignment_submissions`, confirm both
    submissions exist with the correct `student_id` for each.
+
+## Phase 8 — Setup and Testing
+
+**Setup — one database script, nothing else**
+
+1. Supabase → **SQL Editor → New Query**.
+2. Paste the full contents of `supabase/schema_phase8_assessments.sql`,
+   click **Run**.
+3. Confirm a green "Success" message. This creates the quiz, quiz attempt,
+   and capstone tables, locks quiz answers away from any client access
+   whatsoever, marks General Track as requiring a capstone, and seeds one
+   real 3-question quiz.
+4. No new environment variables, no Vercel changes.
+
+**How the completion logic is calculated (read this before testing)**
+
+A track is complete only when ALL of these are true for you specifically:
+- Every lesson in every module of that track has been marked complete.
+- Every module that has a quiz has at least one attempt where you passed
+  (an earlier fail doesn't count against you once you pass later).
+- Every assignment in the track has a submission with status **approved**
+  specifically — "Submitted" is not enough.
+- If the track requires a capstone (General Track does, by default), there's
+  an **approved** capstone submission.
+
+Because nothing can be "approved" yet (that's the Mentor tool, Phase 10),
+**no track will ever show "Complete" yet — even if you finish everything
+else.** That's correct behavior for this phase, not something to debug.
+
+**Verifying the quiz security actually holds**
+
+1. Go to **Assessments** → click into the Level 1 quiz.
+2. Open your browser's DevTools (F12) → **Network** tab, before answering
+   anything.
+3. Answer all 3 questions and submit. Watch the network request to
+   `/api/quiz/submit` — confirm the **request** you send only contains your
+   chosen option IDs, and the **response** only contains your score/pass
+   result — never the correct answers for questions you got wrong.
+4. Separately, try visiting `/api/quiz/by-module/<the module's id>` directly
+   in your browser (GET request) — confirm the JSON returned has no
+   `is_correct` field anywhere, only question text and option text.
+
+**Verifying grading and completion**
+
+1. Deliberately get all 3 answers wrong the first time, submit, confirm you
+   see "Not quite — try again" with your real score.
+2. Click **Retake quiz**, answer all 3 correctly this time, confirm "You
+   passed! 🎉".
+3. Go back to **Assessments** — confirm the quiz now shows "Passed."
+4. Go to **My Courses** — confirm General Track shows an "In progress"
+   badge (not "Complete," per the honest limitation above).
+5. Submit a capstone on `/dashboard/assessments/capstone/<General Track's
+   id>` with a GitHub link and description, confirm it saves and shows in
+   your submission history with status "Submitted."
+6. In Supabase → **Table Editor** → `quiz_attempts`, confirm you can see
+   both attempts (the failed one and the passing one) with correct scores.
 
 ## On the "fourth subdomain" question
 

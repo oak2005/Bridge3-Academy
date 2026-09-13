@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { useProfile } from "@/lib/auth/useProfile";
+import { computeTrackCompletion, TrackCompletionReport } from "@/lib/progress/trackCompletion";
 
 interface Lesson {
   id: string;
@@ -40,6 +41,7 @@ export default function MyCoursesPage() {
   const [loading, setLoading] = useState(true);
   const [tracks, setTracks] = useState<TrackWithModules[]>([]);
   const [completedLessonIds, setCompletedLessonIds] = useState<Set<string>>(new Set());
+  const [completionByTrack, setCompletionByTrack] = useState<Record<string, TrackCompletionReport>>({});
 
   useEffect(() => {
     (async () => {
@@ -78,6 +80,14 @@ export default function MyCoursesPage() {
 
       setTracks(assembled);
       setLoading(false);
+
+      if (session) {
+        const reports: Record<string, TrackCompletionReport> = {};
+        for (const track of assembled) {
+          reports[track.id] = await computeTrackCompletion(session.user.id, track.id);
+        }
+        setCompletionByTrack(reports);
+      }
     })();
   }, [session]);
 
@@ -104,15 +114,27 @@ export default function MyCoursesPage() {
             <div key={type}>
               <h2 className="font-display text-xl text-ink">{TYPE_LABELS[type]}</h2>
               <div className="mt-4 flex flex-col gap-6">
-                {tracksOfType.map((track) => (
+                {tracksOfType.map((track) => {
+                  const completion = completionByTrack[track.id];
+                  return (
                   <div key={track.id} className="rounded border border-border bg-paper-raised p-6">
                     <div className="flex items-center justify-between">
                       <h3 className="font-sans text-base font-semibold text-ink">{track.title}</h3>
-                      {track.coming_soon && (
+                      {track.coming_soon ? (
                         <span className="rounded-full border border-border px-3 py-1 text-xs text-ink-muted">
                           Coming soon
                         </span>
-                      )}
+                      ) : completion ? (
+                        <span
+                          className={`rounded-full border px-3 py-1 text-xs font-medium ${
+                            completion.isComplete
+                              ? "border-accent text-accent-hover"
+                              : "border-border text-ink-muted"
+                          }`}
+                        >
+                          {completion.isComplete ? "Complete" : "In progress"}
+                        </span>
+                      ) : null}
                     </div>
                     {track.description && (
                       <p className="mt-1 text-sm text-ink-muted">{track.description}</p>
@@ -161,7 +183,8 @@ export default function MyCoursesPage() {
                       </div>
                     )}
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           );
