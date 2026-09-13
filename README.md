@@ -73,6 +73,28 @@ Full setup for all of this is below.
   defaulting to `student`. Nothing uses `mentor`/`admin` yet — that's Phase
   10 and Phase 11.
 
+**Phase 5 — Real dashboard shell + course catalog**
+- `/dashboard` is now a real, permanent layout: a left sidebar (Dashboard,
+  My Courses, Workshops, Assessments, Portfolio, Certification, Community,
+  Settings — all with a working mobile menu too) and a top bar (avatar,
+  notifications, settings), shared across every dashboard page.
+- A real course catalog exists in the database: General Track (Level 1 +
+  Level 2), Ecosystem Support Track, and four Skill Set specializations
+  (Designer, Creator, Community & Growth, and Builder — Builder is marked
+  "coming soon," matching the honest framing on the marketing site).
+- The main dashboard's "Today's Lesson" card and progress bar pull **real**
+  data from that catalog — not fake numbers. Progress correctly shows 0%
+  right now, because there's genuinely no way to complete a lesson yet
+  (that's Phase 6) — it'll start moving on its own once that's built,
+  with no changes needed here.
+- The leaderboard and upcoming deadlines are clearly-labeled **placeholder**
+  data — those need Phase 9 (XP/portfolio) and Phase 7/8 (assignments) to
+  become real, and the UI says so honestly rather than pretending.
+- Every sidebar link goes somewhere real — the six not built yet (My
+  Courses, Workshops, Assessments, Portfolio, Certification, Community,
+  Settings) show a short placeholder naming which phase builds them, instead
+  of a broken link.
+
 ## How this is organized
 
 ```
@@ -311,6 +333,50 @@ finished, you're ready to test — no further redeploy required.
    NOT signed in — it should redirect you to `/login` instead of showing
    anything.
 
+## Phase 5 — Setup and Testing
+
+**Setup — one database script, nothing else**
+
+1. Supabase → **SQL Editor → New Query**.
+2. Paste the full contents of `supabase/schema_phase5_courses.sql`, click
+   **Run**.
+3. Confirm a green "Success" message. This creates the `tracks`, `modules`,
+   and `lessons` tables, and seeds them with the real curriculum (General
+   Track, Ecosystem Support Track, and the four Skill Set specializations).
+4. No new environment variables, no Vercel changes, no new external
+   accounts — this phase is pure database + code.
+
+**Verifying the seed data**
+
+1. Supabase → **Table Editor** → open `tracks`. You should see 6 rows:
+   General Track, Ecosystem Support Track, Designer Track, Creator Track,
+   Community & Growth Track, and Builder Track (with `coming_soon` set to
+   `true` on Builder Track only).
+2. Open `modules` — General Track should have 2 rows ("Level 1 —
+   Foundations" and "Level 2 — Practical Usage"), Ecosystem Support Track 1
+   row, and each Skill Set track 1 row.
+3. Open `lessons` — General Track's two modules should have 3 and 2 lessons
+   respectively; the rest have 1 each.
+
+**Verifying the dashboard**
+
+1. Sign in (or if already signed in, just visit `/dashboard`).
+2. Confirm the sidebar shows all 8 links, and the current page is
+   highlighted.
+3. On a narrow browser window or your phone, confirm the sidebar disappears
+   and a hamburger menu appears in its place, with all the same links.
+4. On the main dashboard, confirm:
+   - **"Today's lesson"** shows "What is Blockchain?" (the real first
+     lesson of General Track's first module) with a duration and a
+     "Start lesson" button.
+   - The **progress bar** shows "General Track — 0% completed" with the
+     correct total lesson count (should be 5 — 3 from Level 1, 2 from Level
+     2).
+   - **Leaderboard** and **upcoming deadlines** show sample data, each with
+     a small note underneath honestly saying it's a placeholder.
+5. Click each of the other 7 sidebar links — each should show a short page
+   naming which phase actually builds it, not a 404.
+
 ## On the "fourth subdomain" question
 
 I recommend a route (`/waitlist`) instead of a real `waitlist.bridge3academy.com`
@@ -321,39 +387,33 @@ that point, not a rebuild.
 
 ## Getting this onto GitHub
 
-If you haven't done this yet for this project, here's the full walkthrough —
-this only needs to happen once, ever, for the whole project.
+**Current state, as of Phase 5:** your GitHub repo (`oak2005/Bridge3-Academy`)
+has the real, active project sitting at its root — `package.json`, `app/`,
+`components/`, etc. are all directly inside the repo, not nested in a
+subfolder. There are also four older folders (`bridge3-academy-phase1`
+through `-phase4`) — those are just historical snapshots from earlier in the
+build and are safe to ignore forever. Never edit or delete them; they don't
+affect anything.
 
-**Step 1 — Create a GitHub account** (skip if you already have one)
-Go to [github.com](https://github.com) and sign up. It's free.
+You should also already have a **local folder on your computer** (e.g.
+`Documents/bridge3-academy`) that's a real clone of this repo, connected to
+GitHub Desktop. If you don't have that set up yet, or aren't sure, stop and
+tell me before continuing — don't create a second one.
 
-**Step 2 — Install GitHub Desktop**
-Go to [desktop.github.com](https://desktop.github.com), download it, and sign
-in with the GitHub account from Step 1. This gives you a simple window
-interface — no command line typing required for any of this.
+**From here on, every future phase is exactly this, every time:**
+1. Unzip the new phase's files.
+2. Copy everything from inside the unzipped folder **directly into your
+   existing local `bridge3-academy` folder** — the one already connected to
+   GitHub Desktop — overwriting any files with the same name. Do NOT create
+   a new folder, and do NOT re-clone the repo.
+3. Open GitHub Desktop — it shows what changed under "Changes."
+4. Write a short summary (e.g. `Phase 6: classroom`).
+5. Click **Commit to main**, then **Push origin**.
 
-**Step 3 — Create the repository**
-1. Unzip this project folder somewhere on your computer if you haven't
-   already (e.g. Documents/bridge3-academy).
-2. In GitHub Desktop, go to **File → Add Local Repository**, and select that
-   unzipped folder.
-3. GitHub Desktop will notice it isn't a Git repository yet and offer to
-   **"create a repository"** — click that.
-4. You'll see every file in the project listed under "Changes" on the left.
-5. At the bottom, write a summary like `Initial commit: Phase 1 + Phase 2`,
-   then click **Commit to main**.
-6. Click **Publish repository** at the top. Name it `bridge3-academy`. Leave
-   "Keep this code private" checked unless you specifically want it public.
-7. Click **Publish**. Your code is now on GitHub.
-
-**From here on, every future phase is just:**
-1. Add the new/changed files from this chat into the same local folder.
-2. Open GitHub Desktop — it shows what changed under "Changes."
-3. Write a short summary (e.g. `Phase 3: marketing site content`).
-4. Click **Commit to main**, then **Push origin**.
-
-Nothing about this process ever deletes or replaces earlier work — each
-commit only adds what changed in that phase on top of everything before it.
+That's it — permanently, from now on. No more folder-per-phase, no more
+Root Directory changes in Vercel. Nothing about this process ever deletes or
+replaces earlier *committed* work — each push only adds what changed in that
+phase on top of everything before it.
 
 ## Connecting Vercel (do this once, right after your first GitHub push)
 
