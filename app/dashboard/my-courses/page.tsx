@@ -84,7 +84,7 @@ export default function MyCoursesPage() {
       if (session) {
         const reports: Record<string, TrackCompletionReport> = {};
         for (const track of assembled) {
-          reports[track.id] = await computeTrackCompletion(session.user.id, track.id);
+          reports[track.id] = await computeTrackCompletion(supabaseBrowser, session.user.id, track.id);
         }
         setCompletionByTrack(reports);
       }

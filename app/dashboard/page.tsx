@@ -18,17 +18,16 @@ interface TrackProgress {
   completed_lessons: number;
 }
 
-// Placeholder — no real activity/points system exists yet (that's Phase 9).
-const LEADERBOARD_PLACEHOLDER = [
-  { name: "Amara O.", points: 420 },
-  { name: "Tunde A.", points: 385 },
-  { name: "Ngozi E.", points: 340 },
-];
-
 // Placeholder — no assignment/deadline model exists yet (Phase 7 & 8).
 const DEADLINES_PLACEHOLDER = [
   { label: "Complete Level 1 assessment", due: "In 5 days" },
 ];
+
+interface LeaderboardEntry {
+  id: string;
+  name: string;
+  xp: number;
+}
 
 export default function DashboardPage() {
   const { session } = useProfile();
@@ -36,6 +35,7 @@ export default function DashboardPage() {
   const [nextLesson, setNextLesson] = useState<LessonInfo | null>(null);
   const [allCaughtUp, setAllCaughtUp] = useState(false);
   const [progress, setProgress] = useState<TrackProgress | null>(null);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
 
   useEffect(() => {
     if (!session) return;
@@ -106,6 +106,11 @@ export default function DashboardPage() {
 
       setLoading(false);
     })();
+
+    fetch("/api/leaderboard")
+      .then((res) => res.json())
+      .then((data) => setLeaderboard(data.leaderboard || []))
+      .catch(() => setLeaderboard([]));
   }, [session]);
 
   if (loading) {
@@ -173,20 +178,29 @@ export default function DashboardPage() {
         </div>
 
         <div className="rounded border border-border bg-paper-raised p-6">
-          <h2 className="font-sans text-sm font-semibold text-ink">Top students this week</h2>
-          <ul className="mt-3 flex flex-col gap-2">
-            {LEADERBOARD_PLACEHOLDER.map((s, i) => (
-              <li key={s.name} className="flex justify-between text-sm text-ink-soft">
-                <span>
-                  {i + 1}. {s.name}
-                </span>
-                <span className="text-ink-muted">{s.points} XP</span>
-              </li>
-            ))}
-          </ul>
-          <p className="mt-3 text-xs text-ink-muted">
-            Sample data — real XP and rankings arrive with Portfolio (Phase 9).
-          </p>
+          <h2 className="font-sans text-sm font-semibold text-ink">Top students</h2>
+          {leaderboard.length === 0 ? (
+            <p className="mt-3 text-sm text-ink-muted">
+              No XP earned yet across the platform — be the first!
+            </p>
+          ) : (
+            <ul className="mt-3 flex flex-col gap-2">
+              {leaderboard.map((s, i) => (
+                <li key={s.id} className="flex justify-between text-sm text-ink-soft">
+                  <span>
+                    {i + 1}. {s.name}
+                  </span>
+                  <span className="text-ink-muted">{s.xp} XP</span>
+                </li>
+              ))}
+            </ul>
+          )}
+          <Link
+            href="/dashboard/portfolio"
+            className="mt-3 inline-block text-xs text-accent-hover underline"
+          >
+            View your own XP and badges
+          </Link>
         </div>
       </div>
     </div>

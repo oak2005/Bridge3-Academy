@@ -159,6 +159,31 @@ Full setup for all of this is below.
   yet even if you finish every lesson and pass every quiz — that's expected
   correctness, not a bug to chase down.
 
+**Phase 9 — Portfolio, XP, badges, streaks, and a real public profile**
+- **Portfolio** (dashboard) now shows your real XP total, day streak, and
+  earned/locked badges — plus a place to curate your own "proof of work"
+  links (GitHub, personal site, anything you want to show off).
+- Clicking **Share public profile** copies (or native-shares) a public link
+  — `/portfolio/<your id>` — viewable by anyone, no login required.
+- **The public page only ever shows what's deliberately meant to be
+  public**: your name, track, XP, badges, an approved-assignment *count*
+  (never the actual submitted content), and links you chose to add. It
+  never exposes your email or anything else private, and it's marked
+  `noindex` so it's link-shareable without being searchable on Google.
+- **XP is calculated identically everywhere** — your own Portfolio page,
+  the public profile, and the Leaderboard all call the exact same function
+  (`lib/gamification/xp.ts`), so the numbers can never quietly drift apart.
+  Current point values: 10 XP/lesson, 25 XP/quiz passed (once, not per
+  retake), 15 XP/assignment submitted + 25 bonus once approved, 20 XP/
+  capstone submitted + 60 bonus once approved. Change these in one place
+  to retune the whole platform.
+- The **Leaderboard** on the main dashboard is now real — it's a secure
+  server route that computes every student's XP without ever exposing
+  their underlying private data to each other.
+- **Streak** counts consecutive days with any real activity (a completed
+  lesson, quiz attempt, or assignment submission), with a one-day grace
+  period so it doesn't reset the instant midnight passes.
+
 ## How this is organized
 
 ```
@@ -572,6 +597,52 @@ else.** That's correct behavior for this phase, not something to debug.
    your submission history with status "Submitted."
 6. In Supabase → **Table Editor** → `quiz_attempts`, confirm you can see
    both attempts (the failed one and the passing one) with correct scores.
+
+## Phase 9 — Setup and Testing
+
+**Setup — one database script, nothing else**
+
+1. Supabase → **SQL Editor → New Query**.
+2. Paste the full contents of `supabase/schema_phase9_gamification.sql`,
+   click **Run**.
+3. Confirm a green "Success" message. This creates the `portfolio_links`
+   table students use to manage their own public links.
+4. No new environment variables, no Vercel changes.
+
+**Verifying your own Portfolio page**
+
+1. Go to **Portfolio**. Confirm your XP total, streak, and badges reflect
+   real activity from earlier phases (if you've completed lessons/quizzes/
+   assignments before, XP should already be above 0).
+2. Add a portfolio link (e.g. label "GitHub", any URL). Confirm it appears
+   immediately, and remove it to confirm deletion works too.
+3. Click **Share public profile**. On desktop this copies a link; on
+   mobile it may open your device's native share sheet instead — both are
+   correct, just different browser behavior.
+
+**Verifying the public page actually works logged out — and stays private
+where it should**
+
+1. Copy your portfolio link (`/portfolio/<your id>`).
+2. Open it in a **fully private/incognito window** (proves it works with
+   zero login).
+3. Confirm you see your name, track, XP, badges, and any links you added —
+   matching what you saw on your own dashboard.
+4. **The privacy check that matters most**: view the page source (or just
+   look carefully) and confirm there is no email address, no raw
+   assignment/capstone text, and no student ID beyond what's in the URL
+   itself.
+5. Try visiting `/portfolio/` followed by a random, made-up UUID that
+   doesn't belong to any real student — confirm you get a proper "not
+   found" page, not an error or a blank crash.
+
+**Verifying the leaderboard**
+
+1. Go to the main **Dashboard** — confirm "Top students" shows real
+   names and XP now, sorted highest first.
+2. If you're the only student who's done anything yet, that's fine — you
+   should see yourself listed, or an honest "no XP earned yet" message if
+   XP is currently 0.
 
 ## On the "fourth subdomain" question
 

@@ -1,4 +1,4 @@
-import { supabaseBrowser } from "@/lib/supabase/client";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 export interface TrackCompletionReport {
   trackId: string;
@@ -19,6 +19,13 @@ export interface TrackCompletionReport {
  * exact function rather than re-implementing the logic, so there's no risk
  * of the two disagreeing later.
  *
+ * Takes ANY Supabase client (the browser client for a student checking
+ * their own progress, or the server-only admin client when computing this
+ * for someone else — e.g. a public portfolio page in Phase 9, or
+ * Certification in Phase 12). There is deliberately only one
+ * implementation of this logic, used everywhere, rather than a client
+ * version and a server version that could quietly drift apart over time.
+ *
  * A track is complete when ALL of the following are true:
  * - Every lesson in every module has a student_progress row.
  * - Every module that HAS a quiz has at least one PASSING attempt
@@ -32,10 +39,11 @@ export interface TrackCompletionReport {
  *   submission for this student + track.
  */
 export async function computeTrackCompletion(
+  client: SupabaseClient,
   studentId: string,
   trackId: string
 ): Promise<TrackCompletionReport> {
-  const { data: track } = await supabaseBrowser
+  const { data: track } = await client
     .from("tracks")
     .select("id, requires_capstone")
     .eq("id", trackId)
@@ -43,7 +51,7 @@ export async function computeTrackCompletion(
 
   const requiresCapstone = track?.requires_capstone || false;
 
-  const { data: modules } = await supabaseBrowser
+  const { data: modules } = await client
     .from("modules")
     .select("id")
     .eq("track_id", trackId);
@@ -65,7 +73,7 @@ export async function computeTrackCompletion(
   }
 
   // Lessons
-  const { data: lessons } = await supabaseBrowser
+  const { data: lessons } = await client
     .from("lessons")
     .select("id")
     .in("module_id", moduleIds);
@@ -73,7 +81,7 @@ export async function computeTrackCompletion(
 
   let completedLessons = 0;
   if (lessonIds.length > 0) {
-    const { count } = await supabaseBrowser
+    const { count } = await client
       .from("student_progress")
       .select("id", { count: "exact", head: true })
       .eq("student_id", studentId)
@@ -82,7 +90,7 @@ export async function computeTrackCompletion(
   }
 
   // Quizzes
-  const { data: quizzes } = await supabaseBrowser
+  const { data: quizzes } = await client
     .from("quizzes")
     .select("id")
     .in("module_id", moduleIds);
@@ -90,7 +98,7 @@ export async function computeTrackCompletion(
 
   let passedQuizzes = 0;
   if (quizIds.length > 0) {
-    const { data: attempts } = await supabaseBrowser
+    const { data: attempts } = await client
       .from("quiz_attempts")
       .select("quiz_id")
       .eq("student_id", studentId)
@@ -100,7 +108,7 @@ export async function computeTrackCompletion(
   }
 
   // Assignments
-  const { data: assignments } = await supabaseBrowser
+  const { data: assignments } = await client
     .from("assignments")
     .select("id")
     .in("module_id", moduleIds);
@@ -108,7 +116,7 @@ export async function computeTrackCompletion(
 
   let approvedAssignments = 0;
   if (assignmentIds.length > 0) {
-    const { data: submissions } = await supabaseBrowser
+    const { data: submissions } = await client
       .from("assignment_submissions")
       .select("assignment_id")
       .eq("student_id", studentId)
@@ -120,7 +128,7 @@ export async function computeTrackCompletion(
   // Capstone
   let capstoneApproved = false;
   if (requiresCapstone) {
-    const { data: capstone } = await supabaseBrowser
+    const { data: capstone } = await client
       .from("capstone_submissions")
       .select("id")
       .eq("student_id", studentId)
