@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { computeStudentStats } from "@/lib/gamification/computeStudentStats";
+
+// Same caching trap as the public portfolio page — without this, Next.js
+// can cache this route's response and serve stale rankings to everyone.
+export const dynamic = "force-dynamic";
 import { calculateXP } from "@/lib/gamification/xp";
 
 export async function GET() {

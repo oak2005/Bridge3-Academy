@@ -6,6 +6,12 @@ import { calculateXP } from "@/lib/gamification/xp";
 import { BADGES } from "@/lib/gamification/badges";
 import { ShareButton } from "@/components/portfolio/ShareButton";
 
+// Without this, Next.js can cache this page's data fetches and serve a
+// frozen snapshot from whenever it first rendered — a real student's XP,
+// badges, and links would then silently go stale for every future
+// visitor. This forces a fresh read on every request instead.
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };

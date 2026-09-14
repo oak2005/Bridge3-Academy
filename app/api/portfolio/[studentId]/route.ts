@@ -4,6 +4,8 @@ import { computeStudentStats } from "@/lib/gamification/computeStudentStats";
 import { calculateXP } from "@/lib/gamification/xp";
 import { BADGES } from "@/lib/gamification/badges";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(
   req: NextRequest,
   { params }: { params: { studentId: string } }
