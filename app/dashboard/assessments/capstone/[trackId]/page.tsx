@@ -11,6 +11,7 @@ interface CapstoneSubmission {
   github_link: string | null;
   portfolio_description: string | null;
   status: string;
+  feedback: string | null;
   created_at: string;
 }
 
@@ -39,7 +40,7 @@ export default function CapstonePage() {
     if (!session) return;
     const { data } = await supabaseBrowser
       .from("capstone_submissions")
-      .select("id, file_path, github_link, portfolio_description, status, created_at")
+      .select("id, file_path, github_link, portfolio_description, status, feedback, created_at")
       .eq("track_id", params.trackId)
       .eq("student_id", session.user.id)
       .order("created_at", { ascending: false });
@@ -195,6 +196,12 @@ export default function CapstonePage() {
                   <p className="mt-1 text-xs text-ink-muted">
                     {new Date(s.created_at).toLocaleString()}
                   </p>
+                  {s.feedback && (
+                    <div className="mt-2 rounded border border-border bg-paper px-3 py-2">
+                      <p className="text-xs font-medium text-ink-soft">Mentor feedback</p>
+                      <p className="mt-1 text-sm text-ink">{s.feedback}</p>
+                    </div>
+                  )}
                 </div>
                 <span className="whitespace-nowrap rounded-full border border-border px-3 py-1 text-xs text-ink-soft">
                   {STATUS_LABEL[s.status] || s.status}

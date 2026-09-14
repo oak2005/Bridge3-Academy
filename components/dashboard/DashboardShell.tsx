@@ -7,7 +7,7 @@ import { useProfile } from "@/lib/auth/useProfile";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 
-const NAV_ITEMS = [
+const BASE_NAV_ITEMS = [
   { label: "Dashboard", href: "/dashboard" },
   { label: "My Courses", href: "/dashboard/my-courses" },
   { label: "Workshops", href: "/dashboard/workshops" },
@@ -15,8 +15,10 @@ const NAV_ITEMS = [
   { label: "Portfolio", href: "/dashboard/portfolio" },
   { label: "Certification", href: "/dashboard/certification" },
   { label: "Community", href: "/dashboard/community" },
-  { label: "Settings", href: "/dashboard/settings" },
 ];
+
+const SETTINGS_ITEM = { label: "Settings", href: "/dashboard/settings" };
+const MENTOR_ITEM = { label: "Mentor", href: "/dashboard/mentor" };
 
 function initialsFrom(name: string | null | undefined) {
   if (!name) return "?";
@@ -33,6 +35,11 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const { profile } = useProfile();
   const [notifOpen, setNotifOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
+  const isMentorOrAdmin = profile?.role === "mentor" || profile?.role === "admin";
+  const NAV_ITEMS = isMentorOrAdmin
+    ? [...BASE_NAV_ITEMS, MENTOR_ITEM, SETTINGS_ITEM]
+    : [...BASE_NAV_ITEMS, SETTINGS_ITEM];
 
   async function signOut() {
     await supabaseBrowser.auth.signOut();

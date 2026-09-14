@@ -184,6 +184,28 @@ Full setup for all of this is below.
   lesson, quiz attempt, or assignment submission), with a one-day grace
   period so it doesn't reset the instant midnight passes.
 
+**Phase 10 — Mentor role, review queue, and real feedback**
+- A visible **Mentor** sidebar link now appears — but only for accounts
+  with `role = 'mentor'` or `'admin'`. Regular students never see it.
+- The **Mentor Dashboard** shows every assignment and capstone submission
+  currently awaiting review across ALL students (only the most recent
+  attempt per student per assignment — resubmissions replace the old one
+  in the queue, not stack up), plus a read-only quiz results overview.
+- Clicking into a submission shows what the student wrote/linked, a
+  feedback box, and **Approve** / **Needs Revision** buttons. The
+  student sees that exact feedback immediately on their own Workshop or
+  Capstone page.
+- **The real security boundary here is server-side, not just a hidden
+  link.** Every mentor action goes through an API route that re-verifies
+  the caller's role directly against the database on every single
+  request (`lib/auth/verifyMentor.ts`) — a student manually calling
+  those routes, or guessing a mentor URL, gets rejected by the server
+  itself, not just redirected by page-level JavaScript.
+- This phase finally unblocks something several earlier phases were
+  waiting on: **tracks can now actually reach "Complete"** once a mentor
+  approves the required work — the completion logic itself hasn't
+  changed, it was just waiting for this to exist.
+
 ## How this is organized
 
 ```
@@ -643,6 +665,69 @@ where it should**
 2. If you're the only student who's done anything yet, that's fine — you
    should see yourself listed, or an honest "no XP earned yet" message if
    XP is currently 0.
+
+## Phase 10 — Setup and Testing
+
+**Setup**
+
+1. Supabase → **SQL Editor → New Query**.
+2. Paste the full contents of `supabase/schema_phase10_mentor.sql`, click
+   **Run**. This just adds a `feedback` column to two existing tables —
+   nothing else changes.
+3. No new environment variables, no Vercel changes.
+
+**Promoting a test account to mentor** (manual for now — this becomes a
+one-click action once the Admin Panel exists in Phase 11)
+
+1. Supabase → **Table Editor** → `profiles`.
+2. Find the row for the account you want to promote. If you're not sure
+   which row is which account, cross-reference by `full_name`, or open
+   **Authentication → Users** to match an email to its user ID, then find
+   that same ID in `profiles`.
+3. Click into that row's `role` cell and change it from `student` to
+   `mentor`. Save.
+4. **Important**: use a *second* Google account for this if you can — you
+   want one account acting as the student submitting work, and a
+   different one acting as the mentor reviewing it, so you can watch
+   both sides of the loop for real.
+
+**Testing the full loop: student submits → mentor reviews → student sees
+feedback**
+
+1. Signed in as your **student** account, go to **Workshops**, submit
+   (or resubmit) the "Reflect on What You Learned" assignment if you
+   haven't recently.
+2. Sign out, sign in as your **mentor** account.
+3. Confirm you now see a **Mentor** link in the sidebar that the student
+   account never showed.
+4. Go to **Mentor Dashboard** — confirm the assignment you just submitted
+   appears in the Pending Review queue, with the correct student name.
+5. Click into it, write some feedback, click **Approve**.
+6. Sign out, sign back in as the **student** account.
+7. Go back to that same assignment in **Workshops** — confirm the status
+   now shows "Approved" and your mentor's exact feedback text appears
+   underneath it.
+8. Go to **My Courses** — if that assignment was the last thing blocking
+   General Track, confirm it now shows "Complete" instead of "In
+   progress" (it likely won't yet, since a passed quiz and possibly a
+   capstone are also required — that's correct, not a bug).
+
+**The security test that actually matters** — confirming this isn't just a
+hidden link:
+
+1. Signed in as your **student** account (not mentor), try visiting
+   `/dashboard/mentor` directly by typing the URL. Confirm you're
+   redirected straight back to the regular dashboard, not shown the page.
+2. That page-level redirect is a UX nicety, not the real protection —
+   the real protection is that every mentor API route re-checks your
+   actual role against the database on every request, which isn't
+   something you can easily trigger by hand from a browser address bar
+   (visiting an API URL directly doesn't carry your login the same way
+   the app's own requests do, so it isn't a meaningful test either way).
+   I verified this server-side check directly while building it, using
+   the same pattern already proven out in Phase 8's quiz grading route —
+   worth knowing it's there and tested, even without a simple manual way
+   to poke at it yourself.
 
 ## On the "fourth subdomain" question
 
