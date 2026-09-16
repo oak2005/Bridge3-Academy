@@ -1,11 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { supabaseBrowser } from "@/lib/supabase/client";
 
-export default function LoginPage() {
+function LoginContent() {
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [deactivated, setDeactivated] = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get("deactivated") === "1") setDeactivated(true);
+  }, [searchParams]);
 
   async function signInWithGoogle() {
     setLoading(true);
@@ -30,6 +37,16 @@ export default function LoginPage() {
           Sign in with Google to start or continue your learning path.
         </p>
 
+        {deactivated && (
+          <div className="mt-6 rounded border border-border bg-paper px-4 py-3 text-left">
+            <p className="text-sm font-medium text-ink">This account isn&rsquo;t active</p>
+            <p className="mt-1 text-xs text-ink-muted">
+              Your access has been paused. Reach out to the Bridge3 Academy team
+              if you think this is a mistake.
+            </p>
+          </div>
+        )}
+
         <button
           type="button"
           onClick={signInWithGoogle}
@@ -43,6 +60,14 @@ export default function LoginPage() {
         {error && <p className="mt-3 text-sm text-red-700">{error}</p>}
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<p className="px-6 py-24 text-center text-ink-muted">Loading…</p>}>
+      <LoginContent />
+    </Suspense>
   );
 }
 

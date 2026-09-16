@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useProfile } from "@/lib/auth/useProfile";
+import { supabaseBrowser } from "@/lib/supabase/client";
 
 type Stage = "profile" | "onboarding" | "dashboard";
 
@@ -28,6 +29,16 @@ export function AuthGuard({
     }
 
     if (!profile) return; // profile row is still being created/loaded
+
+    // A deactivated account is signed out immediately — deactivation
+    // needs to actually lock someone out, not just show a flag in an
+    // admin table.
+    if (!profile.is_active) {
+      supabaseBrowser.auth.signOut().then(() => {
+        router.replace("/login?deactivated=1");
+      });
+      return;
+    }
 
     if (stage !== "profile" && needsProfileInfo) {
       router.replace("/onboarding/profile");

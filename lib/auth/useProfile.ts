@@ -14,6 +14,7 @@ export interface Profile {
   level: "beginner" | "intermediate" | "advanced" | null;
   track: "growth" | "creative" | "operations" | "engineering" | null;
   onboarding_completed: boolean;
+  is_active: boolean;
 }
 
 interface UseProfileResult {

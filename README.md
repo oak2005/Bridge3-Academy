@@ -206,6 +206,36 @@ Full setup for all of this is below.
   approves the required work — the completion logic itself hasn't
   changed, it was just waiting for this to exist.
 
+**Phase 11 (Part 1) — Hidden admin panel, platform stats, user management**
+- A hidden admin area lives at **`/dashboard/mission-control`** — there is
+  no link to it anywhere in the UI, for anyone, ever. You have to know the
+  URL.
+- **Platform stats**: total accounts by role, how many students were
+  genuinely active in the last 30 days (did a lesson/quiz/submission —
+  not just signed up), lesson completion rate, mentor reviews completed
+  vs still pending, and waitlist signup/confirmation totals.
+- **User management**: see every account, change anyone's role
+  (student/mentor/admin) from a dropdown, and deactivate or reactivate
+  accounts. Deactivation is real — a deactivated person is signed out and
+  can't get back in, with a clear message explaining why — but their work
+  and history are preserved, not deleted.
+- **A guardrail prevents locking yourself out**: the system refuses to
+  demote or deactivate the last remaining active admin, so there's no way
+  to accidentally leave the platform with zero admins and no way back in.
+- **A real security hole from Phase 4 was found and fixed here.** The
+  original "students can edit their own profile" rule (needed so students
+  could save their onboarding answers) technically also allowed a student
+  to set their *own* role to `admin` by calling the database directly
+  from their browser, bypassing the app entirely. A database-level
+  trigger now makes `role` and `is_active` unchangeable by anyone except
+  the server's own admin routes — regardless of what a browser sends.
+- **Audit log** records every role change and deactivation with who did
+  it and when. It's write-only from the app's perspective and readable
+  only by server-side admin routes — a viewer for it comes in Part 2.
+- Still to come in **Part 2**: content management (create/edit tracks,
+  modules, lessons through a UI), the waitlist verification review queue,
+  and the audit log viewer.
+
 ## How this is organized
 
 ```
@@ -728,6 +758,70 @@ hidden link:
    the same pattern already proven out in Phase 8's quiz grading route —
    worth knowing it's there and tested, even without a simple manual way
    to poke at it yourself.
+
+## Phase 11 (Part 1) — Setup and Testing
+
+**Setup**
+
+1. Supabase → **SQL Editor → New Query**.
+2. Paste the full contents of `supabase/schema_phase11_admin.sql`, click
+   **Run**. This adds the deactivation flag, the audit log table, and the
+   security trigger that closes the privilege-escalation hole.
+3. No new environment variables, no Vercel changes.
+
+**Creating your first admin — this can only be done directly in the
+database, deliberately**
+
+There is no way to become an admin through the app. That's the point: if
+signup or any in-app action could grant admin, anyone could take over the
+platform. So the first one is created by hand, once:
+
+1. Supabase → **Table Editor** → `profiles`.
+2. Find your own row (match by `full_name`, or use **Authentication →
+   Users** to find your email's user ID first).
+3. Copy that row's `id` value.
+4. Go to **SQL Editor → New Query** and run, with your real id pasted in:
+   ```sql
+   update profiles set role = 'admin' where id = 'PASTE-YOUR-ID-HERE';
+   ```
+5. Sign out and back in for the change to take effect in your session.
+
+From then on, you can promote anyone else to admin through the panel
+itself — you only ever do this manual step once.
+
+**Testing the admin panel**
+
+1. Signed in as your admin account, go to `/dashboard/mission-control`
+   (type it manually — there's intentionally no link).
+2. Confirm the stats load and the numbers look plausible against what you
+   know (total accounts, waitlist signups, etc.).
+3. Click **Manage users** — confirm you see every account, with your own
+   row marked "(you)".
+4. Change a test account's role from `student` to `mentor`, confirm the
+   change sticks after the page refreshes itself.
+5. Deactivate that test account. Then, in a separate incognito window,
+   sign in as that account — confirm you're immediately signed out and
+   shown the "This account isn't active" notice.
+6. Reactivate it from the admin panel, and confirm that account can sign
+   in normally again.
+
+**Testing that non-admins genuinely can't get in**
+
+1. Signed in as a **student** (or mentor) account, manually type
+   `/dashboard/mission-control` into the address bar.
+2. Confirm you're silently redirected to the normal dashboard — no error
+   message, no "access denied" screen, nothing that even confirms the
+   route exists.
+3. Confirm no "Mission Control" link appears anywhere in the sidebar for
+   that account (it never appears for anyone, including admins).
+
+**Testing the lockout guardrail**
+
+1. As your only admin, try to change your own role from `admin` to
+   `student`, or deactivate yourself.
+2. Confirm you get the error: "This is the last active admin — promote
+   another admin first." This is what prevents you from accidentally
+   locking yourself out of your own platform permanently.
 
 ## On the "fourth subdomain" question
 
