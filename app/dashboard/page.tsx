@@ -107,7 +107,7 @@ export default function DashboardPage() {
       setLoading(false);
     })();
 
-    fetch("/api/leaderboard")
+    fetch("/api/leaderboard", { cache: "no-store" })
       .then((res) => res.json())
       .then((data) => setLeaderboard(data.leaderboard || []))
       .catch(() => setLeaderboard([]));

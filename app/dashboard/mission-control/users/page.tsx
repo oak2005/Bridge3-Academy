@@ -35,6 +35,7 @@ export default function AdminUsersPage() {
     if (!token) return;
     const res = await fetch("/api/admin/users", {
       headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
     });
     if (res.ok) {
       const data = await res.json();
@@ -65,6 +66,22 @@ export default function AdminUsersPage() {
       const data = await res.json().catch(() => ({}));
       setError(data.error || "Could not update this user.");
     } else {
+      // Reflect the change immediately rather than waiting on a re-fetch
+      // to confirm it — the server call already succeeded, so the UI
+      // shouldn't lag behind what we know just happened.
+      setUsers((prev) =>
+        prev.map((u) =>
+          u.id === userId
+            ? {
+                ...u,
+                ...(updates.role !== undefined ? { role: updates.role as UserRow["role"] } : {}),
+                ...(updates.isActive !== undefined ? { is_active: updates.isActive } : {}),
+              }
+            : u
+        )
+      );
+      // Still re-sync with the server in the background, in case anything
+      // else about this user changed elsewhere in the meantime.
       await loadUsers();
     }
     setBusyId(null);

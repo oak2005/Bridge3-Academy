@@ -40,9 +40,12 @@ alter table admin_audit_log enable row level security;
 create or replace function public.protect_privileged_profile_columns()
 returns trigger as $$
 begin
-  -- The service role (used only by our server-side admin routes)
-  -- bypasses this check; everyone else keeps their existing values.
-  if current_setting('role', true) is distinct from 'service_role' then
+  -- Only block updates arriving as a logged-in end user through the
+  -- app's normal login system (Postgres role "authenticated", assigned
+  -- by Supabase's API layer to every signed-in request). The SQL
+  -- Editor, the service role, and other privileged contexts are left
+  -- alone — they're not what this trigger needs to guard against.
+  if current_setting('role', true) = 'authenticated' then
     new.role := old.role;
     new.is_active := old.is_active;
   end if;

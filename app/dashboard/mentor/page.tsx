@@ -54,8 +54,8 @@ export default function MentorDashboardPage() {
       const headers = { Authorization: `Bearer ${token}` };
 
       const [queueRes, quizRes] = await Promise.all([
-        fetch("/api/mentor/queue", { headers }),
-        fetch("/api/mentor/quiz-overview", { headers }),
+        fetch("/api/mentor/queue", { headers, cache: "no-store" }),
+        fetch("/api/mentor/quiz-overview", { headers, cache: "no-store" }),
       ]);
 
       if (!queueRes.ok || !quizRes.ok) {

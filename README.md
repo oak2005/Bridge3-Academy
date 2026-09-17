@@ -231,10 +231,37 @@ Full setup for all of this is below.
   the server's own admin routes — regardless of what a browser sends.
 - **Audit log** records every role change and deactivation with who did
   it and when. It's write-only from the app's perspective and readable
-  only by server-side admin routes — a viewer for it comes in Part 2.
-- Still to come in **Part 2**: content management (create/edit tracks,
-  modules, lessons through a UI), the waitlist verification review queue,
-  and the audit log viewer.
+  only by server-side admin routes.
+
+**Bug found and fixed mid-Part-1: role/deactivation changes weren't
+showing in the admin UI.** The database was updating correctly the whole
+time (confirmed directly in Supabase) — the admin pages just weren't
+displaying the fresh result, the same class of caching issue first found
+in Phase 9. Fixed two ways: every admin/mentor data fetch now explicitly
+disables caching (`cache: "no-store"`), and user management updates the
+screen immediately from the response it already has, instead of waiting
+on a second fetch to confirm what just happened.
+
+**Phase 11 (Part 2) — Content management, waitlist review, audit log viewer**
+- **Content Management**: create, edit, delete, and reorder Tracks,
+  Modules, and Lessons entirely through a UI — no more hand-editing the
+  database to change curriculum. Expandable Track → Module → Lesson tree,
+  with up/down arrows for reordering and a confirmation dialog before any
+  delete (deleting a Track or Module cascades to everything inside it,
+  which the dialog says explicitly).
+- **Waitlist Verification Review** — this is the manual review step Phase
+  2 was built around from day one: every pending Telegram/X submission
+  shows the claimed username and their screenshot (via a temporary signed
+  link, not a permanent public URL), with one-click Verify/Reject. This is
+  what keeps waitlist verification free — no paid API ever checks these,
+  a human does.
+- **Audit Log viewer** — a readable page over the log that's been
+  recording since Part 1, showing who did what and when across role
+  changes, deactivations, content edits, deletions, and waitlist
+  decisions.
+- Every write in Content Management validates the entity type and column
+  names against a fixed allowlist server-side — the client can never send
+  an arbitrary table or column name, even if someone tried.
 
 ## How this is organized
 
@@ -767,6 +794,12 @@ hidden link:
 2. Paste the full contents of `supabase/schema_phase11_admin.sql`, click
    **Run**. This adds the deactivation flag, the audit log table, and the
    security trigger that closes the privilege-escalation hole.
+
+   **If you already ran an earlier copy of this file** and hit the bug
+   where the trigger reverted your own manual admin promotion, that's
+   fixed in this version — but if you haven't re-applied the fix yet, run
+   `supabase/schema_fix_trigger.sql` once too. A fresh setup running the
+   current file doesn't need that extra step.
 3. No new environment variables, no Vercel changes.
 
 **Creating your first admin — this can only be done directly in the
@@ -822,6 +855,50 @@ itself — you only ever do this manual step once.
 2. Confirm you get the error: "This is the last active admin — promote
    another admin first." This is what prevents you from accidentally
    locking yourself out of your own platform permanently.
+
+## Phase 11 (Part 2) — Setup and Testing
+
+**Setup**
+
+No new database script for Part 2 — it uses the same tables Part 1 (and
+earlier phases) already created. No new environment variables, no Vercel
+changes. Just the usual code deploy.
+
+**Testing Content Management**
+
+1. Go to `/dashboard/mission-control/content`.
+2. Click **+ New Track**, fill in a slug/title/description, save — confirm
+   it appears in the list immediately.
+3. Click that track to expand it, **+ Add Module**, then expand the
+   module and **+ Add Lesson** — confirm the nested tree works all the
+   way down.
+4. Use the ↑/↓ arrows on two lessons in the same module — confirm their
+   order actually swaps, and refresh the page to confirm it's saved, not
+   just a visual reorder.
+5. Delete the test lesson, then the test module, then the test track —
+   confirm each shows a confirmation dialog first (and the Track/Module
+   dialogs explicitly warn about cascading deletes), and that deleting a
+   Module with lessons inside actually removes those lessons too.
+6. Go to `/dashboard/mission-control/audit-log` — confirm your test
+   creates, edits, and deletes all show up with your name and a
+   timestamp.
+
+**Testing Waitlist Verification Review**
+
+1. If you don't already have a pending Telegram/X submission to test
+   with, go to the public waitlist dashboard yourself and submit one with
+   a test screenshot.
+2. Go to `/dashboard/mission-control/waitlist` — confirm it shows up with
+   the claimed username and the screenshot actually displaying (not a
+   broken image).
+3. Click **Verify**. Confirm it disappears from this pending list
+   immediately.
+4. Go back to that waitlist entry's own dashboard (or check
+   `waitlist_verification_submissions` in Table Editor) — confirm its
+   status changed to `verified`, and that the person's verification score
+   updated accordingly.
+5. Check the Audit Log again — confirm the verification action is
+   recorded there too.
 
 ## On the "fourth subdomain" question
 

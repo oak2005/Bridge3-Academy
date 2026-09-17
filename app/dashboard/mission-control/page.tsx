@@ -57,6 +57,7 @@ export default function MissionControlPage() {
       if (!token) return;
       const res = await fetch("/api/admin/stats", {
         headers: { Authorization: `Bearer ${token}` },
+        cache: "no-store",
       });
       if (res.ok) setStats(await res.json());
       setLoading(false);
@@ -70,14 +71,34 @@ export default function MissionControlPage() {
 
   return (
     <div className="mx-auto max-w-content px-6 py-10">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-display text-2xl text-ink">Mission Control</h1>
-        <Link
-          href="/dashboard/mission-control/users"
-          className="rounded border border-border px-4 py-2 text-sm font-medium text-ink-soft hover:border-accent"
-        >
-          Manage users
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link
+            href="/dashboard/mission-control/users"
+            className="rounded border border-border px-4 py-2 text-sm font-medium text-ink-soft hover:border-accent"
+          >
+            Manage users
+          </Link>
+          <Link
+            href="/dashboard/mission-control/content"
+            className="rounded border border-border px-4 py-2 text-sm font-medium text-ink-soft hover:border-accent"
+          >
+            Content
+          </Link>
+          <Link
+            href="/dashboard/mission-control/waitlist"
+            className="rounded border border-border px-4 py-2 text-sm font-medium text-ink-soft hover:border-accent"
+          >
+            Waitlist Review
+          </Link>
+          <Link
+            href="/dashboard/mission-control/audit-log"
+            className="rounded border border-border px-4 py-2 text-sm font-medium text-ink-soft hover:border-accent"
+          >
+            Audit Log
+          </Link>
+        </div>
       </div>
 
       {!stats ? (
@@ -120,11 +141,6 @@ export default function MissionControlPage() {
             <StatCard label="Total signups" value={stats.waitlist.total} />
             <StatCard label="Email confirmed" value={stats.waitlist.confirmed} />
           </div>
-
-          <p className="mt-10 text-xs text-ink-muted">
-            Content management, waitlist verification review, and the audit
-            log view are built in Part 2 of this phase.
-          </p>
         </>
       )}
     </div>

@@ -53,6 +53,7 @@ export default function MentorReviewPage() {
 
       const res = await fetch("/api/mentor/queue", {
         headers: { Authorization: `Bearer ${token}` },
+        cache: "no-store",
       });
       if (!res.ok) {
         setError("Could not load this submission.");
