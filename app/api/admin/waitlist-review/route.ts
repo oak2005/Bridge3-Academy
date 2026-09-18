@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { verifyAdmin, logAdminAction } from "@/lib/auth/verifyAdmin";
+import { jsonNoStore } from "@/lib/http/noStore";
 
 export const dynamic = "force-dynamic";
 
@@ -43,7 +44,7 @@ export async function GET(req: NextRequest) {
     })
   );
 
-  return NextResponse.json({ submissions: withUrls });
+  return jsonNoStore({ submissions: withUrls });
 }
 
 export async function POST(req: NextRequest) {

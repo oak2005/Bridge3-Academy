@@ -6,6 +6,7 @@ import { computeStudentStats } from "@/lib/gamification/computeStudentStats";
 // can cache this route's response and serve stale rankings to everyone.
 export const dynamic = "force-dynamic";
 import { calculateXP } from "@/lib/gamification/xp";
+import { jsonNoStore } from "@/lib/http/noStore";
 
 export async function GET() {
   const { data: profiles } = await supabaseAdmin.from("profiles").select("id, full_name");
@@ -22,5 +23,5 @@ export async function GET() {
     .sort((a, b) => b.xp - a.xp)
     .slice(0, 10);
 
-  return NextResponse.json({ leaderboard: top });
+  return jsonNoStore({ leaderboard: top });
 }

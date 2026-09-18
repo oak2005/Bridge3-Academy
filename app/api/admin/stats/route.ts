@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { verifyAdmin } from "@/lib/auth/verifyAdmin";
+import { jsonNoStore } from "@/lib/http/noStore";
 
 export const dynamic = "force-dynamic";
 
@@ -85,7 +86,7 @@ export async function GET(req: NextRequest) {
     .select("id", { count: "exact", head: true })
     .eq("email_confirmed", true);
 
-  return NextResponse.json({
+  return jsonNoStore({
     users: {
       total: totalUsers,
       students: students.length,

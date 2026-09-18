@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { verifyAdmin } from "@/lib/auth/verifyAdmin";
+import { jsonNoStore } from "@/lib/http/noStore";
 
 export const dynamic = "force-dynamic";
 
@@ -15,5 +16,5 @@ export async function GET(req: NextRequest) {
     .select("id, full_name, university, role, is_active, track, level, created_at")
     .order("created_at", { ascending: false });
 
-  return NextResponse.json({ users: profiles || [] });
+  return jsonNoStore({ users: profiles || [] });
 }

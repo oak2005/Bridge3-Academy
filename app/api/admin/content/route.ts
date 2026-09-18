@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { verifyAdmin } from "@/lib/auth/verifyAdmin";
+import { jsonNoStore } from "@/lib/http/noStore";
 
 export const dynamic = "force-dynamic";
 
@@ -25,7 +26,7 @@ export async function GET(req: NextRequest) {
     .select("id, module_id, title, video_url, duration_minutes, order_index")
     .order("order_index", { ascending: true });
 
-  return NextResponse.json({
+  return jsonNoStore({
     tracks: tracks || [],
     modules: modules || [],
     lessons: lessons || [],

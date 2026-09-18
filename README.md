@@ -242,6 +242,23 @@ disables caching (`cache: "no-store"`), and user management updates the
 screen immediately from the response it already has, instead of waiting
 on a second fetch to confirm what just happened.
 
+**Second, deeper bug found after that: role changes were silently
+reverting even after the above fix.** The audit log proved the update
+was genuinely running each time — it just wasn't sticking. The actual
+cause was the privilege-escalation trigger from earlier in Part 1: it
+tried to detect "is this a trusted admin request or a real end user"
+by checking the database session's identity, and that detection turned
+out to be unreliable under Supabase's connection pooling. The fix
+replaces that guesswork entirely with something Postgres enforces
+directly: a column-level permission rule saying the `authenticated` and
+`anon` database identities are flatly not allowed to touch the `role` or
+`is_active` columns, full stop — no runtime detection involved. The
+admin panel's own updates use a separate, unrestricted identity
+(`service_role`), so they were never affected by this and needed no
+changes. Every admin/mentor GET route also now sets an explicit
+`Cache-Control: no-store` HTTP header, closing the caching question
+completely rather than relying only on Next.js's own defaults.
+
 **Phase 11 (Part 2) — Content management, waitlist review, audit log viewer**
 - **Content Management**: create, edit, delete, and reorder Tracks,
   Modules, and Lessons entirely through a UI — no more hand-editing the
@@ -792,15 +809,14 @@ hidden link:
 
 1. Supabase → **SQL Editor → New Query**.
 2. Paste the full contents of `supabase/schema_phase11_admin.sql`, click
-   **Run**. This adds the deactivation flag, the audit log table, and the
-   security trigger that closes the privilege-escalation hole.
-
-   **If you already ran an earlier copy of this file** and hit the bug
-   where the trigger reverted your own manual admin promotion, that's
-   fixed in this version — but if you haven't re-applied the fix yet, run
-   `supabase/schema_fix_trigger.sql` once too. A fresh setup running the
-   current file doesn't need that extra step.
-3. No new environment variables, no Vercel changes.
+   **Run**. This adds the deactivation flag and the audit log table.
+3. Then run `supabase/schema_fix_column_privileges.sql` as well — this is
+   the current, correct fix for the privilege-escalation hole (it
+   replaces an earlier trigger-based attempt at the same fix that turned
+   out to be unreliable; if you ran `schema_fix_trigger.sql` at any point
+   before this, that's fine, this script cleanly removes it and replaces
+   it with the more robust version).
+4. No new environment variables, no Vercel changes.
 
 **Creating your first admin — this can only be done directly in the
 database, deliberately**
@@ -830,8 +846,13 @@ itself — you only ever do this manual step once.
    know (total accounts, waitlist signups, etc.).
 3. Click **Manage users** — confirm you see every account, with your own
    row marked "(you)".
-4. Change a test account's role from `student` to `mentor`, confirm the
-   change sticks after the page refreshes itself.
+4. Change a test account's role from `student` to `mentor`. Confirm it
+   updates immediately on screen, **then do a full page reload (F5, not
+   just navigating away and back)** and confirm it still shows `mentor` —
+   this full-reload check is the real test, since a change that only
+   looks right until you refresh is exactly the bug that was here before.
+   Also confirm directly in Supabase's Table Editor that the `role`
+   column genuinely says `mentor`.
 5. Deactivate that test account. Then, in a separate incognito window,
    sign in as that account — confirm you're immediately signed out and
    shown the "This account isn't active" notice.
