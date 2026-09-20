@@ -26,3 +26,32 @@
     outline-offset: 2px;
   }
 }
+
+/* Phase 12: Certificate Print & Export Styles */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #0b0f19 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  @page {
+    size: landscape;
+    margin: 10mm;
+  }
+
+  .certificate-frame {
+    box-shadow: none !important;
+    border: 2px solid #d4af37 !important;
+    page-break-inside: avoid !important;
+  }
+}

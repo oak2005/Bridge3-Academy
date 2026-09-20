@@ -280,6 +280,31 @@ completely rather than relying only on Next.js's own defaults.
   names against a fixed allowlist server-side — the client can never send
   an arbitrary table or column name, even if someone tried.
 
+**Phase 12 — Verifiable Certificates & Certification System**
+- **Certification** (`/dashboard/certification`) is now a real dashboard
+  hub instead of a placeholder. It reads every curriculum track and runs
+  `lib/progress/trackCompletion.ts` live for the signed-in student.
+- If a track is 100% complete (every lesson done, every quiz passed, every
+  assignment approved, capstone approved if required), a prominent **"Ready to
+  Claim"** card unlocks with a one-click **"Claim Certificate"** button.
+- **The issuance boundary is strictly server-side**: calling the issuance
+  endpoint (`/api/certificates/issue`) re-verifies completion against the
+  database directly before generating a unique Certificate ID
+  (`B3A-YYYY-XXXXXX`) and a SHA-256 cryptographic verification hash.
+- **Adapter Interface (`lib/certificates/adapter.ts`)**: Built with an
+  extensible abstraction pattern designed so Phase 14 can swap in real
+  on-chain Stacks Clarity (SIP-009 NFT) minting without changing any UI or
+  caller routes.
+- **Public Verification Page (`/certificates/[id]`)**: Anyone (employers,
+  ecosystem DAOs, partners) can verify an issued certificate by ID or hash
+  without an account. Displays student name, track competencies, issue date,
+  hash, and official academy seal.
+- **Print & PDF Styling**: Includes `@media print` rules in `globals.css`
+  so students can click "Print / Save PDF" to generate a clean, landscape,
+  border-framed physical or PDF credential.
+- **Portfolio Integration**: Earned certificates automatically link from the
+  student's public portfolio page (`/portfolio/[id]`).
+
 ## How this is organized
 
 ```
@@ -920,6 +945,49 @@ changes. Just the usual code deploy.
    updated accordingly.
 5. Check the Audit Log again — confirm the verification action is
    recorded there too.
+
+## Phase 12 — Setup and Testing
+
+**Setup**
+
+1. Supabase → **SQL Editor → New Query**.
+2. Paste the full contents of `supabase/schema_phase12_certification.sql`, click
+   **Run**. This creates the `certificates` table with unique constraints,
+   indexes, and strict RLS rules (issuance restricted to server-side routes;
+   students can view their own; public queries allowed by exact ID/hash).
+3. No new environment variables, no Vercel changes.
+
+**Testing the Certification Dashboard**
+
+1. Sign in as your student account and navigate to **Certification**
+   (`/dashboard/certification`).
+2. If General Track (or any track) is incomplete, confirm it appears under
+   **In Progress** with a breakdown of remaining lessons, quizzes,
+   assignments, and capstone status.
+3. Once all requirements for a track are satisfied (you can verify this if a
+   mentor approved your workshop assignments and capstone in Phase 10), confirm
+   the track moves to **Ready to Claim** with an emerald banner.
+4. Click **Claim Certificate**. Confirm the button shows a loading state and
+   issues the certificate with a celebration banner.
+5. Confirm the track now appears under **Earned Certificates** with its unique
+   certificate number (e.g. `B3A-2026-...`), issue date, and "View & Verify"
+   link.
+
+**Testing Public Verification & Print Styling**
+
+1. Click **View & Verify ↗** on your earned certificate to open
+   `/certificates/<id>`.
+2. Copy the URL, open an **incognito window**, and paste the URL. Confirm the
+   certificate displays fully without requiring any sign-in.
+3. Confirm the student name, track title, competency numbers, issue date,
+   certificate ID, and cryptographic verification hash match.
+4. Click **Print / Save PDF** (or press Ctrl+P). Confirm browser print preview
+   shows a landscape-oriented, clean certificate without headers, sidebars, or
+   buttons.
+5. Click **Share on X** to confirm the share link pre-fills the verification
+   URL.
+6. Try visiting `/certificates/` followed by an invalid UUID. Confirm you
+   receive a clean "not found" page.
 
 ## On the "fourth subdomain" question
 

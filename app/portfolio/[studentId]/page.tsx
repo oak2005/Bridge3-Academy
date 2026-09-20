@@ -46,6 +46,12 @@ export default async function PublicPortfolioPage({ params }: Props) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
   const shareUrl = `${siteUrl}/portfolio/${studentId}`;
 
+  // Certificates (Phase 12)
+  const { data: certificates } = await supabaseAdmin
+    .from("certificates")
+    .select("id, certificate_number, track_id")
+    .eq("student_id", studentId);
+
   return (
     <div className="mx-auto max-w-content px-6 py-16">
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -54,9 +60,27 @@ export default async function PublicPortfolioPage({ params }: Props) {
           <p className="mt-2 text-ink-muted">
             {profile.track ? `Track: ${profile.track}` : "Bridge3 Academy Student"}
           </p>
-          <p className="mt-1 text-sm text-ink-muted">
-            Certification: Not yet certified — Certification is coming soon.
-          </p>
+          <div className="mt-2">
+            {certificates && certificates.length > 0 ? (
+              <div className="flex flex-wrap items-center gap-2">
+                {certificates.map((c) => (
+                  <a
+                    key={c.id}
+                    href={`/certificates/${c.id}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-[#C5A059]/40 bg-[#C5A059]/10 px-3 py-1 text-xs font-semibold text-[#8C6D37] transition-colors hover:bg-[#C5A059]/20"
+                  >
+                    🎓 Verified Certificate · {c.certificate_number} ↗
+                  </a>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-ink-muted">
+                Certification: Coursework in progress
+              </p>
+            )}
+          </div>
         </div>
         <ShareButton url={shareUrl} />
       </div>
