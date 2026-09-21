@@ -322,6 +322,34 @@ completely rather than relying only on Next.js's own defaults.
   university, track, role interest, and level. Includes notification toggles,
   account credentials overview, and sign-out controls.
 
+**Phase 15 — Academy Documentation Hub & Knowledge Base**
+- **Documentation Hub (`/docs`)**: Replaces the placeholder with a multi-page,
+  structured documentation portal that acts as the single source of truth for
+  prospective scholars, enrolled students, mentors, and ecosystem partners.
+- **5 Structured Knowledge Base Categories & 16 Deep-Dive Articles**:
+  - **Getting Started**: Welcome to Bridge3, student onboarding, 4-step learning workflow.
+  - **Curriculum & Tracks**: Curriculum philosophy, General Track (Bitcoin & Web3 foundations),
+    Developer Track (Clarity & L2 smart contracts), Creative Track (Web3 UX/UI), and Growth Track.
+  - **Workshops & Mentorship**: Workshop submission guidelines, mentor grading rubrics,
+    revision flows, and capstone project standards.
+  - **Gamification & Integrity**: XP point allocation matrix, student levels, skill badges,
+    public portfolio showcase (`/portfolio/[studentId]`), and the Academy Honor Code.
+  - **Certification & Standards**: Strict 100% completion graduation requirements,
+    SHA-256 cryptographic verification engine, and multi-chain future credentials.
+- **Interactive Documentation Components**:
+  - **Responsive Sidebar (`components/docs/DocsSidebar.tsx`)**: Grouped by category with
+    article count badges, active article highlight, and a mobile drawer toggle.
+  - **Live Search (`components/docs/DocsSearch.tsx`)**: Client-side instant search across
+    all article titles, descriptions, categories, and tags.
+  - **Dynamic Article Reader (`app/docs/[slug]/page.tsx`)**: Pre-rendered via SSG
+    (`generateStaticParams`), breadcrumb navigation, reading times, key takeaways summary cards,
+    rich callout boxes (Tip, Note, Important, Warning), formatted code blocks, and comparison tables.
+  - **In-Page Table of Contents**: Sticky right sidebar on wide screens with anchor jumping.
+  - **Pagination & Feedback**: Previous/Next article links (`components/docs/DocsPagination.tsx`)
+    and "Was this article helpful?" student feedback widget (`components/docs/DocsFeedback.tsx`).
+- **Site-Wide Navigation Updates**: Added "Docs" to the top header (`components/ui/Header.tsx`)
+  and updated footer curriculum links (`components/ui/Footer.tsx`) to point to direct docs tracks.
+
 ## How this is organized
 
 ```

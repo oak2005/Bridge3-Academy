@@ -12,9 +12,11 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
   {
     title: "Curriculum",
     links: [
-      { label: "General Track", href: "/docs" },
-      { label: "Ecosystem Support Track", href: "/docs" },
-      { label: "Skill Set Track", href: "/docs" },
+      { label: "Documentation Hub", href: "/docs" },
+      { label: "General Track", href: "/docs/track-general" },
+      { label: "Developer Track", href: "/docs/track-developer" },
+      { label: "Creative Track", href: "/docs/track-creative" },
+      { label: "Growth Track", href: "/docs/track-growth" },
     ],
   },
   {
