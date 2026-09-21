@@ -1,37 +1,37 @@
 import type { Config } from "tailwindcss";
 
-// Bridge3 Academy design tokens
+// Bridge3 Academy design tokens with Universal Dark Mode
 // Direction: "premium academic meets Web3-native" — a quiet paper canvas,
-// ink text with a green undertone (ties the palette together instead of
-// pure black), and ONE confident green accent used sparingly for the
-// things that matter (primary actions, verified/proof-of-work states).
-// Deliberately avoiding: cream+terracotta, near-black+neon-accent, and
-// uniform rounded-shadow "SaaS card" treatments.
+// ink text with a green undertone, and ONE confident green accent used sparingly.
+// Uses CSS variables for instant, seamless dark mode adaptation across all components.
 
 const config: Config = {
+  darkMode: "class",
   content: [
     "./app/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
+    "./lib/**/*.{ts,tsx}",
   ],
   theme: {
     extend: {
       colors: {
         ink: {
-          DEFAULT: "#1C2A22", // primary text — near-black with a green undertone
-          soft: "#3A473F",    // secondary text
-          muted: "#5C6B60",   // tertiary / helper text
+          DEFAULT: "rgb(var(--color-ink) / <alpha-value>)",
+          soft: "rgb(var(--color-ink-soft) / <alpha-value>)",
+          muted: "rgb(var(--color-ink-muted) / <alpha-value>)",
         },
         paper: {
-          DEFAULT: "#F5F5EF", // page background — cool bone, not the flagged warm cream
-          raised: "#FFFFFF",  // cards / raised surfaces
+          DEFAULT: "rgb(var(--color-paper) / <alpha-value>)",
+          raised: "rgb(var(--color-paper-raised) / <alpha-value>)",
+          hover: "rgb(var(--color-paper-hover) / <alpha-value>)",
         },
         border: {
-          DEFAULT: "#DEDFD3", // hairline dividers and outlines
+          DEFAULT: "rgb(var(--color-border) / <alpha-value>)",
         },
         accent: {
-          DEFAULT: "#3E9A5C", // primary CTA green
-          hover: "#347F4C",
-          tint: "#E3F1E2",    // light green for badges / verified states
+          DEFAULT: "rgb(var(--color-accent) / <alpha-value>)",
+          hover: "rgb(var(--color-accent-hover) / <alpha-value>)",
+          tint: "rgb(var(--color-accent-tint) / <alpha-value>)",
           contrast: "#FFFFFF",
         },
       },

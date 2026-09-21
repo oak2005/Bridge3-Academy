@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 const NAV_LINKS = [
   { label: "Home", href: "/" },
@@ -35,7 +36,8 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="hidden items-center gap-4 md:flex">
+        <div className="hidden items-center gap-3 md:flex">
+          <ThemeToggle />
           <Link
             href="/login"
             className="text-sm font-medium text-ink-soft transition-colors hover:text-ink"
@@ -50,20 +52,23 @@ export function Header() {
           </Link>
         </div>
 
-        <button
-          type="button"
-          aria-label="Toggle menu"
-          aria-expanded={open}
-          onClick={() => setOpen((v) => !v)}
-          className="flex h-9 w-9 items-center justify-center rounded border border-border md:hidden"
-        >
-          <span className="sr-only">Toggle menu</span>
-          <div className="flex flex-col gap-1">
-            <span className="h-px w-5 bg-ink" />
-            <span className="h-px w-5 bg-ink" />
-            <span className="h-px w-5 bg-ink" />
-          </div>
-        </button>
+        <div className="flex items-center gap-2 md:hidden">
+          <ThemeToggle />
+          <button
+            type="button"
+            aria-label="Toggle menu"
+            aria-expanded={open}
+            onClick={() => setOpen((v) => !v)}
+            className="flex h-9 w-9 items-center justify-center rounded border border-border"
+          >
+            <span className="sr-only">Toggle menu</span>
+            <div className="flex flex-col gap-1">
+              <span className="h-px w-5 bg-ink" />
+              <span className="h-px w-5 bg-ink" />
+              <span className="h-px w-5 bg-ink" />
+            </div>
+          </button>
+        </div>
       </div>
 
       {open && (

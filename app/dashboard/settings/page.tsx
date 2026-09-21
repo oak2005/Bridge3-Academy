@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useProfile, Profile } from "@/lib/auth/useProfile";
 import { supabaseBrowser } from "@/lib/supabase/client";
+import { useTheme } from "@/lib/theme/ThemeContext";
 
 export default function SettingsPage() {
   const router = useRouter();
   const { session, profile, loading: profileLoading, refresh } = useProfile();
+  const { theme, setTheme } = useTheme();
 
   // Form states
   const [fullName, setFullName] = useState("");
@@ -243,7 +245,71 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {/* Section 3: Notification Preferences */}
+      {/* Section 3: Appearance & Theme */}
+      <div className="mt-8 rounded-xl border border-border bg-paper-raised p-6 shadow-sm">
+        <h2 className="font-display text-base font-semibold text-ink">Appearance &amp; Theme</h2>
+        <p className="mt-1 text-xs text-ink-muted">
+          Customize how Bridge3 Academy looks on your device. Choose between light, dark, or system preference.
+        </p>
+
+        <div className="mt-5 grid gap-3 sm:grid-cols-3">
+          <button
+            type="button"
+            onClick={() => setTheme("light")}
+            className={`flex items-center gap-3 rounded-xl border p-4 text-left transition-all ${
+              theme === "light"
+                ? "border-accent bg-accent-tint/40 shadow-sm"
+                : "border-border bg-paper hover:bg-paper-hover"
+            }`}
+          >
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-amber-100 text-amber-600 text-lg">
+              ☀️
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-ink">Light Mode</p>
+              <p className="text-[11px] text-ink-muted">Cool bone canvas &amp; dark text</p>
+            </div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setTheme("dark")}
+            className={`flex items-center gap-3 rounded-xl border p-4 text-left transition-all ${
+              theme === "dark"
+                ? "border-accent bg-accent-tint/40 shadow-sm"
+                : "border-border bg-paper hover:bg-paper-hover"
+            }`}
+          >
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-950 text-emerald-400 text-lg">
+              🌙
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-ink">Dark Mode</p>
+              <p className="text-[11px] text-ink-muted">Deep obsidian &amp; crisp sage</p>
+            </div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setTheme("system")}
+            className={`flex items-center gap-3 rounded-xl border p-4 text-left transition-all ${
+              theme === "system"
+                ? "border-accent bg-accent-tint/40 shadow-sm"
+                : "border-border bg-paper hover:bg-paper-hover"
+            }`}
+          >
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-paper-raised text-ink text-lg border border-border">
+              💻
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-ink">System Default</p>
+              <p className="text-[11px] text-ink-muted">Matches your OS setting</p>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      {/* Section 4: Notification Preferences */}
       <div className="mt-8 rounded-xl border border-border bg-paper-raised p-6 shadow-sm">
         <div className="flex items-center justify-between">
           <div>

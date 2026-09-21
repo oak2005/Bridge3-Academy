@@ -7,6 +7,7 @@ import { useProfile } from "@/lib/auth/useProfile";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { NotificationDropdown } from "@/components/dashboard/NotificationDropdown";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 const BASE_NAV_ITEMS = [
   { label: "Dashboard", href: "/dashboard" },
@@ -90,7 +91,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             </button>
             <p className="text-sm text-ink-muted">Bridge3 Academy</p>
           </div>
-          <div className="ml-auto flex items-center gap-4">
+          <div className="ml-auto flex items-center gap-3">
+            <ThemeToggle />
             <NotificationDropdown />
             <Link
               href="/dashboard/settings"

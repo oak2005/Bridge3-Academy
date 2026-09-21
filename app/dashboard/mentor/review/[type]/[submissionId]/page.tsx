@@ -172,14 +172,74 @@ export default function MentorReviewPage() {
         )}
       </div>
 
-      <div className="mt-6 rounded border border-border bg-paper-raised p-6">
-        <h2 className="font-sans text-sm font-semibold text-ink">Your feedback</h2>
+      <div className="mt-6 rounded border border-border bg-paper-raised p-6 shadow-sm">
+        <div className="flex items-center justify-between">
+          <h2 className="font-sans text-sm font-semibold text-ink">Your Feedback</h2>
+          <span className="text-[11px] text-ink-muted">Quick feedback presets:</span>
+        </div>
+
+        {/* Quick Feedback Snippet Chips */}
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          <button
+            type="button"
+            onClick={() =>
+              setFeedback((prev) =>
+                prev
+                  ? `${prev}\n\n🌟 Excellent submission! Clean architecture, clear code comments, and all criteria satisfied.`
+                  : "🌟 Excellent submission! Clean architecture, clear code comments, and all criteria satisfied."
+              )
+            }
+            className="rounded-lg border border-border bg-paper px-2.5 py-1 text-[11px] font-medium text-ink-soft hover:border-accent hover:text-ink"
+          >
+            + 🌟 Excellent Work
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              setFeedback((prev) =>
+                prev
+                  ? `${prev}\n\n⚠️ Good effort, but automated unit tests are missing. Please add test cases and resubmit.`
+                  : "⚠️ Good effort, but automated unit tests are missing. Please add test cases and resubmit."
+              )
+            }
+            className="rounded-lg border border-border bg-paper px-2.5 py-1 text-[11px] font-medium text-ink-soft hover:border-accent hover:text-ink"
+          >
+            + ⚠️ Missing Tests
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              setFeedback((prev) =>
+                prev
+                  ? `${prev}\n\n📝 Please include setup, configuration, and run instructions in your README.md.`
+                  : "📝 Please include setup, configuration, and run instructions in your README.md."
+              )
+            }
+            className="rounded-lg border border-border bg-paper px-2.5 py-1 text-[11px] font-medium text-ink-soft hover:border-accent hover:text-ink"
+          >
+            + 📝 Add README Docs
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              setFeedback((prev) =>
+                prev
+                  ? `${prev}\n\n🔒 The provided repository/document link is private. Please update access to public and resubmit.`
+                  : "🔒 The provided repository/document link is private. Please update access to public and resubmit."
+              )
+            }
+            className="rounded-lg border border-border bg-paper px-2.5 py-1 text-[11px] font-medium text-ink-soft hover:border-accent hover:text-ink"
+          >
+            + 🔒 Private Link
+          </button>
+        </div>
+
         <textarea
           value={feedback}
           onChange={(e) => setFeedback(e.target.value)}
           rows={4}
-          placeholder="Write feedback the student will see…"
-          className="mt-3 w-full rounded border border-border bg-paper px-3 py-2 text-sm text-ink focus:border-accent"
+          placeholder="Write constructive feedback the student will see…"
+          className="mt-3 w-full rounded border border-border bg-paper px-3 py-2 text-sm text-ink focus:border-accent focus:outline-none"
         />
 
         {error && <p className="mt-2 text-sm text-red-700">{error}</p>}

@@ -3,12 +3,44 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --color-ink: 28 42 34; /* #1C2A22 */
+    --color-ink-soft: 58 71 63; /* #3A473F */
+    --color-ink-muted: 92 107 96; /* #5C6B60 */
+    --color-paper: 245 245 239; /* #F5F5EF */
+    --color-paper-raised: 255 255 255; /* #FFFFFF */
+    --color-paper-hover: 236 236 229; /* #ECECE5 */
+    --color-border: 222 223 211; /* #DEDFD3 */
+    --color-accent: 62 154 92; /* #3E9A5C */
+    --color-accent-hover: 52 127 76; /* #347F4C */
+    --color-accent-tint: 227 241 226; /* #E3F1E2 */
+  }
+
+  .dark {
+    --color-ink: 234 242 236; /* #EAF2EC crisp warm off-white */
+    --color-ink-soft: 176 194 182; /* #B0C2B6 soft silver-sage */
+    --color-ink-muted: 120 139 127; /* #788B7F muted sage */
+    --color-paper: 15 23 19; /* #0F1713 deep obsidian */
+    --color-paper-raised: 24 34 29; /* #18221D raised dark card surface */
+    --color-paper-hover: 32 45 39; /* #202D27 hover surface */
+    --color-border: 37 52 44; /* #25342C subtle hairline dark borders */
+    --color-accent: 74 222 128; /* #4ADE80 vibrant emerald green */
+    --color-accent-hover: 34 197 94; /* #22C55E */
+    --color-accent-tint: 22 51 35; /* #163323 dark emerald tint */
+  }
+
   html {
     scroll-behavior: smooth;
+    color-scheme: light;
+  }
+
+  html.dark {
+    color-scheme: dark;
   }
 
   body {
     @apply bg-paper text-ink font-sans antialiased;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
   h1,
