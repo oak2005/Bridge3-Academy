@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
   {
@@ -40,8 +43,14 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
 ];
 
 export function Footer() {
+  const pathname = usePathname();
+
+  if (pathname?.startsWith("/dashboard")) {
+    return null;
+  }
+
   return (
-    <footer className="border-t border-border bg-paper">
+    <footer className="border-t border-border bg-paper no-print">
       <div className="mx-auto max-w-content px-6 py-12">
         <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-5">
           {COLUMNS.map((column) => (

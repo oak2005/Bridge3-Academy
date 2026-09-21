@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 const NAV_LINKS = [
@@ -15,10 +16,15 @@ const NAV_LINKS = [
 ];
 
 export function Header() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
+  if (pathname?.startsWith("/dashboard")) {
+    return null;
+  }
+
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-paper/95 backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-border bg-paper/95 backdrop-blur no-print">
       <div className="mx-auto flex max-w-content items-center justify-between px-6 py-4">
         <Link href="/" className="font-display text-lg font-medium tracking-tight text-ink">
           Bridge3 Academy
