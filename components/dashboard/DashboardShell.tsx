@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useProfile } from "@/lib/auth/useProfile";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import { NotificationDropdown } from "@/components/dashboard/NotificationDropdown";
 
 const BASE_NAV_ITEMS = [
   { label: "Dashboard", href: "/dashboard" },
@@ -33,7 +34,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { profile } = useProfile();
-  const [notifOpen, setNotifOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   const isMentorOrAdmin = profile?.role === "mentor" || profile?.role === "admin";
@@ -91,21 +91,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             <p className="text-sm text-ink-muted">Bridge3 Academy</p>
           </div>
           <div className="ml-auto flex items-center gap-4">
-            <div className="relative">
-              <button
-                type="button"
-                aria-label="Notifications"
-                onClick={() => setNotifOpen((v) => !v)}
-                className="flex h-9 w-9 items-center justify-center rounded border border-border text-ink-soft hover:border-accent"
-              >
-                🔔
-              </button>
-              {notifOpen && (
-                <div className="absolute right-0 mt-2 w-56 rounded border border-border bg-paper-raised p-4 text-sm text-ink-muted shadow-sm">
-                  No notifications yet.
-                </div>
-              )}
-            </div>
+            <NotificationDropdown />
             <Link
               href="/dashboard/settings"
               aria-label="Settings"

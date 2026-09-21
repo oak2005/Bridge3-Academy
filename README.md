@@ -305,6 +305,23 @@ completely rather than relying only on Next.js's own defaults.
 - **Portfolio Integration**: Earned certificates automatically link from the
   student's public portfolio page (`/portfolio/[id]`).
 
+**Phase 13 — Community, Notifications & Student Settings**
+- **Automated Notifications Engine**: Real-time alerts generated directly in
+  Postgres via triggers whenever a mentor approves or requests revisions on an
+  assignment, approves a capstone, or issues a certificate.
+- **Interactive Notification Bell (`DashboardShell.tsx`)**: Replaces the static
+  placeholder with a live dropdown showing unread count pill badges, time ago
+  indicators, click-to-navigate links, and a "Mark all as read" button.
+- **Community Hub (`/dashboard/community`)**: Replaces the placeholder with a
+  complete ecosystem dashboard featuring official channels (Telegram Group,
+  Telegram Announcements, X/Twitter, Stacks Africa Forum, Discord), study
+  circles by track, platform announcements feed with mentor posting capabilities,
+  weekly live event schedules (AMAs, Spaces), and community guidelines.
+- **Settings & Profile Portal (`/dashboard/settings`)**: Replaces the placeholder
+  with an interactive form allowing students to update their full name,
+  university, track, role interest, and level. Includes notification toggles,
+  account credentials overview, and sign-out controls.
+
 ## How this is organized
 
 ```
@@ -988,6 +1005,50 @@ changes. Just the usual code deploy.
    URL.
 6. Try visiting `/certificates/` followed by an invalid UUID. Confirm you
    receive a clean "not found" page.
+
+## Phase 13 — Setup and Testing
+
+**Setup**
+
+1. Supabase → **SQL Editor → New Query**.
+2. Paste the full contents of `supabase/schema_phase13_community_notifications.sql`,
+   click **Run**. This creates the `notifications` and `community_announcements`
+   tables, sets up RLS, configures automated review triggers, and seeds welcome
+   announcements.
+3. No new environment variables, no Vercel changes.
+
+**Testing the Notification Bell**
+
+1. Sign in as a student account. Confirm the `🔔` notification icon appears in
+   the top navigation bar.
+2. Click the bell: confirm the interactive dropdown opens displaying welcome
+   announcements or review alerts with relative timestamps ("Just now", "5m ago").
+3. Click "Mark all read" and confirm unread indicators clear.
+
+**Testing Automated Review Triggers**
+
+1. Sign in as your mentor account in a private window and navigate to
+   `/dashboard/mentor`.
+2. Approve a pending assignment submission or capstone.
+3. Switch back to your student account and reload (or click the bell): confirm
+   an automated alert ("Assignment Approved! 🎉") immediately appears in the
+   notification dropdown.
+4. Click the notification item: confirm it navigates directly to the reviewed
+   workshop assignment.
+
+**Testing Community & Settings**
+
+1. Navigate to **Community** (`/dashboard/community`):
+   - Confirm official Telegram, X, Discord, and Stacks Africa links open in new
+     tabs.
+   - Confirm the live announcements board displays recent updates.
+   - If signed in as mentor or admin, confirm the "+ Post Announcement" button
+     appears and lets you broadcast an announcement to the academy.
+2. Navigate to **Settings** (`/dashboard/settings`):
+   - Edit your Full Name or University and click **Save Profile**. Confirm the
+     success message appears and that the top right avatar/initials update
+     immediately.
+   - Refresh the page to confirm your changes persisted in the database.
 
 ## On the "fourth subdomain" question
 
