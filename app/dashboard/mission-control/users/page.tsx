@@ -67,21 +67,24 @@ export default function AdminUsersPage() {
       body: JSON.stringify({ userId, ...updates }),
     });
 
+    const data = await res.json().catch(() => ({}));
+
     if (!res.ok) {
-      const data = await res.json().catch(() => ({}));
       setError(data.error || "Could not update this user.");
     } else {
-      setUsers((prev) =>
-        prev.map((u) =>
-          u.id === userId
-            ? {
-                ...u,
-                ...(updates.role !== undefined ? { role: updates.role as UserRow["role"] } : {}),
-                ...(updates.isActive !== undefined ? { is_active: updates.isActive } : {}),
-              }
-            : u
-        )
-      );
+      if (data.profile) {
+        setUsers((prev) =>
+          prev.map((u) =>
+            u.id === userId
+              ? {
+                  ...u,
+                  role: data.profile.role,
+                  is_active: data.profile.is_active,
+                }
+              : u
+          )
+        );
+      }
       await loadUsers();
     }
     setBusyId(null);

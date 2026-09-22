@@ -24,6 +24,9 @@ export async function GET(req: NextRequest) {
     .in("id", signupIds.length > 0 ? signupIds : ["00000000-0000-0000-0000-000000000000"]);
   const emailById = new Map((signups || []).map((s) => [s.id, s.email]));
 
+  const { data: allTasks } = await supabaseAdmin.from("waitlist_tasks").select("id, title");
+  const taskTitleById = new Map((allTasks || []).map((t) => [t.id, t.title]));
+
   const withUrls = await Promise.all(
     (submissions || []).map(async (s) => {
       let screenshotUrl: string | null = null;
@@ -37,6 +40,7 @@ export async function GET(req: NextRequest) {
         id: s.id,
         email: emailById.get(s.waitlist_signup_id) || "Unknown",
         taskType: s.task_type,
+        taskTitle: taskTitleById.get(s.task_type) || s.task_type,
         submissionText: s.submission_text,
         screenshotUrl,
         createdAt: s.created_at,

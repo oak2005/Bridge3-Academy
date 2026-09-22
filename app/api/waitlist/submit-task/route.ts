@@ -1,14 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
-const VALID_TASK_TYPES = ["telegram", "x_twitter"];
-
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
   const { waitlistSignupId, taskType, submissionText, screenshotPath } = body || {};
 
-  if (!waitlistSignupId || !VALID_TASK_TYPES.includes(taskType)) {
-    return NextResponse.json({ error: "Invalid submission." }, { status: 400 });
+  if (!waitlistSignupId || !taskType || typeof taskType !== "string") {
+    return NextResponse.json({ error: "Invalid submission payload." }, { status: 400 });
   }
 
   // Confirm the signup actually exists before attaching a submission to it.

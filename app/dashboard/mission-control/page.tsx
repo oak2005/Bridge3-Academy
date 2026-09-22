@@ -76,25 +76,31 @@ export default function MissionControlPage() {
         <div className="flex flex-wrap gap-2">
           <Link
             href="/dashboard/mission-control/users"
-            className="rounded border border-border px-4 py-2 text-sm font-medium text-ink-soft hover:border-accent"
+            className="rounded border border-border px-3.5 py-1.5 text-xs font-semibold text-ink-soft hover:border-accent hover:text-ink transition-colors"
           >
-            Manage users
+            Manage Users
           </Link>
           <Link
             href="/dashboard/mission-control/content"
-            className="rounded border border-border px-4 py-2 text-sm font-medium text-ink-soft hover:border-accent"
+            className="rounded border border-border px-3.5 py-1.5 text-xs font-semibold text-ink-soft hover:border-accent hover:text-ink transition-colors"
           >
-            Content
+            Curriculum Content
           </Link>
           <Link
             href="/dashboard/mission-control/waitlist"
-            className="rounded border border-border px-4 py-2 text-sm font-medium text-ink-soft hover:border-accent"
+            className="rounded border border-border px-3.5 py-1.5 text-xs font-semibold text-ink-soft hover:border-accent hover:text-ink transition-colors"
           >
-            Waitlist Review
+            Waitlist & Tasks
+          </Link>
+          <Link
+            href="/dashboard/mission-control/site-settings"
+            className="rounded border border-accent bg-accent/10 px-3.5 py-1.5 text-xs font-semibold text-accent hover:bg-accent/20 transition-colors"
+          >
+            Site Branding & CMS
           </Link>
           <Link
             href="/dashboard/mission-control/audit-log"
-            className="rounded border border-border px-4 py-2 text-sm font-medium text-ink-soft hover:border-accent"
+            className="rounded border border-border px-3.5 py-1.5 text-xs font-semibold text-ink-soft hover:border-accent hover:text-ink transition-colors"
           >
             Audit Log
           </Link>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { DEFAULT_SITE_SETTINGS } from "@/lib/settings/constants";
 
 const CHECKLIST_PREVIEW = [
   "Join Telegram community",
@@ -16,6 +17,22 @@ export function WaitlistHero() {
   const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const [signupId, setSignupId] = useState<string | null>(null);
+  const [siteSettings, setSiteSettings] = useState(DEFAULT_SITE_SETTINGS);
+
+  useEffect(() => {
+    async function loadSettings() {
+      try {
+        const res = await fetch("/api/site-settings");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.settings) setSiteSettings(data.settings);
+        }
+      } catch (err) {
+        console.error("Could not load dynamic site settings:", err);
+      }
+    }
+    loadSettings();
+  }, []);
 
   // Capture a referral on first visit, so it survives even if the person
   // doesn't sign up immediately. First-touch only: if a referral is
@@ -75,11 +92,10 @@ export function WaitlistHero() {
       <div className="mx-auto grid max-w-content items-center gap-12 px-6 md:grid-cols-2">
         <div>
           <h1 className="font-display text-4xl leading-tight text-ink md:text-5xl">
-            Africa&rsquo;s first structured Web3 education Platform.
+            {siteSettings.heroHeadline}
           </h1>
           <p className="mt-4 max-w-prose text-ink-soft">
-            From zero knowledge to verified certification. Learn blockchain, DeFi,
-            smart contracts, and career-ready Web3 skills without tutorial chaos.
+            {siteSettings.heroSubheadline}
           </p>
 
           <form onSubmit={handleSubmit} className="mt-8 flex max-w-md flex-col gap-3 sm:flex-row">
@@ -96,7 +112,7 @@ export function WaitlistHero() {
               disabled={status === "submitting"}
               className="whitespace-nowrap rounded bg-accent px-6 py-3 text-sm font-semibold text-accent-contrast transition-colors hover:bg-accent-hover disabled:opacity-60"
             >
-              {status === "submitting" ? "Joining…" : "Join Early Access"}
+              {status === "submitting" ? "Joining…" : siteSettings.heroCtaText || "Join Early Access"}
             </button>
           </form>
 
@@ -105,13 +121,36 @@ export function WaitlistHero() {
           )}
 
           <p className="mt-3 text-sm text-ink-muted">
-            Early members receive priority verification and scholarship
-            consideration.
+            {siteSettings.heroAnnouncement}
           </p>
         </div>
 
-        <div className="flex aspect-[4/3] items-center justify-center rounded border border-dashed border-border bg-paper-raised">
-          <p className="text-sm text-ink-muted">Illustration slot</p>
+        {/* Dynamic Hero Illustration Slot */}
+        <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded-2xl border border-border bg-paper-raised p-6 shadow-sm transition-all hover:border-border/80">
+          {siteSettings.illustrationUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={siteSettings.illustrationUrl}
+              alt={siteSettings.illustrationCaption || "Bridge3 Web3 Ecosystem"}
+              className="h-full w-full object-contain"
+            />
+          ) : (
+            <div className="flex flex-col items-center justify-center text-center p-6 space-y-4">
+              <div className="relative flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-tr from-accent/20 to-accent-hover/30 border border-accent/30 shadow-inner">
+                <span className="text-3xl font-display text-accent">B3</span>
+                <span className="absolute -top-1 -right-1 flex h-4 w-4">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
+                  <span className="relative inline-flex rounded-full h-4 w-4 bg-accent" />
+                </span>
+              </div>
+              <div>
+                <p className="font-display text-base font-semibold text-ink">Bridge3 Web3 Ecosystem</p>
+                <p className="mt-1 text-xs text-ink-muted max-w-xs">
+                  Structured curriculum &bull; Verifiable credentials &bull; Pan-African talent network
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

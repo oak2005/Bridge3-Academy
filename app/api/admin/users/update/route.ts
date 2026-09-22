@@ -60,9 +60,34 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Nothing to update." }, { status: 400 });
   }
 
-  const { error } = await supabaseAdmin.from("profiles").update(updates).eq("id", userId);
+  const { data: updatedProfile, error } = await supabaseAdmin
+    .from("profiles")
+    .update(updates)
+    .eq("id", userId)
+    .select("id, full_name, role, is_active")
+    .single();
+
   if (error) {
-    return NextResponse.json({ error: "Could not update user." }, { status: 500 });
+    console.error("Admin user update error:", error);
+    return NextResponse.json({ error: error.message || "Could not update user." }, { status: 500 });
+  }
+
+  // Safety verification: ensure database row actually reflected the requested values
+  if (role !== undefined && updatedProfile.role !== role) {
+    return NextResponse.json(
+      {
+        error: `Database trigger reverted role change (database has '${updatedProfile.role}', requested '${role}'). Please run supabase/schema_redo_admin_and_cms.sql in your Supabase SQL editor to drop the conflicting trigger.`,
+      },
+      { status: 500 }
+    );
+  }
+  if (isActive !== undefined && updatedProfile.is_active !== isActive) {
+    return NextResponse.json(
+      {
+        error: `Database trigger reverted access status change. Please run supabase/schema_redo_admin_and_cms.sql in your Supabase SQL editor to drop the conflicting trigger.`,
+      },
+      { status: 500 }
+    );
   }
 
   if (role !== undefined && role !== target.role) {
@@ -84,5 +109,5 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, profile: updatedProfile });
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
@@ -18,6 +18,25 @@ const NAV_LINKS = [
 export function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [logo, setLogo] = useState({ text: "Bridge3 Academy", url: "" });
+
+  useEffect(() => {
+    async function loadLogo() {
+      try {
+        const res = await fetch("/api/site-settings");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.settings) {
+            setLogo({
+              text: data.settings.logoText || "Bridge3 Academy",
+              url: data.settings.logoUrl || "",
+            });
+          }
+        }
+      } catch {}
+    }
+    loadLogo();
+  }, []);
 
   if (pathname?.startsWith("/dashboard")) {
     return null;
@@ -26,8 +45,12 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-paper/95 backdrop-blur no-print">
       <div className="mx-auto flex max-w-content items-center justify-between px-6 py-4">
-        <Link href="/" className="font-display text-lg font-medium tracking-tight text-ink">
-          Bridge3 Academy
+        <Link href="/" className="flex items-center gap-2 font-display text-lg font-medium tracking-tight text-ink">
+          {logo.url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={logo.url} alt={logo.text} className="h-7 w-auto object-contain" />
+          ) : null}
+          <span>{logo.text}</span>
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
