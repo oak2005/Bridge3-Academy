@@ -23,6 +23,7 @@ export default function AdminUsersPage() {
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   // Search & Filter controls
   const [searchQuery, setSearchQuery] = useState("");
@@ -71,6 +72,8 @@ export default function AdminUsersPage() {
 
     if (!res.ok) {
       setError(data.error || "Could not update this user.");
+      setSuccess("");
+      setTimeout(() => setError(""), 5000);
     } else {
       if (data.profile) {
         setUsers((prev) =>
@@ -85,6 +88,15 @@ export default function AdminUsersPage() {
           )
         );
       }
+      const targetName = users.find((u) => u.id === userId)?.full_name || "User";
+      const changeDesc = updates.role
+        ? `Role changed to ${updates.role}`
+        : updates.isActive !== undefined
+        ? (updates.isActive ? "Account reactivated" : "Account deactivated")
+        : "Updated";
+      setSuccess(`✓ ${targetName}: ${changeDesc}`);
+      setError("");
+      setTimeout(() => setSuccess(""), 3000);
       await loadUsers();
     }
     setBusyId(null);
@@ -173,6 +185,12 @@ export default function AdminUsersPage() {
       {error && (
         <div className="mt-6 rounded-lg border border-red-300 bg-red-50 p-4 text-xs font-semibold text-red-800 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-300">
           ✕ {error}
+        </div>
+      )}
+
+      {success && (
+        <div className="mt-4 rounded-lg border border-emerald-300 bg-emerald-50 p-4 text-xs font-semibold text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300">
+          {success}
         </div>
       )}
 

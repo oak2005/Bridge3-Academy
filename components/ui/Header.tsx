@@ -38,7 +38,7 @@ export function Header() {
     loadLogo();
   }, []);
 
-  if (pathname?.startsWith("/dashboard")) {
+  if (pathname?.startsWith("/dashboard") || pathname?.startsWith("/waitlist")) {
     return null;
   }
 

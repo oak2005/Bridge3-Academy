@@ -149,11 +149,11 @@ export default function ContentManagementPage() {
                 </p>
                 <p className="text-xs text-ink-muted">/{track.slug}</p>
               </button>
-              <div className="flex items-center gap-2">
-                <button type="button" onClick={() => reorder("track", track.id, "up")} disabled={i === 0} className="text-ink-muted disabled:opacity-30">↑</button>
-                <button type="button" onClick={() => reorder("track", track.id, "down")} disabled={i === tracks.length - 1} className="text-ink-muted disabled:opacity-30">↓</button>
-                <button type="button" onClick={() => setEditing(`track:${track.id}`)} className="text-xs text-accent-hover underline">Edit</button>
-                <button type="button" onClick={() => deleteEntity("track", track.id, track.title)} className="text-xs text-red-700 underline">Delete</button>
+              <div className="flex items-center gap-1.5">
+                <button type="button" onClick={() => reorder("track", track.id, "up")} disabled={i === 0} className="flex h-7 w-7 items-center justify-center rounded border border-border text-xs text-ink-soft transition-colors hover:bg-accent/10 hover:text-accent disabled:opacity-25 disabled:hover:bg-transparent" title="Move up">▲</button>
+                <button type="button" onClick={() => reorder("track", track.id, "down")} disabled={i === tracks.length - 1} className="flex h-7 w-7 items-center justify-center rounded border border-border text-xs text-ink-soft transition-colors hover:bg-accent/10 hover:text-accent disabled:opacity-25 disabled:hover:bg-transparent" title="Move down">▼</button>
+                <button type="button" onClick={() => setEditing(`track:${track.id}`)} className="ml-1 rounded border border-border px-2.5 py-1 text-xs font-medium text-accent-hover transition-colors hover:bg-accent/10">Edit</button>
+                <button type="button" onClick={() => deleteEntity("track", track.id, track.title)} className="rounded border border-red-700/30 px-2.5 py-1 text-xs font-medium text-red-500 transition-colors hover:bg-red-500/10">Delete</button>
               </div>
             </div>
 
@@ -200,11 +200,11 @@ export default function ContentManagementPage() {
                           >
                             {mod.title}
                           </button>
-                          <div className="flex items-center gap-2">
-                            <button type="button" onClick={() => reorder("module", mod.id, "up")} disabled={mi === 0} className="text-ink-muted disabled:opacity-30">↑</button>
-                            <button type="button" onClick={() => reorder("module", mod.id, "down")} disabled={mi === arr.length - 1} className="text-ink-muted disabled:opacity-30">↓</button>
-                            <button type="button" onClick={() => setEditing(`module:${mod.id}`)} className="text-xs text-accent-hover underline">Edit</button>
-                            <button type="button" onClick={() => deleteEntity("module", mod.id, mod.title)} className="text-xs text-red-700 underline">Delete</button>
+                          <div className="flex items-center gap-1.5">
+                            <button type="button" onClick={() => reorder("module", mod.id, "up")} disabled={mi === 0} className="flex h-6 w-6 items-center justify-center rounded border border-border text-[10px] text-ink-soft transition-colors hover:bg-accent/10 hover:text-accent disabled:opacity-25 disabled:hover:bg-transparent" title="Move up">▲</button>
+                            <button type="button" onClick={() => reorder("module", mod.id, "down")} disabled={mi === arr.length - 1} className="flex h-6 w-6 items-center justify-center rounded border border-border text-[10px] text-ink-soft transition-colors hover:bg-accent/10 hover:text-accent disabled:opacity-25 disabled:hover:bg-transparent" title="Move down">▼</button>
+                            <button type="button" onClick={() => setEditing(`module:${mod.id}`)} className="ml-1 rounded border border-border px-2 py-0.5 text-xs font-medium text-accent-hover transition-colors hover:bg-accent/10">Edit</button>
+                            <button type="button" onClick={() => deleteEntity("module", mod.id, mod.title)} className="rounded border border-red-700/30 px-2 py-0.5 text-xs font-medium text-red-500 transition-colors hover:bg-red-500/10">Delete</button>
                           </div>
                         </div>
 
@@ -245,11 +245,11 @@ export default function ContentManagementPage() {
                                   <li key={lesson.id}>
                                     <div className="flex items-center justify-between py-2">
                                       <span className="text-sm text-ink-soft">{lesson.title}</span>
-                                      <div className="flex items-center gap-2">
-                                        <button type="button" onClick={() => reorder("lesson", lesson.id, "up")} disabled={li === 0} className="text-ink-muted disabled:opacity-30">↑</button>
-                                        <button type="button" onClick={() => reorder("lesson", lesson.id, "down")} disabled={li === larr.length - 1} className="text-ink-muted disabled:opacity-30">↓</button>
-                                        <button type="button" onClick={() => setEditing(`lesson:${lesson.id}`)} className="text-xs text-accent-hover underline">Edit</button>
-                                        <button type="button" onClick={() => deleteEntity("lesson", lesson.id, lesson.title)} className="text-xs text-red-700 underline">Delete</button>
+                                      <div className="flex items-center gap-1.5">
+                                        <button type="button" onClick={() => reorder("lesson", lesson.id, "up")} disabled={li === 0} className="flex h-5 w-5 items-center justify-center rounded border border-border text-[9px] text-ink-soft transition-colors hover:bg-accent/10 hover:text-accent disabled:opacity-25 disabled:hover:bg-transparent" title="Move up">▲</button>
+                                        <button type="button" onClick={() => reorder("lesson", lesson.id, "down")} disabled={li === larr.length - 1} className="flex h-5 w-5 items-center justify-center rounded border border-border text-[9px] text-ink-soft transition-colors hover:bg-accent/10 hover:text-accent disabled:opacity-25 disabled:hover:bg-transparent" title="Move down">▼</button>
+                                        <button type="button" onClick={() => setEditing(`lesson:${lesson.id}`)} className="ml-1 rounded border border-border px-2 py-0.5 text-xs font-medium text-accent-hover transition-colors hover:bg-accent/10">Edit</button>
+                                        <button type="button" onClick={() => deleteEntity("lesson", lesson.id, lesson.title)} className="rounded border border-red-700/30 px-2 py-0.5 text-xs font-medium text-red-500 transition-colors hover:bg-red-500/10">Delete</button>
                                       </div>
                                     </div>
                                     {editing === `lesson:${lesson.id}` && (

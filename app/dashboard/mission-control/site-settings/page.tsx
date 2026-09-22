@@ -248,9 +248,8 @@ export default function SiteSettingsAdminPage() {
                 {form.logoUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={form.logoUrl} alt="Logo" className="h-5 w-auto object-contain" />
-                ) : (
-                  <span className="font-display text-sm font-semibold text-ink">{form.logoText}</span>
-                )}
+                ) : null}
+                <span className="font-display text-sm font-semibold text-ink">{form.logoText}</span>
               </div>
 
               <div className="mt-5 space-y-4">
