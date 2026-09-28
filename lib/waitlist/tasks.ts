@@ -50,8 +50,8 @@ export const DEFAULT_TASKS: PublicWaitlistTask[] = [
   },
   {
     id: "referral",
-    title: "Share with 3 friends",
-    description: "Invite fellow learners. Generates your personal invite code and counts verified signups.",
+    title: "Invite friends — earn XP for every verified invite",
+    description: "Invite fellow learners. Earn 20 XP on Bridge3 for each friend who verifies their email (up to 500 XP).",
     actionUrl: null,
     actionLabel: null,
     inputType: "none",

@@ -9,6 +9,11 @@ const FAQS = [
       "The General Track is free to join. Some specialized tracks may introduce costs as the platform grows, with scholarship consideration available for early members.",
   },
   {
+    question: "How do I sign up?",
+    answer:
+      "Click 'Create an account' or 'Sign up / Log in' and continue with your Google account. Your Bridge3 Academy account is created automatically — no passwords, no extra steps.",
+  },
+  {
     question: "Do I need coding knowledge?",
     answer:
       "No. The General Track starts from zero knowledge. Coding is only introduced later, for students who choose a builder-focused path.",

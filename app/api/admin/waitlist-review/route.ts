@@ -64,6 +64,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
 
+  // Fetch the submission first so we can clean up its screenshot file later.
+  const { data: submission } = await supabaseAdmin
+    .from("waitlist_verification_submissions")
+    .select("id, screenshot_path, waitlist_signup_id")
+    .eq("id", submissionId)
+    .maybeSingle();
+
+  if (!submission) {
+    return NextResponse.json({ error: "Submission not found." }, { status: 404 });
+  }
+
   const { error } = await supabaseAdmin
     .from("waitlist_verification_submissions")
     .update({ status, reviewed_by: auth.userId, reviewed_at: new Date().toISOString() })
@@ -73,12 +84,27 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Could not save review." }, { status: 500 });
   }
 
+  // Log the admin action BEFORE cleanup so we always have an audit trail.
   await logAdminAction({
     actorId: auth.userId,
     action: `waitlist_task_${status}`,
     targetType: "waitlist_verification_submission",
     targetId: submissionId,
   });
+
+  // ── Cleanup: free storage space after the task has been reviewed ──
+  // Delete the screenshot file from Supabase Storage (if one was uploaded).
+  if (submission.screenshot_path) {
+    await supabaseAdmin.storage
+      .from("waitlist-verification")
+      .remove([submission.screenshot_path]);
+  }
+
+  // Delete the submission row itself — the audit log preserves traceability.
+  await supabaseAdmin
+    .from("waitlist_verification_submissions")
+    .delete()
+    .eq("id", submissionId);
 
   return NextResponse.json({ ok: true });
 }

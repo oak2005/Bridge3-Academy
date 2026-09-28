@@ -11,7 +11,7 @@ const TABLE_BY_TYPE: Record<string, string> = {
 const ALLOWED_FIELDS: Record<string, string[]> = {
   track: ["slug", "title", "description", "track_type", "coming_soon"],
   module: ["track_id", "title", "description"],
-  lesson: ["module_id", "title", "video_url", "duration_minutes"],
+  lesson: ["module_id", "title", "video_url", "duration_minutes", "notes", "instructor_name"],
 };
 
 const PARENT_FIELD: Record<string, string | null> = {

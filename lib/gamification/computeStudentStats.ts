@@ -107,6 +107,40 @@ export async function computeStudentStats(
     }
   }
 
+  // Referrals from waitlist
+  let verifiedReferrals = 0;
+  try {
+    const { data: profileRow } = await supabase
+      .from("profiles")
+      .select("email, waitlist_signup_id")
+      .eq("id", studentId)
+      .maybeSingle();
+
+    let waitlistId = profileRow?.waitlist_signup_id;
+
+    if (!waitlistId && profileRow?.email) {
+      const { data: waitlistRow } = await supabase
+        .from("waitlist_signups")
+        .select("id")
+        .eq("email", profileRow.email.toLowerCase())
+        .maybeSingle();
+      if (waitlistRow) {
+        waitlistId = waitlistRow.id;
+      }
+    }
+
+    if (waitlistId) {
+      const { count } = await supabase
+        .from("waitlist_signups")
+        .select("id", { count: "exact", head: true })
+        .eq("referred_by", waitlistId)
+        .eq("email_confirmed", true);
+      verifiedReferrals = count || 0;
+    }
+  } catch (err) {
+    console.error("Error computing student referral stats:", err);
+  }
+
   return {
     lessonsCompleted,
     quizzesPassed,
@@ -116,5 +150,6 @@ export async function computeStudentStats(
     capstonesApproved,
     currentStreak,
     anyTrackComplete,
+    verifiedReferrals,
   };
 }

@@ -1,10 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import {
+  isPlaceholderSupabase,
+  findMockSignupById,
+  mockSignups,
+  getMockSubmissionsForSignup,
+} from "@/lib/waitlist/mockStore";
 
-const TASK_TYPES = ["telegram", "x_twitter"] as const;
-type TaskType = (typeof TASK_TYPES)[number];
+const REFERRALS_REQUIRED = 1;
 
-const REFERRALS_REQUIRED = 3;
+function maskEmail(email: string): string {
+  const parts = email.split("@");
+  if (parts.length !== 2) return "***";
+  const [local, domain] = parts;
+  const visible = local.length <= 2 ? local[0] : local.slice(0, 2);
+  return `${visible}***@${domain}`;
+}
 
 export async function GET(req: NextRequest) {
   const rawId = req.nextUrl.searchParams.get("id")?.trim() || "";
@@ -14,14 +25,81 @@ export async function GET(req: NextRequest) {
   // Sanitize UUID in case spaces were introduced by URL copy/paste
   const id = rawId.replace(/\s+/g, "-");
 
-  const { data: signup, error: signupError } = await supabaseAdmin
+  if (isPlaceholderSupabase()) {
+    let mockSignup = findMockSignupById(id);
+    if (!mockSignup) {
+      mockSignup = {
+        id,
+        email: "scholar@example.com",
+        email_confirmed: false,
+        confirmation_token: "mock-token",
+        referred_by: null,
+        created_at: new Date().toISOString(),
+      };
+      mockSignups.set(id, mockSignup);
+    }
+    const subs = getMockSubmissionsForSignup(id);
+    const latestByTask: Record<string, string | null> = {};
+    for (const row of subs) {
+      if (latestByTask[row.task_type] === undefined) {
+        latestByTask[row.task_type] = row.status;
+      }
+    }
+    let score = mockSignup.email_confirmed ? 25 : 0;
+    if (latestByTask["telegram"] === "verified" || latestByTask["telegram"] === "pending_review") score += 25;
+    if (latestByTask["x_twitter"] === "verified" || latestByTask["x_twitter"] === "pending_review") score += 25;
+
+    return NextResponse.json({
+      id: mockSignup.id,
+      emailConfirmed: mockSignup.email_confirmed,
+      tasks: latestByTask,
+      referral: {
+        count: 0,
+        required: 1,
+        completed: false,
+        code: "B3-DEMO12",
+        earnedXP: 0,
+        maxXP: 500,
+        invitees: [],
+      },
+      score,
+    });
+  }
+
+  // Load signup
+  let { data: signup, error: signupError } = await supabaseAdmin
     .from("waitlist_signups")
-    .select("id, email_confirmed, created_at")
+    .select("id, email, email_confirmed, created_at, referral_code")
     .eq("id", id)
     .maybeSingle();
 
+  if (signupError) {
+    // If referral_code column doesn't exist yet, query without it
+    const fallbackRes = await supabaseAdmin
+      .from("waitlist_signups")
+      .select("id, email, email_confirmed, created_at")
+      .eq("id", id)
+      .maybeSingle();
+    signup = fallbackRes.data ? { ...fallbackRes.data, referral_code: null } : null;
+    signupError = fallbackRes.error;
+  }
+
   if (signupError || !signup) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  // If referral_code is missing, generate and persist one
+  let referralCode = signup.referral_code;
+  if (!referralCode) {
+    referralCode = "B3-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+    try {
+      await supabaseAdmin
+        .from("waitlist_signups")
+        .update({ referral_code: referralCode })
+        .eq("id", id);
+    } catch {
+      // Column may not exist yet
+    }
   }
 
   // Load all verification submissions for this signup
@@ -42,19 +120,27 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  // "Share with 3 friends": fully automatic referral count
-  const { count: referredCount, error: referralError } = await supabaseAdmin
+  // Query referred signups
+  const { data: inviteeRows, error: referralError } = await supabaseAdmin
     .from("waitlist_signups")
-    .select("id", { count: "exact", head: true })
+    .select("id, email, email_confirmed, created_at")
     .eq("referred_by", id)
-    .eq("email_confirmed", true);
+    .order("created_at", { ascending: false });
 
   if (referralError) {
     return NextResponse.json({ error: "Could not load referral status" }, { status: 500 });
   }
 
-  const effectiveReferredCount = referredCount ?? 0;
+  const confirmedInvitees = (inviteeRows || []).filter((r) => r.email_confirmed);
+  const effectiveReferredCount = confirmedInvitees.length;
   const referralCompleted = effectiveReferredCount >= REFERRALS_REQUIRED;
+
+  const maskedInvitees = (inviteeRows || []).map((inv) => ({
+    id: inv.id,
+    maskedEmail: maskEmail(inv.email),
+    confirmed: inv.email_confirmed,
+    createdAt: inv.created_at,
+  }));
 
   // Load active tasks from waitlist_tasks to compute weighted dynamic score
   const { data: activeTasks } = await supabaseAdmin
@@ -101,6 +187,10 @@ export async function GET(req: NextRequest) {
       count: effectiveReferredCount,
       required: REFERRALS_REQUIRED,
       completed: referralCompleted,
+      code: referralCode,
+      earnedXP: Math.min(effectiveReferredCount, 25) * 20,
+      maxXP: 500,
+      invitees: maskedInvitees,
     },
     score,
   });

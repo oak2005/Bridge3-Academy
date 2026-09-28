@@ -1162,3 +1162,48 @@ unguessable pass — nobody can access someone else's status without their
 exact id, but there's no full login system protecting it yet (real accounts
 arrive in Phase 4). This is a reasonable tradeoff for a pre-launch waitlist
 tool, worth revisiting only if it ever becomes a real security concern.
+
+---
+
+## Round 2 Upgrades (All 7 Feature Areas)
+
+### 1. Authentication Wording & `/signup` Page
+- **Dynamic Auth Header**: Shows "Dashboard" for authenticated users, and "Sign up / Log in" for visitors.
+- **Dedicated `/signup` page**: Welcoming copy and seamless Google OAuth integration.
+- **Consistent CTA**: Clean signup links across Hero, About, FAQ, and Footer.
+
+### 2. Course Next/Previous Sequence
+- **Pure sequential logic**: (`lib/progress/courseSequence.ts`) tested with 23 Vitest unit tests.
+- **Unified progress order**: Seamlessly navigates lessons -> module quiz -> workshops -> next module.
+- **Integrated UI**: Classroom (`Complete & continue →`, `Next →`, `← Previous`), Quiz (`Continue →` on pass/review), and Workshop submissions.
+
+### 3. Hardened VideoPlayer & Admin Fields
+- **10+ YouTube link formats**: Shorts, live streams, nocookie, mobile URLs, start time parameters (`&t=90s`).
+- **Resilient fallbacks**: Direct "Open in YouTube" link and direct MP4/WebM video playback.
+- **CMS Enhancements**: Added live video previews, instructor names, and multiline lesson notes.
+
+### 4. Read/Listen Mode with AI Audio
+- **Instant browser voice**: Speech synthesis fallback with speed controls (`0.75x` to `2.0x`) and seek capabilities (`-10s`, `+10s`).
+- **Provider abstraction**: (`lib/audio/ttsProvider.ts`) supporting Google Cloud TTS, ElevenLabs, and OpenAI TTS.
+- **Admin CMS generation**: One-click "Generate AI Audio" button uploading to Supabase Storage `lesson-audio`.
+- **Migration**: `supabase/schema_r2_lesson_audio.sql`.
+
+### 5. Web3 Tools & Ecosystem Directory
+- **Student Directory**: (`/dashboard/tools`) with category filters, keyword search, difficulty filter, and "Start Here" beginner essentials (Leather, Luno, Quidax, Hiro Explorer, Clarity Playground).
+- **Admin Management**: (`/dashboard/mission-control/tools`) full CRUD, featured toggle, and publishing.
+- **Migration & Seeds**: `supabase/schema_r2_tools.sql`.
+
+### 6. Waitlist Referrals → XP → Leaderboard
+- **Streamlined milestone**: Referral requirement reduced from 3 to 1 friend for task completion.
+- **Clean referral codes**: Short alphanumeric codes (e.g. `B3-XXXXXX`) alongside backward-compatible UUIDs.
+- **Social Sharing**: 1-click share buttons for WhatsApp, Twitter/X, and Telegram.
+- **Anti-abuse protections**: Email normalization (dots/plus-tags) and disposable email detection (`lib/waitlist/normalizeEmail.ts`).
+- **Gamification bridge**: +20 XP awarded per verified friend (up to 500 XP), synced directly into student stats, portfolio, and leaderboard.
+- **Migration**: `supabase/schema_r2_referrals.sql`.
+
+### 7. Guided "How to Use" Tour
+- **Lightweight custom tour**: Zero heavy bundle size, element highlighting, smooth backdrop.
+- **Comprehensive orientation**: 12 interactive steps explaining curriculum, audio player, quizzes, workshops, tools, and certification.
+- **Student controls**: "Take Tour 💡" in dashboard header, keyboard navigation (Esc, Arrows), and persistent completion tracking via `/api/tour/complete`.
+- **Migration**: `supabase/schema_r2_tour.sql`.
+

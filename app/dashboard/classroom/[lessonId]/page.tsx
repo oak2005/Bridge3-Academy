@@ -1,11 +1,20 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { useProfile } from "@/lib/auth/useProfile";
 import { VideoPlayer } from "@/components/classroom/VideoPlayer";
+import { AudioPlayer } from "@/components/classroom/AudioPlayer";
+import {
+  fetchTrackSequenceForModule,
+  getNextStep,
+  getPreviousStep,
+  getItemUrl,
+  getItemLabel,
+  SequenceItem,
+} from "@/lib/progress/courseSequence";
 
 interface LessonDetail {
   id: string;
@@ -17,6 +26,7 @@ interface LessonDetail {
   module_id: string;
   module_title: string;
   track_title: string;
+  audio_path?: string | null;
 }
 
 interface SiblingLesson {
@@ -34,6 +44,7 @@ interface Resource {
 export default function ClassroomPage() {
   const params = useParams<{ lessonId: string }>();
   const lessonId = params.lessonId;
+  const router = useRouter();
   const { session } = useProfile();
 
   const [loading, setLoading] = useState(true);
@@ -42,6 +53,7 @@ export default function ClassroomPage() {
   const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
   const [resources, setResources] = useState<Resource[]>([]);
   const [marking, setMarking] = useState(false);
+  const [trackSequence, setTrackSequence] = useState<SequenceItem[]>([]);
 
   const loadCompletion = useCallback(
     async (moduleId: string) => {
@@ -70,7 +82,7 @@ export default function ClassroomPage() {
 
       const { data: lessonRow } = await supabaseBrowser
         .from("lessons")
-        .select("id, title, instructor_name, notes, video_url, duration_minutes, module_id")
+        .select("id, title, instructor_name, notes, video_url, duration_minutes, module_id, audio_path")
         .eq("id", lessonId)
         .maybeSingle();
 
@@ -100,6 +112,7 @@ export default function ClassroomPage() {
         module_id: lessonRow.module_id,
         module_title: moduleRow?.title || "",
         track_title: trackRow?.title || "",
+        audio_path: lessonRow.audio_path,
       });
 
       const { data: siblingLessons } = await supabaseBrowser
@@ -114,6 +127,16 @@ export default function ClassroomPage() {
         .select("id, file_name, storage_path")
         .eq("lesson_id", lessonId);
       setResources(resourceRows || []);
+
+      // Load full sequence across the track
+      try {
+        const seqResult = await fetchTrackSequenceForModule(supabaseBrowser, lessonRow.module_id);
+        if (seqResult) {
+          setTrackSequence(seqResult.sequence);
+        }
+      } catch (err) {
+        console.error("Failed to load track sequence:", err);
+      }
 
       await loadCompletion(lessonRow.module_id);
       setLoading(false);
@@ -131,13 +154,53 @@ export default function ClassroomPage() {
         .delete()
         .eq("student_id", session.user.id)
         .eq("lesson_id", lesson.id);
+      setCompletedIds((prev) => {
+        const next = new Set(prev);
+        next.delete(lesson.id);
+        return next;
+      });
     } else {
       await supabaseBrowser
         .from("student_progress")
         .insert({ student_id: session.user.id, lesson_id: lesson.id });
+      setCompletedIds((prev) => new Set([...prev, lesson.id]));
     }
-    await loadCompletion(lesson.module_id);
     setMarking(false);
+  }
+
+  const prevStep = trackSequence.length > 0 && lesson ? getPreviousStep(trackSequence, lesson.id) : null;
+  const nextStep = trackSequence.length > 0 && lesson ? getNextStep(trackSequence, lesson.id) : null;
+
+  async function handleCompleteAndContinue() {
+    if (!session || !lesson) return;
+    setMarking(true);
+    if (!completedIds.has(lesson.id)) {
+      await supabaseBrowser
+        .from("student_progress")
+        .insert({ student_id: session.user.id, lesson_id: lesson.id });
+      setCompletedIds((prev) => new Set([...prev, lesson.id]));
+    }
+    setMarking(false);
+
+    if (nextStep === "track_finished") {
+      router.push("/dashboard/certification");
+    } else if (nextStep && typeof nextStep === "object") {
+      router.push(getItemUrl(nextStep));
+    }
+  }
+
+  function handleGoNext() {
+    if (nextStep === "track_finished") {
+      router.push("/dashboard/certification");
+    } else if (nextStep && typeof nextStep === "object") {
+      router.push(getItemUrl(nextStep));
+    }
+  }
+
+  function handleGoPrev() {
+    if (prevStep && prevStep !== "start_of_track") {
+      router.push(getItemUrl(prevStep));
+    }
   }
 
   async function downloadResource(path: string, fileName: string) {
@@ -170,40 +233,97 @@ export default function ClassroomPage() {
 
   return (
     <div className="mx-auto max-w-content px-6 py-10">
-      <p className="text-sm text-ink-muted">
-        {lesson.track_title} · {lesson.module_title}
-      </p>
-      <h1 className="mt-1 font-display text-2xl text-ink">{lesson.title}</h1>
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <p className="text-sm text-ink-muted">
+            {lesson.track_title} · {lesson.module_title}
+          </p>
+          <h1 className="mt-1 font-display text-2xl text-ink">{lesson.title}</h1>
+        </div>
+
+        {/* Quick top navigation */}
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleGoPrev}
+            disabled={!prevStep || prevStep === "start_of_track"}
+            className="rounded border border-border px-3 py-1.5 text-xs font-semibold text-ink-soft hover:bg-paper-raised disabled:opacity-40 disabled:hover:bg-transparent"
+          >
+            ← Previous
+          </button>
+          {isDone ? (
+            <button
+              type="button"
+              onClick={handleGoNext}
+              disabled={!nextStep}
+              className="rounded bg-accent px-3 py-1.5 text-xs font-semibold text-accent-contrast hover:bg-accent-hover disabled:opacity-40"
+            >
+              {nextStep === "track_finished" ? "Finish Track 🎉" : "Next →"}
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={handleCompleteAndContinue}
+              disabled={marking}
+              className="rounded bg-accent px-3 py-1.5 text-xs font-semibold text-accent-contrast hover:bg-accent-hover disabled:opacity-60"
+            >
+              {marking ? "Saving…" : "Complete & continue →"}
+            </button>
+          )}
+        </div>
+      </div>
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_280px]">
         <div>
           <VideoPlayer videoUrl={lesson.video_url} />
 
-          <div className="mt-4 flex items-center justify-between">
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
             <p className="text-sm text-ink-muted">
               {lesson.instructor_name ? `Instructor: ${lesson.instructor_name}` : "Instructor: Bridge3 Academy"}
               {lesson.duration_minutes ? ` · ${lesson.duration_minutes} min` : ""}
             </p>
-            <button
-              type="button"
-              onClick={toggleComplete}
-              disabled={marking}
-              className={`rounded px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-60 ${
-                isDone
-                  ? "border border-border text-ink-soft hover:border-accent"
-                  : "bg-accent text-accent-contrast hover:bg-accent-hover"
-              }`}
-            >
-              {marking ? "Saving…" : isDone ? "Mark as incomplete" : "Mark as completed"}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={toggleComplete}
+                disabled={marking}
+                className={`rounded px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-60 ${
+                  isDone
+                    ? "border border-border text-ink-soft hover:border-accent"
+                    : "border border-accent/40 bg-accent/10 text-accent hover:bg-accent/20"
+                }`}
+              >
+                {marking ? "Saving…" : isDone ? "Mark as incomplete" : "✓ Mark completed"}
+              </button>
+
+              {!isDone ? (
+                <button
+                  type="button"
+                  onClick={handleCompleteAndContinue}
+                  disabled={marking}
+                  className="rounded bg-accent px-4 py-2 text-sm font-semibold text-accent-contrast hover:bg-accent-hover disabled:opacity-60"
+                >
+                  {marking ? "Saving…" : "Complete & continue →"}
+                </button>
+              ) : nextStep ? (
+                <button
+                  type="button"
+                  onClick={handleGoNext}
+                  className="rounded bg-accent px-4 py-2 text-sm font-semibold text-accent-contrast hover:bg-accent-hover"
+                >
+                  {nextStep === "track_finished"
+                    ? "View Certificate →"
+                    : `${getItemLabel(nextStep)} →`}
+                </button>
+              ) : null}
+            </div>
           </div>
 
-          <div className="mt-6 rounded border border-border bg-paper-raised p-6">
-            <h2 className="font-sans text-sm font-semibold text-ink">Lesson notes</h2>
-            <p className="mt-2 text-sm text-ink-soft">
-              {lesson.notes || "No written notes for this lesson yet."}
-            </p>
-          </div>
+          <AudioPlayer
+            notes={lesson.notes || ""}
+            audioPath={lesson.audio_path}
+            lessonTitle={lesson.title}
+          />
 
           <div className="mt-6 rounded border border-border bg-paper-raised p-6">
             <h2 className="font-sans text-sm font-semibold text-ink">Downloadable resources</h2>
@@ -225,6 +345,44 @@ export default function ClassroomPage() {
               </ul>
             )}
           </div>
+
+          {/* Bottom Sequence Navigation Bar */}
+          <div className="mt-8 flex items-center justify-between border-t border-border pt-6">
+            {prevStep && prevStep !== "start_of_track" ? (
+              <button
+                type="button"
+                onClick={handleGoPrev}
+                className="inline-flex items-center gap-2 rounded border border-border px-4 py-2 text-sm font-medium text-ink-soft hover:bg-paper-raised hover:text-ink transition-colors"
+              >
+                <span>←</span>
+                <span>{prevStep.title || "Previous step"}</span>
+              </button>
+            ) : (
+              <span className="text-xs text-ink-muted">Beginning of track</span>
+            )}
+
+            {nextStep === "track_finished" ? (
+              <button
+                type="button"
+                onClick={handleGoNext}
+                className="inline-flex items-center gap-2 rounded bg-accent px-4 py-2 text-sm font-semibold text-accent-contrast hover:bg-accent-hover transition-colors"
+              >
+                <span>Complete track 🎉</span>
+                <span>→</span>
+              </button>
+            ) : nextStep ? (
+              <button
+                type="button"
+                onClick={handleGoNext}
+                className="inline-flex items-center gap-2 rounded bg-accent px-4 py-2 text-sm font-semibold text-accent-contrast hover:bg-accent-hover transition-colors"
+              >
+                <span>{getItemLabel(nextStep)}</span>
+                <span>→</span>
+              </button>
+            ) : (
+              <span className="text-xs text-ink-muted">End of available content</span>
+            )}
+          </div>
         </div>
 
         <aside className="rounded border border-border bg-paper-raised p-4">
@@ -240,13 +398,13 @@ export default function ClassroomPage() {
                   <Link
                     href={`/dashboard/classroom/${s.id}`}
                     className={`flex items-center gap-2 rounded px-3 py-2 text-sm ${
-                      active ? "bg-accent-tint text-ink" : "text-ink-soft hover:bg-paper"
+                      active ? "bg-accent-tint text-ink font-semibold" : "text-ink-soft hover:bg-paper"
                     }`}
                   >
-                    <span className={done ? "text-accent-hover" : "text-ink-muted"}>
+                    <span className={done ? "text-accent-hover font-bold" : "text-ink-muted"}>
                       {done ? "✓" : "○"}
                     </span>
-                    {s.title}
+                    <span className="truncate">{s.title}</span>
                   </Link>
                 </li>
               );

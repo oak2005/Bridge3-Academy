@@ -87,6 +87,12 @@ export default function MissionControlPage() {
             Curriculum Content
           </Link>
           <Link
+            href="/dashboard/mission-control/tools"
+            className="rounded border border-border px-3.5 py-1.5 text-xs font-semibold text-ink-soft hover:border-accent hover:text-ink transition-colors"
+          >
+            Tools Directory
+          </Link>
+          <Link
             href="/dashboard/mission-control/waitlist"
             className="rounded border border-border px-3.5 py-1.5 text-xs font-semibold text-ink-soft hover:border-accent hover:text-ink transition-colors"
           >

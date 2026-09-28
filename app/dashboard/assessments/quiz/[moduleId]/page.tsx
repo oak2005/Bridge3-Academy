@@ -2,7 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import { supabaseBrowser } from "@/lib/supabase/client";
+import {
+  fetchTrackSequenceForModule,
+  getNextStep,
+  getPreviousStep,
+  getItemUrl,
+  getItemLabel,
+  SequenceItem,
+} from "@/lib/progress/courseSequence";
 
 interface QuizOption {
   id: string;
@@ -32,6 +41,7 @@ export default function QuizPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [quiz, setQuiz] = useState<QuizData | null>(null);
+  const [trackSequence, setTrackSequence] = useState<SequenceItem[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -40,11 +50,22 @@ export default function QuizPage() {
 
   useEffect(() => {
     (async () => {
-      const res = await fetch(`/api/quiz/by-module/${params.moduleId}`);
-      if (res.ok) {
-        setQuiz(await res.json());
+      try {
+        const res = await fetch(`/api/quiz/by-module/${params.moduleId}`);
+        if (res.ok) {
+          const q = await res.json();
+          setQuiz(q);
+        }
+
+        const seqRes = await fetchTrackSequenceForModule(supabaseBrowser, params.moduleId);
+        if (seqRes) {
+          setTrackSequence(seqRes.sequence);
+        }
+      } catch (err) {
+        console.error("Failed to load quiz or sequence:", err);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     })();
   }, [params.moduleId]);
 
@@ -65,17 +86,26 @@ export default function QuizPage() {
       return;
     }
 
+    const payload = {
+      quizId: quiz.quizId,
+      answers: Object.entries(answers).map(([questionId, selectedOptionId]) => ({
+        questionId,
+        selectedOptionId,
+      })),
+    };
+
     const res = await fetch("/api/quiz/submit", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ moduleId: params.moduleId, answers }),
+      body: JSON.stringify(payload),
     });
 
     if (!res.ok) {
-      setError("Could not submit your quiz. Try again.");
+      const body = await res.json();
+      setError(body.error || "Failed to submit quiz.");
       setSubmitting(false);
       return;
     }
@@ -84,12 +114,39 @@ export default function QuizPage() {
     setSubmitting(false);
   }
 
+  const currentQuizId = quiz?.quizId || "";
+  const nextStep = trackSequence.length > 0 && currentQuizId ? getNextStep(trackSequence, currentQuizId) : null;
+  const prevStep = trackSequence.length > 0 && currentQuizId ? getPreviousStep(trackSequence, currentQuizId) : null;
+
+  function handleGoNext() {
+    if (nextStep === "track_finished") {
+      router.push("/dashboard/certification");
+    } else if (nextStep && typeof nextStep === "object") {
+      router.push(getItemUrl(nextStep));
+    } else {
+      router.push("/dashboard/assessments");
+    }
+  }
+
+  function handleGoPrev() {
+    if (prevStep && prevStep !== "start_of_track") {
+      router.push(getItemUrl(prevStep));
+    }
+  }
+
   if (loading) {
     return <p className="px-6 py-12 text-ink-muted">Loading quiz…</p>;
   }
 
   if (!quiz) {
-    return <p className="px-6 py-12 text-ink-muted">No quiz found for this module.</p>;
+    return (
+      <div className="mx-auto max-w-content px-6 py-12">
+        <p className="text-ink-muted">No quiz found for this module.</p>
+        <Link href="/dashboard/assessments" className="mt-2 inline-block text-sm text-accent-hover underline">
+          Back to Assessments
+        </Link>
+      </div>
+    );
   }
 
   if (result) {
@@ -99,28 +156,81 @@ export default function QuizPage() {
           {result.passed ? "You passed! 🎉" : "Not quite — try again"}
         </h1>
         <p className="mt-3 text-ink-soft">
-          You scored {result.score}% ({result.correctCount} of {result.totalCount} correct).
+          You scored <strong className={result.passed ? "text-accent font-semibold" : "text-amber-600 font-semibold"}>{result.score}%</strong> ({result.correctCount} of {result.totalCount} correct).
           The passing score is {result.passingScore}%.
         </p>
-        <div className="mt-8 flex justify-center gap-3">
-          <button
-            type="button"
-            onClick={() => {
-              setResult(null);
-              setAnswers({});
-              setCurrentIndex(0);
-            }}
-            className="rounded border border-border px-5 py-2 text-sm font-medium text-ink-soft hover:border-accent"
-          >
-            Retake quiz
-          </button>
-          <button
-            type="button"
-            onClick={() => router.push("/dashboard/assessments")}
-            className="rounded bg-accent px-5 py-2 text-sm font-semibold text-accent-contrast hover:bg-accent-hover"
-          >
-            Back to Assessments
-          </button>
+
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          {result.passed ? (
+            <>
+              {nextStep ? (
+                <button
+                  type="button"
+                  onClick={handleGoNext}
+                  className="rounded bg-accent px-6 py-2.5 text-sm font-semibold text-accent-contrast hover:bg-accent-hover transition-colors"
+                >
+                  {nextStep === "track_finished" ? "Finish Track 🎉" : `${getItemLabel(nextStep)} →`}
+                </button>
+              ) : null}
+              <button
+                type="button"
+                onClick={() => {
+                  setResult(null);
+                  setAnswers({});
+                  setCurrentIndex(0);
+                }}
+                className="rounded border border-border px-5 py-2.5 text-sm font-medium text-ink-soft hover:border-accent"
+              >
+                Retake quiz
+              </button>
+              <button
+                type="button"
+                onClick={() => router.push("/dashboard/assessments")}
+                className="rounded border border-border px-5 py-2.5 text-sm font-medium text-ink-soft hover:bg-paper-raised"
+              >
+                Back to Assessments
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={() => {
+                  setResult(null);
+                  setAnswers({});
+                  setCurrentIndex(0);
+                }}
+                className="rounded bg-accent px-6 py-2.5 text-sm font-semibold text-accent-contrast hover:bg-accent-hover"
+              >
+                Try again
+              </button>
+              {prevStep && prevStep !== "start_of_track" && (
+                <button
+                  type="button"
+                  onClick={handleGoPrev}
+                  className="rounded border border-border px-5 py-2.5 text-sm font-medium text-ink-soft hover:border-accent"
+                >
+                  Review {prevStep.title || "previous lesson"}
+                </button>
+              )}
+              {nextStep && (
+                <button
+                  type="button"
+                  onClick={handleGoNext}
+                  className="rounded border border-border px-5 py-2.5 text-sm font-medium text-ink-soft hover:bg-paper-raised"
+                >
+                  Continue anyway →
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => router.push("/dashboard/assessments")}
+                className="rounded border border-border px-4 py-2.5 text-sm font-medium text-ink-muted hover:text-ink"
+              >
+                Back to Assessments
+              </button>
+            </>
+          )}
         </div>
       </div>
     );
@@ -132,9 +242,21 @@ export default function QuizPage() {
 
   return (
     <div className="mx-auto max-w-content px-6 py-10">
-      <p className="text-sm text-ink-muted">
-        Question {currentIndex + 1} of {quiz.questions.length}
-      </p>
+      <div className="flex items-center justify-between text-sm text-ink-muted">
+        <span>
+          Question {currentIndex + 1} of {quiz.questions.length}
+        </span>
+        {prevStep && prevStep !== "start_of_track" && (
+          <button
+            type="button"
+            onClick={handleGoPrev}
+            className="text-xs text-ink-soft hover:underline"
+          >
+            ← Back to lesson
+          </button>
+        )}
+      </div>
+
       <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-border">
         <div
           className="h-full bg-accent transition-all"
@@ -148,8 +270,8 @@ export default function QuizPage() {
         {question.options.map((opt) => (
           <label
             key={opt.id}
-            className={`flex items-center gap-3 rounded border px-4 py-3 text-sm text-ink cursor-pointer ${
-              answers[question.id] === opt.id ? "border-accent bg-accent-tint" : "border-border"
+            className={`flex items-center gap-3 rounded border px-4 py-3 text-sm text-ink cursor-pointer transition-colors ${
+              answers[question.id] === opt.id ? "border-accent bg-accent-tint font-medium" : "border-border hover:bg-paper-raised"
             }`}
           >
             <input

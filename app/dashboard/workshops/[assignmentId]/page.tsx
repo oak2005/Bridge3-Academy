@@ -1,16 +1,25 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { useProfile } from "@/lib/auth/useProfile";
+import {
+  fetchTrackSequenceForModule,
+  getNextStep,
+  getPreviousStep,
+  getItemUrl,
+  getItemLabel,
+  SequenceItem,
+} from "@/lib/progress/courseSequence";
 
 interface AssignmentDetail {
   id: string;
   title: string;
   description: string | null;
   submission_format: string | null;
+  module_id: string;
   module_title: string;
   track_title: string;
 }
@@ -42,12 +51,14 @@ const STATUS_LABEL: Record<string, string> = {
 export default function AssignmentPage() {
   const params = useParams<{ assignmentId: string }>();
   const assignmentId = params.assignmentId;
+  const router = useRouter();
   const { session, profile } = useProfile();
 
   const [loading, setLoading] = useState(true);
   const [assignment, setAssignment] = useState<AssignmentDetail | null>(null);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [comments, setComments] = useState<Comment[]>([]);
+  const [trackSequence, setTrackSequence] = useState<SequenceItem[]>([]);
 
   const [submissionText, setSubmissionText] = useState("");
   const [file, setFile] = useState<File | null>(null);
@@ -129,15 +140,44 @@ export default function AssignmentPage() {
         title: assignmentRow.title,
         description: assignmentRow.description,
         submission_format: assignmentRow.submission_format,
+        module_id: assignmentRow.module_id,
         module_title: moduleRow?.title || "",
         track_title: trackRow?.title || "",
       });
+
+      try {
+        const seqResult = await fetchTrackSequenceForModule(supabaseBrowser, assignmentRow.module_id);
+        if (seqResult) {
+          setTrackSequence(seqResult.sequence);
+        }
+      } catch (err) {
+        console.error("Failed to load track sequence for assignment:", err);
+      }
 
       await loadSubmissions();
       await loadComments();
       setLoading(false);
     })();
   }, [assignmentId, loadSubmissions, loadComments]);
+
+  const prevStep = trackSequence.length > 0 && assignment ? getPreviousStep(trackSequence, assignment.id) : null;
+  const nextStep = trackSequence.length > 0 && assignment ? getNextStep(trackSequence, assignment.id) : null;
+
+  function handleGoNext() {
+    if (nextStep === "track_finished") {
+      router.push("/dashboard/certification");
+    } else if (nextStep && typeof nextStep === "object") {
+      router.push(getItemUrl(nextStep));
+    } else {
+      router.push("/dashboard/workshops");
+    }
+  }
+
+  function handleGoPrev() {
+    if (prevStep && prevStep !== "start_of_track") {
+      router.push(getItemUrl(prevStep));
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -149,34 +189,41 @@ export default function AssignmentPage() {
     setSubmitting(true);
     setSubmitError("");
 
-    try {
-      let filePath: string | null = null;
-      if (file) {
-        const path = `${session.user.id}/${assignment.id}/${Date.now()}-${file.name}`;
-        const { error: uploadError } = await supabaseBrowser.storage
-          .from("assignment-submissions")
-          .upload(path, file);
-        if (uploadError) throw new Error("Could not upload file.");
-        filePath = path;
+    let filePath: string | null = null;
+    if (file) {
+      const ext = file.name.split(".").pop() || "bin";
+      const path = `${session.user.id}/${assignmentId}/${Date.now()}.${ext}`;
+      const { error: uploadError } = await supabaseBrowser.storage
+        .from("assignment-submissions")
+        .upload(path, file);
+      if (uploadError) {
+        setSubmitError(`Upload failed: ${uploadError.message}`);
+        setSubmitting(false);
+        return;
       }
+      filePath = path;
+    }
 
-      const { error: insertError } = await supabaseBrowser.from("assignment_submissions").insert({
-        assignment_id: assignment.id,
+    const { error: insertError } = await supabaseBrowser
+      .from("assignment_submissions")
+      .insert({
+        assignment_id: assignmentId,
         student_id: session.user.id,
-        submission_text: submissionText || null,
+        submission_text: submissionText.trim() || null,
         file_path: filePath,
         status: "submitted",
       });
-      if (insertError) throw new Error("Could not save your submission.");
 
-      setSubmissionText("");
-      setFile(null);
-      await loadSubmissions();
-    } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : "Something went wrong.");
-    } finally {
+    if (insertError) {
+      setSubmitError(`Failed to save submission: ${insertError.message}`);
       setSubmitting(false);
+      return;
     }
+
+    setSubmissionText("");
+    setFile(null);
+    await loadSubmissions();
+    setSubmitting(false);
   }
 
   async function downloadSubmissionFile(path: string) {
@@ -220,10 +267,37 @@ export default function AssignmentPage() {
 
   return (
     <div className="mx-auto max-w-content px-6 py-10">
-      <p className="text-sm text-ink-muted">
-        {assignment.track_title} · {assignment.module_title}
-      </p>
-      <h1 className="mt-1 font-display text-2xl text-ink">{assignment.title}</h1>
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <p className="text-sm text-ink-muted">
+            {assignment.track_title} · {assignment.module_title}
+          </p>
+          <h1 className="mt-1 font-display text-2xl text-ink">{assignment.title}</h1>
+        </div>
+
+        {/* Top sequence buttons */}
+        <div className="flex items-center gap-2">
+          {prevStep && prevStep !== "start_of_track" && (
+            <button
+              type="button"
+              onClick={handleGoPrev}
+              className="rounded border border-border px-3 py-1.5 text-xs font-semibold text-ink-soft hover:bg-paper-raised"
+            >
+              ← Previous
+            </button>
+          )}
+          {nextStep && (
+            <button
+              type="button"
+              onClick={handleGoNext}
+              className="rounded bg-accent px-3 py-1.5 text-xs font-semibold text-accent-contrast hover:bg-accent-hover"
+            >
+              {nextStep === "track_finished" ? "Finish Track 🎉" : "Next →"}
+            </button>
+          )}
+        </div>
+      </div>
+
       {assignment.description && (
         <p className="mt-3 max-w-prose text-ink-soft">{assignment.description}</p>
       )}
@@ -234,10 +308,33 @@ export default function AssignmentPage() {
         </p>
       )}
 
+      {/* Submission status banner if already submitted */}
+      {latest && (
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded border border-accent/40 bg-accent-tint p-4">
+          <div>
+            <p className="text-sm font-semibold text-ink">
+              Status: <span className="text-accent">{STATUS_LABEL[latest.status] || latest.status}</span>
+            </p>
+            <p className="text-xs text-ink-muted">
+              Submitted on {new Date(latest.created_at).toLocaleString()}
+            </p>
+          </div>
+          {nextStep && (
+            <button
+              type="button"
+              onClick={handleGoNext}
+              className="rounded bg-accent px-4 py-2 text-xs font-semibold text-accent-contrast hover:bg-accent-hover transition-colors"
+            >
+              {nextStep === "track_finished" ? "Finish Track 🎉" : `Continue: ${getItemLabel(nextStep)} →`}
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Submission form */}
-      <div className="mt-8 rounded border border-border bg-paper-raised p-6">
+      <div className="mt-6 rounded border border-border bg-paper-raised p-6">
         <h2 className="font-sans text-sm font-semibold text-ink">
-          {latest ? "Submit again" : "Submit your work"}
+          {latest ? "Submit revision" : "Submit your work"}
         </h2>
         <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-3">
           <textarea
@@ -253,13 +350,24 @@ export default function AssignmentPage() {
             className="text-sm text-ink-muted"
           />
           {submitError && <p className="text-sm text-red-700">{submitError}</p>}
-          <button
-            type="submit"
-            disabled={submitting}
-            className="w-fit rounded bg-accent px-5 py-2 text-sm font-semibold text-accent-contrast transition-colors hover:bg-accent-hover disabled:opacity-60"
-          >
-            {submitting ? "Submitting…" : "Submit assignment"}
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              type="submit"
+              disabled={submitting}
+              className="rounded bg-accent px-5 py-2 text-sm font-semibold text-accent-contrast transition-colors hover:bg-accent-hover disabled:opacity-60"
+            >
+              {submitting ? "Submitting…" : latest ? "Submit revision" : "Submit assignment"}
+            </button>
+            {latest && nextStep && (
+              <button
+                type="button"
+                onClick={handleGoNext}
+                className="rounded border border-border px-4 py-2 text-sm font-medium text-ink-soft hover:bg-paper"
+              >
+                Skip to next step →
+              </button>
+            )}
+          </div>
         </form>
       </div>
 
@@ -272,7 +380,7 @@ export default function AssignmentPage() {
               <li key={s.id} className="flex items-start justify-between gap-4 py-3">
                 <div>
                   {s.submission_text && (
-                    <p className="text-sm text-ink-soft">{s.submission_text}</p>
+                    <p className="text-sm text-ink-soft whitespace-pre-wrap">{s.submission_text}</p>
                   )}
                   {s.file_path && (
                     <button
@@ -302,8 +410,46 @@ export default function AssignmentPage() {
         </div>
       )}
 
+      {/* Bottom sequence navigation */}
+      <div className="mt-8 flex items-center justify-between border-t border-border pt-6">
+        {prevStep && prevStep !== "start_of_track" ? (
+          <button
+            type="button"
+            onClick={handleGoPrev}
+            className="inline-flex items-center gap-2 rounded border border-border px-4 py-2 text-sm font-medium text-ink-soft hover:bg-paper-raised transition-colors"
+          >
+            <span>←</span>
+            <span>{prevStep.title || "Previous step"}</span>
+          </button>
+        ) : (
+          <span className="text-xs text-ink-muted">Beginning of track</span>
+        )}
+
+        {nextStep === "track_finished" ? (
+          <button
+            type="button"
+            onClick={handleGoNext}
+            className="inline-flex items-center gap-2 rounded bg-accent px-4 py-2 text-sm font-semibold text-accent-contrast hover:bg-accent-hover transition-colors"
+          >
+            <span>Complete track 🎉</span>
+            <span>→</span>
+          </button>
+        ) : nextStep ? (
+          <button
+            type="button"
+            onClick={handleGoNext}
+            className="inline-flex items-center gap-2 rounded bg-accent px-4 py-2 text-sm font-semibold text-accent-contrast hover:bg-accent-hover transition-colors"
+          >
+            <span>{getItemLabel(nextStep)}</span>
+            <span>→</span>
+          </button>
+        ) : (
+          <span className="text-xs text-ink-muted">End of track</span>
+        )}
+      </div>
+
       {/* Peer discussion */}
-      <div className="mt-6 rounded border border-border bg-paper-raised p-6">
+      <div className="mt-8 rounded border border-border bg-paper-raised p-6">
         <h2 className="font-sans text-sm font-semibold text-ink">Peer discussion</h2>
 
         {comments.length === 0 ? (

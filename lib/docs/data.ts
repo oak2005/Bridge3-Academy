@@ -142,7 +142,7 @@ export const DOC_ARTICLES: DocArticle[] = [
           heading: "Step 1: One-Click Authentication",
           body: [
             "Bridge3 Academy utilizes Google OAuth for secure, frictionless authentication. We deliberately do not store passwords, eliminating credential theft vulnerabilities.",
-            "Simply click 'Login' or 'Get Started' from the homepage and authorize with your personal or university Google account.",
+            "Simply click 'Sign up / Log in' or 'Create an account' from the homepage and authorize with your personal or university Google account.",
           ],
           callout: {
             type: "tip",

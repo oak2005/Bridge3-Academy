@@ -14,6 +14,10 @@ interface StatusResponse {
     count: number;
     required: number;
     completed: boolean;
+    code?: string;
+    earnedXP?: number;
+    maxXP?: number;
+    invitees?: { id: string; maskedEmail: string; confirmed: boolean; createdAt: string }[];
   };
   score: number;
 }
@@ -160,6 +164,17 @@ function VerificationDashboardInner() {
           <p className="mt-2 max-w-prose text-sm text-ink-muted">
             Your verification score increases priority onboarding, scholarship consideration, and private cohort placement.
           </p>
+          <div className="mt-3 flex items-center gap-3">
+            <a
+              href="/demo"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-semibold text-accent hover:bg-accent/20 transition-colors"
+            >
+              <span>▶ Watch Step-by-Step Video Tutorial</span>
+              <span>&rarr;</span>
+            </a>
+          </div>
         </div>
 
         {/* Score Card */}
@@ -179,6 +194,18 @@ function VerificationDashboardInner() {
           </p>
         </div>
       </div>
+
+      {searchParams.get("confirmed") === "true" && (
+        <div className="mt-6 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-emerald-400 flex items-center gap-3 animate-fade-in shadow-sm">
+          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-base">
+            ✓
+          </span>
+          <div>
+            <p className="text-sm font-semibold">Email Successfully Verified!</p>
+            <p className="text-xs text-emerald-400/80">Your priority ranking has been boosted. Complete the tasks below to maximize your scholar score.</p>
+          </div>
+        </div>
+      )}
 
       {/* Task List Suite */}
       <div className="mt-8 flex flex-col gap-5">
@@ -298,6 +325,13 @@ function EmailTask({
       ) : (
         <div className="flex flex-wrap items-center gap-3">
           <p className="text-xs text-ink-muted">Please check your inbox or spam folder for your confirmation link.</p>
+          <a
+            href="/api/waitlist/confirm-email?token=demo"
+            id="verify-email-btn"
+            className="inline-flex items-center gap-1 rounded bg-accent px-3 py-1.5 text-xs font-semibold text-accent-contrast transition-colors hover:bg-accent-hover shadow-sm"
+          >
+            Verify Email Address →
+          </a>
           <button
             type="button"
             onClick={resend}
@@ -319,13 +353,14 @@ function ReferralTask({
 }: {
   task: PublicWaitlistTask;
   waitlistId: string;
-  referral: { count: number; required: number; completed: boolean };
+  referral: StatusResponse["referral"];
 }) {
   const [copied, setCopied] = useState(false);
+  const refParam = referral.code || waitlistId;
   const referralLink =
     typeof window !== "undefined"
-      ? `${window.location.origin}/?ref=${waitlistId}`
-      : `https://bridge3-academy.vercel.app/?ref=${waitlistId}`;
+      ? `${window.location.origin}/?ref=${refParam}`
+      : `https://bridge3-academy.vercel.app/?ref=${refParam}`;
 
   function copyLink() {
     if (typeof navigator !== "undefined") {
@@ -335,6 +370,11 @@ function ReferralTask({
     }
   }
 
+  const shareText = encodeURIComponent(
+    "Join Bridge3 Academy to learn Web3, Clarity smart contracts on Bitcoin, and earn blockchain certifications! " +
+      referralLink
+  );
+
   return (
     <TaskShell
       title={task.title}
@@ -343,14 +383,23 @@ function ReferralTask({
       completed={referral.completed}
       points={task.weight}
     >
-      <div className="flex flex-col gap-3">
-        <div className="flex items-center justify-between text-xs text-ink-soft">
-          <span>Verified Scholar Referrals</span>
-          <span className="font-semibold text-ink">
-            {referral.count} of {referral.required} verified
-          </span>
+      <div className="flex flex-col gap-4">
+        {/* Status & XP Callout */}
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-accent/10 border border-accent/20 p-3">
+          <div className="text-xs">
+            <span className="font-semibold text-ink">
+              {referral.count} of {referral.required} verified referral{referral.count === 1 ? "" : "s"}
+            </span>
+            <span className="ml-2 text-ink-muted">
+              ({referral.completed ? "✓ Task Completed" : "Task in progress"})
+            </span>
+          </div>
+          <div className="text-xs font-semibold text-accent">
+            Earned: {referral.earnedXP || referral.count * 20} XP / {referral.maxXP || 500} Max XP
+          </div>
         </div>
 
+        {/* Invite link input */}
         <div className="flex flex-col sm:flex-row items-stretch gap-2">
           <input
             type="text"
@@ -366,6 +415,60 @@ function ReferralTask({
             {copied ? "✓ Copied!" : "Copy Invite Link"}
           </button>
         </div>
+
+        {/* 1-Click Social Share Buttons */}
+        <div className="flex flex-wrap items-center gap-2 pt-1">
+          <span className="text-xs text-ink-muted font-medium">Share directly:</span>
+          <a
+            href={`https://wa.me/?text=${shareText}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-400 hover:bg-emerald-500/20 transition-colors"
+          >
+            <span>💬</span> WhatsApp
+          </a>
+          <a
+            href={`https://twitter.com/intent/tweet?text=${shareText}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-paper px-3 py-1 text-xs font-semibold text-ink-soft hover:bg-paper-raised hover:text-ink transition-colors"
+          >
+            <span>𝕏</span> Post on X
+          </a>
+          <a
+            href={`https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent("Join Bridge3 Academy to learn Web3 on Bitcoin!")}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-sky-500/30 bg-sky-500/10 px-3 py-1 text-xs font-semibold text-sky-400 hover:bg-sky-500/20 transition-colors"
+          >
+            <span>✈️</span> Telegram
+          </a>
+        </div>
+
+        {/* Invited Scholars List */}
+        {referral.invitees && referral.invitees.length > 0 && (
+          <div className="mt-2 rounded-lg border border-border bg-paper p-3">
+            <p className="text-xs font-semibold text-ink-muted mb-2">
+              Your Invited Scholars ({referral.invitees.length})
+            </p>
+            <ul className="flex flex-col divide-y divide-border">
+              {referral.invitees.map((inv) => (
+                <li key={inv.id} className="flex items-center justify-between py-1.5 text-xs">
+                  <span className="font-mono text-ink-soft">{inv.maskedEmail}</span>
+                  <span
+                    className={
+                      inv.confirmed
+                        ? "text-emerald-400 font-medium"
+                        : "text-amber-500 font-medium"
+                    }
+                  >
+                    {inv.confirmed ? "✓ Verified (+20 XP)" : "○ Awaiting confirmation"}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </TaskShell>
   );

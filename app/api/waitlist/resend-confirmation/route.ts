@@ -1,12 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { sendWaitlistConfirmationEmail } from "@/lib/email/resend";
+import { isPlaceholderSupabase, findMockSignupById } from "@/lib/waitlist/mockStore";
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
   const id = body?.id;
   if (!id) {
     return NextResponse.json({ error: "Missing id" }, { status: 400 });
+  }
+
+  if (isPlaceholderSupabase()) {
+    const signup = findMockSignupById(id);
+    if (!signup) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    if (signup.email_confirmed) {
+      return NextResponse.json({ ok: true, alreadyConfirmed: true });
+    }
+    return NextResponse.json({ ok: true });
   }
 
   const { data: signup } = await supabaseAdmin

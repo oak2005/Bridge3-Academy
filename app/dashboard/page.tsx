@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { useProfile } from "@/lib/auth/useProfile";
+import { GuidedTour } from "@/components/tour/GuidedTour";
 
 interface LessonInfo {
   id: string;
@@ -31,6 +32,7 @@ export default function DashboardPage() {
   const [allCaughtUp, setAllCaughtUp] = useState(false);
   const [progress, setProgress] = useState<TrackProgress | null>(null);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [tourForcedOpen, setTourForcedOpen] = useState(false);
 
   useEffect(() => {
     if (!session?.user?.id) {
@@ -150,6 +152,13 @@ export default function DashboardPage() {
         </div>
 
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setTourForcedOpen(true)}
+            className="rounded-lg border border-accent/40 bg-accent/10 px-3.5 py-1.5 text-xs font-semibold text-accent transition-colors hover:bg-accent/20"
+          >
+            💡 Take Tour
+          </button>
           <Link
             href="/docs"
             className="rounded-lg border border-border bg-paper-raised px-3.5 py-1.5 text-xs font-semibold text-ink transition-colors hover:border-accent"
@@ -166,7 +175,10 @@ export default function DashboardPage() {
       </div>
 
       {/* Hero Action: Resume Learning */}
-      <div className="mt-8 rounded-2xl border border-accent/40 bg-gradient-to-br from-paper-raised to-paper p-6 sm:p-8 shadow-sm">
+      <div
+        data-tour="today-lesson"
+        className="mt-8 rounded-2xl border border-accent/40 bg-gradient-to-br from-paper-raised to-paper p-6 sm:p-8 shadow-sm"
+      >
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
@@ -385,6 +397,12 @@ export default function DashboardPage() {
           )}
         </div>
       </div>
+
+      <GuidedTour
+        forceOpen={tourForcedOpen}
+        onClose={() => setTourForcedOpen(false)}
+        userCompletedTour={!!(profile as any)?.tour_completed_at}
+      />
     </div>
   );
 }

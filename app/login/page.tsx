@@ -32,9 +32,10 @@ function LoginContent() {
   return (
     <div className="mx-auto flex max-w-content flex-col items-center px-6 py-24">
       <div className="w-full max-w-sm rounded border border-border bg-paper-raised p-8 text-center">
-        <h1 className="font-display text-2xl text-ink">Welcome to Bridge3 Academy</h1>
+        <h1 className="font-display text-2xl text-ink">Sign up or log in</h1>
         <p className="mt-2 text-sm text-ink-muted">
-          Sign in with Google to start or continue your learning path.
+          New here? Continue with Google and your account is created automatically.
+          Already have one? Same button.
         </p>
 
         {deactivated && (

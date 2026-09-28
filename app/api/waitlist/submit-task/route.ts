@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { isPlaceholderSupabase, addMockSubmission } from "@/lib/waitlist/mockStore";
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
@@ -7,6 +8,11 @@ export async function POST(req: NextRequest) {
 
   if (!waitlistSignupId || !taskType || typeof taskType !== "string") {
     return NextResponse.json({ error: "Invalid submission payload." }, { status: 400 });
+  }
+
+  if (isPlaceholderSupabase()) {
+    addMockSubmission(waitlistSignupId, taskType, submissionText || null, screenshotPath || null, "verified");
+    return NextResponse.json({ ok: true, status: "verified" });
   }
 
   // Confirm the signup actually exists before attaching a submission to it.

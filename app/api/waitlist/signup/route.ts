@@ -1,16 +1,33 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { sendWaitlistConfirmationEmail } from "@/lib/email/resend";
+import { isPlaceholderSupabase, createMockSignup } from "@/lib/waitlist/mockStore";
+import { normalizeEmail, isDisposableEmail } from "@/lib/waitlist/normalizeEmail";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
-  const email = typeof body?.email === "string" ? body.email.trim().toLowerCase() : "";
-  const referredBy = typeof body?.referredBy === "string" ? body.referredBy : null;
+  const rawEmail = typeof body?.email === "string" ? body.email.trim() : "";
+  const referredBy = typeof body?.referredBy === "string" ? body.referredBy.trim() : null;
 
-  if (!EMAIL_REGEX.test(email)) {
+  if (!EMAIL_REGEX.test(rawEmail)) {
     return NextResponse.json({ error: "Enter a valid email address." }, { status: 400 });
+  }
+
+  if (isDisposableEmail(rawEmail)) {
+    return NextResponse.json(
+      { error: "Disposable email addresses are not permitted. Please use your permanent email." },
+      { status: 400 }
+    );
+  }
+
+  const email = rawEmail.toLowerCase();
+  const normalizedEmail = normalizeEmail(rawEmail);
+
+  if (isPlaceholderSupabase()) {
+    const signup = createMockSignup(email, referredBy);
+    return NextResponse.json({ id: signup.id, alreadyConfirmed: signup.email_confirmed });
   }
 
   // Reuse an existing row instead of erroring, so someone who already
@@ -18,11 +35,22 @@ export async function POST(req: NextRequest) {
   const { data: existing, error: lookupError } = await supabaseAdmin
     .from("waitlist_signups")
     .select("id, email_confirmed, confirmation_token")
-    .eq("email", email)
+    .or(`email.eq.${email},normalized_email.eq.${normalizedEmail}`)
     .maybeSingle();
 
-  if (lookupError) {
-    return NextResponse.json({ error: "Something went wrong. Try again." }, { status: 500 });
+  if (lookupError && lookupError.code !== "PGRST100") {
+    // If normalized_email column doesn't exist yet, fallback to email lookup
+    const { data: fallbackExisting } = await supabaseAdmin
+      .from("waitlist_signups")
+      .select("id, email_confirmed, confirmation_token")
+      .eq("email", email)
+      .maybeSingle();
+    if (fallbackExisting) {
+      return NextResponse.json({
+        id: fallbackExisting.id,
+        alreadyConfirmed: fallbackExisting.email_confirmed,
+      });
+    }
   }
 
   let signupId: string;
@@ -38,19 +66,41 @@ export async function POST(req: NextRequest) {
     // only if the referrer is a real signup and not the same person.
     let validatedReferrer: string | null = null;
     if (referredBy) {
-      const { data: referrer } = await supabaseAdmin
-        .from("waitlist_signups")
-        .select("id")
-        .eq("id", referredBy)
-        .maybeSingle();
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(referredBy);
+      let referrerQuery = supabaseAdmin.from("waitlist_signups").select("id");
+      if (isUuid) {
+        referrerQuery = referrerQuery.eq("id", referredBy);
+      } else {
+        referrerQuery = referrerQuery.eq("referral_code", referredBy.toUpperCase());
+      }
+      const { data: referrer } = await referrerQuery.maybeSingle();
       if (referrer) validatedReferrer = referrer.id;
     }
 
-    const { data: inserted, error: insertError } = await supabaseAdmin
+    const referralCode = "B3-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+
+    // Try insert with referral_code and normalized_email
+    let { data: inserted, error: insertError } = await supabaseAdmin
       .from("waitlist_signups")
-      .insert({ email, referred_by: validatedReferrer })
+      .insert({
+        email,
+        normalized_email: normalizedEmail,
+        referral_code: referralCode,
+        referred_by: validatedReferrer,
+      })
       .select("id, confirmation_token")
       .single();
+
+    if (insertError) {
+      // Fallback in case migration hasn't been run yet on production db
+      const fallbackRes = await supabaseAdmin
+        .from("waitlist_signups")
+        .insert({ email, referred_by: validatedReferrer })
+        .select("id, confirmation_token")
+        .single();
+      inserted = fallbackRes.data;
+      insertError = fallbackRes.error;
+    }
 
     if (insertError || !inserted) {
       return NextResponse.json({ error: "Something went wrong. Try again." }, { status: 500 });

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { useProfile } from "@/lib/auth/useProfile";
+import { VideoPlayer } from "@/components/classroom/VideoPlayer";
 
 interface Track {
   id: string;
@@ -29,6 +30,9 @@ interface Lesson {
   video_url: string | null;
   duration_minutes: number | null;
   order_index: number;
+  notes?: string | null;
+  instructor_name?: string | null;
+  audio_path?: string | null;
 }
 
 async function authedFetch(path: string, options: RequestInit = {}) {
@@ -55,6 +59,7 @@ export default function ContentManagementPage() {
   const [expandedTrack, setExpandedTrack] = useState<string | null>(null);
   const [expandedModule, setExpandedModule] = useState<string | null>(null);
   const [editing, setEditing] = useState<string | null>(null); // "type:id" or "type:new:parentId"
+  const [generatingAudioId, setGeneratingAudioId] = useState<string | null>(null);
 
   useEffect(() => {
     if (profileLoading) return;
@@ -107,6 +112,26 @@ export default function ContentManagementPage() {
       body: JSON.stringify({ entityType, id, direction }),
     });
     await loadContent();
+  }
+
+  async function generateAudio(lessonId: string) {
+    setGeneratingAudioId(lessonId);
+    try {
+      const res = await authedFetch(`/api/admin/lessons/${lessonId}/audio`, {
+        method: "POST",
+      });
+      const body = await res.json();
+      if (!res.ok) {
+        alert(`Audio generation failed: ${body.error || "Unknown error"}`);
+      } else {
+        alert("Lesson audio generated and saved successfully!");
+        await loadContent();
+      }
+    } catch (err: unknown) {
+      alert(`Audio generation error: ${err instanceof Error ? err.message : String(err)}`);
+    } finally {
+      setGeneratingAudioId(null);
+    }
   }
 
   if (profileLoading || loading) return <p className="px-6 py-12 text-ink-muted">Loading…</p>;
@@ -249,6 +274,15 @@ export default function ContentManagementPage() {
                                         <button type="button" onClick={() => reorder("lesson", lesson.id, "up")} disabled={li === 0} className="flex h-5 w-5 items-center justify-center rounded border border-border text-[9px] text-ink-soft transition-colors hover:bg-accent/10 hover:text-accent disabled:opacity-25 disabled:hover:bg-transparent" title="Move up">▲</button>
                                         <button type="button" onClick={() => reorder("lesson", lesson.id, "down")} disabled={li === larr.length - 1} className="flex h-5 w-5 items-center justify-center rounded border border-border text-[9px] text-ink-soft transition-colors hover:bg-accent/10 hover:text-accent disabled:opacity-25 disabled:hover:bg-transparent" title="Move down">▼</button>
                                         <button type="button" onClick={() => setEditing(`lesson:${lesson.id}`)} className="ml-1 rounded border border-border px-2 py-0.5 text-xs font-medium text-accent-hover transition-colors hover:bg-accent/10">Edit</button>
+                                        <button
+                                          type="button"
+                                          onClick={() => generateAudio(lesson.id)}
+                                          disabled={generatingAudioId === lesson.id || !lesson.notes}
+                                          className="rounded border border-border px-2 py-0.5 text-xs font-medium text-ink-soft transition-colors hover:bg-accent/10 hover:text-accent disabled:opacity-30"
+                                          title={lesson.notes ? (lesson.audio_path ? "Regenerate AI Audio" : "Generate AI Audio") : "Add notes first to generate audio"}
+                                        >
+                                          {generatingAudioId === lesson.id ? "🎙️..." : lesson.audio_path ? "🎧 Audio ✓" : "🎙️ Audio"}
+                                        </button>
                                         <button type="button" onClick={() => deleteEntity("lesson", lesson.id, lesson.title)} className="rounded border border-red-700/30 px-2 py-0.5 text-xs font-medium text-red-500 transition-colors hover:bg-red-500/10">Delete</button>
                                       </div>
                                     </div>
@@ -361,27 +395,104 @@ function LessonForm({
   const [title, setTitle] = useState(initial?.title || "");
   const [videoUrl, setVideoUrl] = useState(initial?.video_url || "");
   const [duration, setDuration] = useState(initial?.duration_minutes?.toString() || "");
+  const [instructorName, setInstructorName] = useState(initial?.instructor_name || "");
+  const [notes, setNotes] = useState(initial?.notes || "");
 
   return (
-    <div className="mt-2 flex flex-col gap-2 rounded border border-border bg-paper p-3">
-      <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" className="rounded border border-border px-3 py-2 text-sm" />
-      <input value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} placeholder="Video URL (YouTube, Vimeo, or direct file)" className="rounded border border-border px-3 py-2 text-sm" />
-      <input value={duration} onChange={(e) => setDuration(e.target.value)} placeholder="Duration (minutes)" type="number" className="rounded border border-border px-3 py-2 text-sm" />
-      <div className="flex gap-2">
+    <div className="mt-2 flex flex-col gap-3 rounded border border-border bg-paper p-4">
+      <div>
+        <label className="block text-xs font-semibold uppercase tracking-wider text-ink-muted mb-1">
+          Lesson Title
+        </label>
+        <input
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Title"
+          className="w-full rounded border border-border bg-paper-raised px-3 py-2 text-sm text-ink"
+        />
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div>
+          <label className="block text-xs font-semibold uppercase tracking-wider text-ink-muted mb-1">
+            Instructor Name
+          </label>
+          <input
+            value={instructorName}
+            onChange={(e) => setInstructorName(e.target.value)}
+            placeholder="e.g. Satoshi Nakamoto"
+            className="w-full rounded border border-border bg-paper-raised px-3 py-2 text-sm text-ink"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-semibold uppercase tracking-wider text-ink-muted mb-1">
+            Duration (minutes)
+          </label>
+          <input
+            value={duration}
+            onChange={(e) => setDuration(e.target.value)}
+            placeholder="e.g. 15"
+            type="number"
+            className="w-full rounded border border-border bg-paper-raised px-3 py-2 text-sm text-ink"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-xs font-semibold uppercase tracking-wider text-ink-muted mb-1">
+          Video URL (YouTube, Vimeo, or direct MP4/WebM)
+        </label>
+        <input
+          value={videoUrl}
+          onChange={(e) => setVideoUrl(e.target.value)}
+          placeholder="https://www.youtube.com/watch?v=..."
+          className="w-full rounded border border-border bg-paper-raised px-3 py-2 text-sm text-ink"
+        />
+      </div>
+
+      {videoUrl.trim() && (
+        <div className="rounded border border-border bg-paper-raised p-3">
+          <p className="text-xs font-medium text-ink-muted mb-2">Live Video Preview:</p>
+          <div className="max-w-md">
+            <VideoPlayer videoUrl={videoUrl.trim()} />
+          </div>
+        </div>
+      )}
+
+      <div>
+        <label className="block text-xs font-semibold uppercase tracking-wider text-ink-muted mb-1">
+          Lesson Notes (multiline markdown or text)
+        </label>
+        <textarea
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          placeholder="Key takeaways, links, summaries..."
+          rows={4}
+          className="w-full rounded border border-border bg-paper-raised px-3 py-2 text-sm text-ink font-mono text-xs"
+        />
+      </div>
+
+      <div className="flex gap-2 pt-2">
         <button
           type="button"
           onClick={() =>
             onSave({
               title,
-              video_url: videoUrl || null,
+              video_url: videoUrl.trim() || null,
               duration_minutes: duration ? parseInt(duration, 10) : null,
+              instructor_name: instructorName.trim() || null,
+              notes: notes.trim() || null,
             })
           }
-          className="rounded bg-accent px-4 py-2 text-sm font-semibold text-accent-contrast hover:bg-accent-hover"
+          className="rounded bg-accent px-4 py-2 text-sm font-semibold text-accent-contrast hover:bg-accent-hover transition-colors"
         >
-          Save
+          Save Lesson
         </button>
-        <button type="button" onClick={onCancel} className="rounded border border-border px-4 py-2 text-sm text-ink-soft">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="rounded border border-border px-4 py-2 text-sm text-ink-soft hover:bg-paper-raised transition-colors"
+        >
           Cancel
         </button>
       </div>

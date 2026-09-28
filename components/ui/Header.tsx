@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { supabaseBrowser } from "@/lib/supabase/client";
 
 const NAV_LINKS = [
   { label: "Home", href: "/" },
@@ -19,6 +20,7 @@ export function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [logo, setLogo] = useState({ text: "Bridge3 Academy", url: "" });
+  const [isSignedIn, setIsSignedIn] = useState<boolean | null>(null);
 
   useEffect(() => {
     async function loadLogo() {
@@ -38,7 +40,25 @@ export function Header() {
     loadLogo();
   }, []);
 
-  if (pathname?.startsWith("/dashboard") || pathname?.startsWith("/waitlist")) {
+  // Check auth state so we can show "Dashboard" vs "Sign up / Log in"
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      const { data } = await supabaseBrowser.auth.getSession();
+      if (active) setIsSignedIn(!!data.session);
+    })();
+    const { data: listener } = supabaseBrowser.auth.onAuthStateChange(
+      (_event, session) => {
+        setIsSignedIn(!!session);
+      }
+    );
+    return () => {
+      active = false;
+      listener.subscription.unsubscribe();
+    };
+  }, []);
+
+  if (pathname?.startsWith("/dashboard") || pathname?.startsWith("/waitlist") || pathname?.startsWith("/video-capture")) {
     return null;
   }
 
@@ -67,18 +87,29 @@ export function Header() {
 
         <div className="hidden items-center gap-3 md:flex">
           <ThemeToggle />
-          <Link
-            href="/login"
-            className="text-sm font-medium text-ink-soft transition-colors hover:text-ink"
-          >
-            Login
-          </Link>
-          <Link
-            href="/#waitlist"
-            className="rounded bg-accent px-5 py-2.5 text-sm font-semibold text-accent-contrast transition-colors hover:bg-accent-hover"
-          >
-            Join Waitlist
-          </Link>
+          {isSignedIn ? (
+            <Link
+              href="/dashboard"
+              className="rounded bg-accent px-5 py-2.5 text-sm font-semibold text-accent-contrast transition-colors hover:bg-accent-hover"
+            >
+              Dashboard
+            </Link>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="text-sm font-medium text-ink-soft transition-colors hover:text-ink"
+              >
+                Sign up / Log in
+              </Link>
+              <Link
+                href="/#waitlist"
+                className="rounded bg-accent px-5 py-2.5 text-sm font-semibold text-accent-contrast transition-colors hover:bg-accent-hover"
+              >
+                Join Waitlist
+              </Link>
+            </>
+          )}
         </div>
 
         <div className="flex items-center gap-2 md:hidden">
@@ -113,15 +144,32 @@ export function Header() {
                 {link.label}
               </Link>
             ))}
-            <Link href="/login" className="text-sm font-medium text-ink-soft">
-              Login
-            </Link>
-            <Link
-              href="/#waitlist"
-              className="w-fit rounded bg-accent px-5 py-2.5 text-sm font-semibold text-accent-contrast"
-            >
-              Join Waitlist
-            </Link>
+            {isSignedIn ? (
+              <Link
+                href="/dashboard"
+                onClick={() => setOpen(false)}
+                className="w-fit rounded bg-accent px-5 py-2.5 text-sm font-semibold text-accent-contrast"
+              >
+                Dashboard
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  onClick={() => setOpen(false)}
+                  className="text-sm font-medium text-ink-soft"
+                >
+                  Sign up / Log in
+                </Link>
+                <Link
+                  href="/#waitlist"
+                  onClick={() => setOpen(false)}
+                  className="w-fit rounded bg-accent px-5 py-2.5 text-sm font-semibold text-accent-contrast"
+                >
+                  Join Waitlist
+                </Link>
+              </>
+            )}
           </div>
         </nav>
       )}

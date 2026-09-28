@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const VALUES = ["Accessibility", "Structure", "Proof of Work", "Community"];
 
 export function About() {
@@ -20,6 +22,18 @@ export function About() {
             </span>
           ))}
         </div>
+
+        <p className="mt-8 text-sm text-ink-muted">
+          Ready to start?{" "}
+          <Link href="/signup" className="font-semibold text-accent-hover underline">
+            Create your free account
+          </Link>{" "}
+          or{" "}
+          <Link href="/#waitlist" className="font-semibold text-accent-hover underline">
+            join the waitlist
+          </Link>
+          .
+        </p>
       </div>
     </section>
   );

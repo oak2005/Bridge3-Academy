@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { DEFAULT_SITE_SETTINGS } from "@/lib/settings/constants";
 
 const CHECKLIST_PREVIEW = [
   "Join Telegram community",
   "Follow X (Twitter)",
-  "Share with 3 friends",
+  "Invite friends — earn XP for every verified invite",
   "Confirm email",
 ];
 
@@ -123,6 +124,26 @@ export function WaitlistHero() {
           <p className="mt-3 text-sm text-ink-muted">
             {siteSettings.heroAnnouncement}
           </p>
+
+          <div className="mt-5 flex flex-wrap items-center gap-3">
+            <Link
+              href="/demo"
+              className="inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/10 px-4 py-2 text-xs font-semibold text-accent hover:bg-accent/20 transition-all shadow-sm group"
+            >
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-accent text-accent-contrast text-[10px] font-bold group-hover:scale-110 transition-transform">
+                ▶
+              </span>
+              <span>Watch Video Demo & Tutorial</span>
+              <span className="text-accent/60 group-hover:translate-x-0.5 transition-transform">&rarr;</span>
+            </Link>
+            <Link
+              href="/signup"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-ink-soft hover:text-ink transition-colors"
+            >
+              <span>Already know you want in?</span>
+              <span className="text-accent-hover underline">Create an account →</span>
+            </Link>
+          </div>
         </div>
 
         {/* Dynamic Hero Illustration Slot */}

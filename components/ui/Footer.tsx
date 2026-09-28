@@ -10,6 +10,7 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
       { label: "About", href: "/#about" },
       { label: "How It Works", href: "/#how-it-works" },
       { label: "Tracks", href: "/#tracks" },
+      { label: "Create an account", href: "/signup" },
     ],
   },
   {
@@ -45,7 +46,7 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
 export function Footer() {
   const pathname = usePathname();
 
-  if (pathname?.startsWith("/dashboard") || pathname?.startsWith("/waitlist")) {
+  if (pathname?.startsWith("/dashboard") || pathname?.startsWith("/waitlist") || pathname?.startsWith("/video-capture")) {
     return null;
   }
 

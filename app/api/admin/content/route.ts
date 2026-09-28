@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
 
   const { data: lessons } = await supabaseAdmin
     .from("lessons")
-    .select("id, module_id, title, video_url, duration_minutes, order_index")
+    .select("id, module_id, title, video_url, duration_minutes, order_index, notes, instructor_name")
     .order("order_index", { ascending: true });
 
   return jsonNoStore({

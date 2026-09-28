@@ -14,6 +14,7 @@ const BASE_NAV_ITEMS = [
   { label: "My Courses", href: "/dashboard/my-courses" },
   { label: "Workshops", href: "/dashboard/workshops" },
   { label: "Assessments", href: "/dashboard/assessments" },
+  { label: "Tools", href: "/dashboard/tools" },
   { label: "Portfolio", href: "/dashboard/portfolio" },
   { label: "Certification", href: "/dashboard/certification" },
   { label: "Community", href: "/dashboard/community" },
@@ -58,10 +59,12 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         <nav className="flex flex-col gap-1 px-3">
           {NAV_ITEMS.map((item) => {
             const active = pathname === item.href;
+            const tourKey = item.href.replace("/dashboard/", "").replace("/dashboard", "dashboard");
             return (
               <Link
                 key={item.href}
                 href={item.href}
+                data-tour={tourKey}
                 className={`rounded px-3 py-2 text-sm font-medium transition-colors ${
                   active ? "bg-accent-tint text-ink" : "text-ink-soft hover:bg-paper"
                 }`}
