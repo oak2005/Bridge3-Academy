@@ -8,8 +8,8 @@ export const XP_RULES = {
   assignmentApprovedBonus: 25, // ADDED on top of the submission XP once approved
   capstoneSubmitted: 20,
   capstoneApprovedBonus: 60, // ADDED on top of the submission XP once approved
-  referralVerified: 20, // per verified invitee
-  referralVerifiedCap: 25, // max invitees that count (max 500 XP)
+  referralVerified: 10, // per verified invitee (10 XP per verified referral)
+  referralVerifiedCap: 50, // max invitees that count (max 500 XP)
 } as const;
 
 export interface StudentStats {

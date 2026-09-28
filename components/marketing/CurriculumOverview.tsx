@@ -5,17 +5,19 @@ const TRACKS = [
     title: "General Track",
     description:
       "Two phases. Level 1 covers the fundamentals — blockchain, Bitcoin, Web3, smart contracts, NFTs, DeFi, AI, and the crypto economy. Level 2 moves into practical Web3 usage: essential tools, ecosystem participation, security, communication, and real-world application.",
+    href: "/docs/track-general",
   },
   {
-    title: "Ecosystem Support Track",
+    title: "Ecosystem or Sponsorship Track",
     description:
-      "How blockchain ecosystems actually work — how users interact with them, how decentralized applications operate, and the basics of ecosystem infrastructure and language.",
+      "How blockchain ecosystems and decentralized protocols work — network participation, smart contract integrations, grants, and ecosystem tooling supported by leading Web3 partners.",
+    href: "/docs/track-ecosystem",
   },
   {
-    title: "Skill Set Track",
+    title: "Skill set Track",
     description:
-      "Choose a specialization: Designer, Creator, or Community & Growth. Each includes hands-on training, assignments, and project-based learning.",
-    footnote: "Builder Track — planned partnership, coming soon.",
+      "Career-ready hands-on specializations: Web3 UI/UX Design, Community & Growth, and Smart Contract Development. Each includes project-based assignments and mentor review.",
+    href: "/docs/track-skillset",
   },
 ];
 
@@ -35,9 +37,12 @@ export function CurriculumOverview() {
               <h3 className="font-sans text-base font-semibold text-ink">{track.title}</h3>
               <div>
                 <p className="max-w-prose text-sm text-ink-muted">{track.description}</p>
-                {track.footnote && (
-                  <p className="mt-2 text-xs font-medium text-accent-hover">{track.footnote}</p>
-                )}
+                <Link
+                  href={track.href}
+                  className="mt-2 inline-block text-xs font-semibold text-accent-hover hover:underline"
+                >
+                  Explore {track.title} syllabus →
+                </Link>
               </div>
             </div>
           ))}

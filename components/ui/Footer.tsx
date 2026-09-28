@@ -9,7 +9,7 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
     links: [
       { label: "About", href: "/#about" },
       { label: "How It Works", href: "/#how-it-works" },
-      { label: "Tracks", href: "/#tracks" },
+      { label: "Curriculum", href: "/#curriculum" },
       { label: "Create an account", href: "/signup" },
     ],
   },
@@ -18,9 +18,8 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
     links: [
       { label: "Documentation Hub", href: "/docs" },
       { label: "General Track", href: "/docs/track-general" },
-      { label: "Developer Track", href: "/docs/track-developer" },
-      { label: "Creative Track", href: "/docs/track-creative" },
-      { label: "Growth Track", href: "/docs/track-growth" },
+      { label: "Ecosystem or Sponsorship Track", href: "/docs/track-ecosystem" },
+      { label: "Skill set Track", href: "/docs/track-skillset" },
     ],
   },
   {

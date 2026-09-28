@@ -54,10 +54,10 @@ export default function DocsHomePage() {
             📚
           </div>
           <h3 className="mt-4 text-sm font-bold text-ink group-hover:text-accent">
-            Curriculum &amp; Tracks
+            Curriculum
           </h3>
           <p className="mt-1 text-xs text-ink-muted leading-relaxed">
-            Detailed breakdowns of General, Ecosystem, Developer (Clarity), Creative (UI/UX), and Growth tracks.
+            Detailed breakdowns of our 3 core tracks: General, Ecosystem or Sponsorship, and Skill set Track.
           </p>
           <span className="mt-3 inline-flex items-center text-xs font-semibold text-accent">
             Explore Syllabus →

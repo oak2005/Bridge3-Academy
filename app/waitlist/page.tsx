@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { PublicWaitlistTask, DEFAULT_TASKS } from "@/lib/waitlist/tasks";
+import { WaitlistLeaderboard } from "@/components/waitlist/WaitlistLeaderboard";
 
 type TaskStatus = "verified" | "pending_review" | "rejected" | null;
 
@@ -146,6 +147,9 @@ function VerificationDashboardInner() {
         >
           Join Waitlist
         </a>
+        <div className="mt-8 text-left">
+          <WaitlistLeaderboard />
+        </div>
       </div>
     );
   }
@@ -244,6 +248,9 @@ function VerificationDashboardInner() {
           );
         })}
       </div>
+
+      {/* Top Inviters Leaderboard */}
+      <WaitlistLeaderboard waitlistId={waitlistId} />
     </div>
   );
 }
@@ -395,7 +402,7 @@ function ReferralTask({
             </span>
           </div>
           <div className="text-xs font-semibold text-accent">
-            Earned: {referral.earnedXP || referral.count * 20} XP / {referral.maxXP || 500} Max XP
+            Earned: {referral.earnedXP ?? referral.count * 10} XP / {referral.maxXP || 500} Max XP
           </div>
         </div>
 

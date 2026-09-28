@@ -45,8 +45,8 @@ export const DOC_CATEGORIES: DocCategory[] = [
   },
   {
     id: "curriculum",
-    label: "Curriculum & Tracks",
-    description: "Detailed syllabus breakdown across General, Ecosystem, Developer, Creative, and Growth tracks.",
+    label: "Curriculum",
+    description: "Detailed syllabus breakdown across our 3 main tracks: General, Ecosystem or Sponsorship, and Skill set Track.",
     icon: "📚",
   },
   {
@@ -157,7 +157,7 @@ export const DOC_ARTICLES: DocArticle[] = [
           bullets: [
             "University / Institution: Connect with fellow alumni and track your campus's position on the academy leaderboard.",
             "Experience Level: Choose between Beginner (new to crypto), Intermediate (familiar with wallets & tokens), or Advanced (active developer/builder).",
-            "Specialization Track: Select your primary focus area — Engineering, Creative & Design, Community & Growth, or Operations.",
+            "Curriculum Pathway: Choose your focus — General, Ecosystem or Sponsorship, or Skill set Track (Design, Growth, Development).",
           ],
         },
         {
@@ -223,41 +223,41 @@ export const DOC_ARTICLES: DocArticle[] = [
     },
   },
 
-  // 2. Curriculum & Tracks
+  // 2. Curriculum
   {
     slug: "curriculum-overview",
     title: "Curriculum Architecture & Philosophy",
     category: "curriculum",
-    categoryLabel: "Curriculum & Tracks",
-    summary: "An overview of how our curriculum is structured across foundational, ecosystem, and specialized skill tracks.",
+    categoryLabel: "Curriculum",
+    summary: "Comprehensive breakdown of Bridge3 Academy's 3-track curriculum: General, Ecosystem or Sponsorship, and Skill set Track.",
     readTime: "4 min read",
     updatedAt: "September 2026",
-    tags: ["curriculum", "tracks", "syllabus", "overview"],
+    tags: ["curriculum", "general", "ecosystem", "skillset", "overview"],
     keyTakeaways: [
       "The General Track is mandatory for all students to build ironclad Bitcoin & Web3 fundamentals.",
-      "Ecosystem Support Track prepares students for community management and DAO governance.",
-      "Specialization tracks offer focused pathways for Developers, Creators, and Growth operators.",
+      "Ecosystem or Sponsorship Track explores real decentralized networks, protocol grants, and developer tooling.",
+      "Skill set Track provides career-focused specializations in Design & UX, Community & Growth, and Smart Contract Development.",
     ],
     content: {
       sections: [
         {
-          heading: "Three-Tier Educational Hierarchy",
+          heading: "Our Three Core Curriculum Tracks",
           body: [
-            "The Bridge3 Academy curriculum is organized into three distinct tiers:",
-            "1. Tier 1: General Track (Foundations) — Required for all scholars. Establishes core cryptographic principles, decentralized consensus, Bitcoin, and wallet security.",
-            "2. Tier 2: Ecosystem Support Track — Bridges theory to real decentralized protocols, covering tokenomics, DAO governance, and developer relations.",
-            "3. Tier 3: Specialized Skill Tracks — Hands-on, career-focused mastery in Engineering, Design, or Growth.",
+            "Bridge3 Academy does away with chaotic playlists and tutorial fragmentation. Our structured collegiate curriculum is built around three primary tracks:",
+            "1. General Track — Required for all scholars. Establishes core cryptographic principles, decentralized consensus, Bitcoin, wallet custody, and smart contract primitives.",
+            "2. Ecosystem or Sponsorship Track — Bridges theoretical knowledge to real partner blockchain ecosystems, protocol integrations, sponsored hackathons, and grant opportunities.",
+            "3. Skill set Track — Hands-on, career-focused mastery divided into specialized pathways: Web3 UI/UX Design, Community & Growth, and Smart Contract Development.",
           ],
         },
         {
-          heading: "Built for the African Job Market",
+          heading: "Tailored for the African Job Market",
           body: [
-            "Web3 companies hire remotely across global time zones. Our curriculum is tailored to prepare African youth for remote junior developer roles, technical community management, Web3 graphic design, and ecosystem operations.",
+            "Web3 companies hire remotely across global time zones. Our curriculum is tailored to prepare African youth for remote roles across engineering, community leadership, visual design, and ecosystem operations.",
             "Every assignment simulates real deliverables expected by leading decentralized protocols and venture-backed startups.",
           ],
           callout: {
             type: "tip",
-            text: "You can study multiple tracks sequentially! Many successful scholars complete the General Track first, then pursue both Engineering and Growth tracks.",
+            text: "All scholars begin with the General Track. Once foundational competencies are verified, you unlock the Ecosystem or Sponsorship Track and your chosen Skill set Track.",
           },
         },
       ],
@@ -267,7 +267,7 @@ export const DOC_ARTICLES: DocArticle[] = [
     slug: "track-general",
     title: "General Track: Web3 & Bitcoin Foundations",
     category: "curriculum",
-    categoryLabel: "Curriculum & Tracks",
+    categoryLabel: "Curriculum",
     summary: "Foundational syllabus covering Bitcoin, Proof of Work, cryptographic hashing, wallets, and smart contract primitives.",
     readTime: "5 min read",
     updatedAt: "September 2026",
@@ -275,7 +275,7 @@ export const DOC_ARTICLES: DocArticle[] = [
     keyTakeaways: [
       "Demystifies Byzantine Fault Tolerance and Satoshi Nakamoto's breakthrough.",
       "Covers public/private key cryptography, mnemonic seed phrases, and self-custody.",
-      "Explores Layer 1 vs. Layer 2 scaling architectures.",
+      "Explores Layer 1 vs. Layer 2 scaling architectures and smart contracts.",
     ],
     content: {
       sections: [
@@ -317,129 +317,112 @@ export const DOC_ARTICLES: DocArticle[] = [
     },
   },
   {
-    slug: "track-developer",
-    title: "Developer Track: Smart Contracts & Layer 2",
+    slug: "track-ecosystem",
+    title: "Ecosystem or Sponsorship Track: Protocol Integration & Sponsored Bounties",
     category: "curriculum",
-    categoryLabel: "Curriculum & Tracks",
-    summary: "Deep dive for software engineers building decentralized applications, smart contracts, and Web3 frontends.",
-    readTime: "6 min read",
+    categoryLabel: "Curriculum",
+    summary: "How blockchain ecosystems operate, protocol integrations, sponsored partner challenges, grant funding, and DAO governance.",
+    readTime: "5 min read",
     updatedAt: "September 2026",
-    tags: ["developer", "clarity", "smart-contracts", "coding"],
+    tags: ["ecosystem", "sponsorship", "protocols", "governance"],
     keyTakeaways: [
-      "Master decidable smart contract programming with Clarity on Bitcoin Layer 2.",
-      "Write automated unit tests using Clarinet and TypeScript.",
-      "Integrate Web3 wallets and interact with smart contracts from Next.js frontends.",
+      "Explore major L1/L2 ecosystems and sponsored partner protocols.",
+      "Understand protocol grant applications, hackathon bounties, and ecosystem expansion.",
+      "Participate in real on-chain DAO governance, community voting, and developer tooling.",
     ],
     content: {
       sections: [
         {
-          heading: "Why Clarity & Decidable Contracts?",
+          heading: "Module 1: Protocol Architecture & Ecosystem Participation",
           body: [
-            "Unlike Solidity on the EVM which is Turing-complete and prone to reentrancy attacks, Clarity is a decidable, interpreted smart contract language. You can mathematically verify gas execution and state transitions before a transaction executes.",
+            "Decentralized networks thrive on active participant ecosystems. In this module, scholars analyze leading protocol architectures:",
           ],
-          codeBlock: {
-            language: "clarity",
-            code: `;; Sample Clarity smart contract function
-(define-public (mint-credential (recipient principal) (token-id uint))
-  (begin
-    (asserts! (is-eq tx-sender contract-owner) (err u100))
-    (nft-mint? bridge3-cert token-id recipient)
-  )
-)`,
+          bullets: [
+            "Bitcoin Layer 2s, Ethereum rollups, and multi-chain interoperability standards.",
+            "Tokenomics design: inflation schedules, staking rewards, and utility sinks.",
+            "Running nodes, RPC endpoints, and block explorers (Stacks Explorer, Etherscan).",
+            "Understanding testnets, faucets, and safe contract verification.",
+          ],
+        },
+        {
+          heading: "Module 2: Sponsored Bounties, Grants & Hackathon Preparation",
+          body: [
+            "Bridge3 partners directly with Web3 foundations and protocols to offer sponsored challenges and real compensation opportunities:",
+          ],
+          bullets: [
+            "How protocol foundation grants work and how to write a winning RFP proposal.",
+            "Deconstructing hackathon judging rubrics and structuring minimum viable products (MVPs).",
+            "Completing sponsored workshops with direct mentor guidance.",
+          ],
+          callout: {
+            type: "tip",
+            text: "Top students completing sponsored workshops are directly introduced to partner talent pipelines for internships and contractor roles.",
           },
         },
         {
-          heading: "Developer Track Syllabus",
+          heading: "Module 3: DAO Governance & Decentralized Operations",
           body: [
-            "The engineering curriculum is project-intensive from Day 1:",
+            "Hands-on experience with decentralized autonomous organizations: token-weighted voting, Snapshot proposals, multi-sig treasury management, and community consensus.",
+          ],
+        },
+      ],
+    },
+  },
+  {
+    slug: "track-skillset",
+    title: "Skill set Track: Career Specializations (Design, Growth, Development)",
+    category: "curriculum",
+    categoryLabel: "Curriculum",
+    summary: "Career-focused practical specializations in Web3 UI/UX Design, Community & Ecosystem Growth, and Smart Contract Development.",
+    readTime: "6 min read",
+    updatedAt: "September 2026",
+    tags: ["skillset", "design", "growth", "developer", "career"],
+    keyTakeaways: [
+      "Hands-on tracks mapped directly to active Web3 remote job opportunities.",
+      "Specializations in Web3 UI/UX Design, Community & Growth, and Smart Contract Development.",
+      "Every student builds a mentor-reviewed portfolio project and capstone deliverable.",
+    ],
+    content: {
+      sections: [
+        {
+          heading: "Pathway 1: Web3 UI/UX Design",
+          body: [
+            "The greatest barrier to Web3 adoption is terrible user experience. Cryptic hex addresses, scary transaction warnings, and complicated gas popups intimidate newcomers. This pathway trains scholars to design intuitive Web3 consumer experiences:",
+          ],
+          bullets: [
+            "Human-Centric Web3 UX: Progressive onboarding, gasless meta-transactions, and seed phrase recovery UX.",
+            "Figma Component Systems: Accessible color palettes, dark/light themes, typography, and state machines.",
+            "Transaction Feedback Design: Pending, confirmed, and reverted state animations.",
+            "Community Branding & Storytelling: Creating compelling visual identities for DAOs and protocols.",
+          ],
+        },
+        {
+          heading: "Pathway 2: Community Management & Ecosystem Growth",
+          body: [
+            "Equips students with professional strategies to manage developer relations, write competitive ecosystem grant proposals, and scale community engagement:",
+          ],
+          bullets: [
+            "Ecosystem Grant Proposal: Research a real protocol need and draft a formal milestone grant application.",
+            "Technical Documentation & Tutorials: Write clear developer guides explaining how to interact with a protocol.",
+            "Campus Meetup Playbook: Plan an in-person university Web3 workshop complete with budget, agenda, and promotional campaign.",
+            "Community Moderation & Engagement: Manage Discord, Telegram, and host live X Spaces.",
+          ],
+        },
+        {
+          heading: "Pathway 3: Smart Contract Development & Clarity Engineering",
+          body: [
+            "Deep dive for software engineers building decentralized applications, decidable smart contracts, and Web3 frontends on Bitcoin Layer 2:",
           ],
           bullets: [
             "Clarity Primitives: Data types, maps, variables, error handling, and authorization traits.",
             "Local Development: Installing Clarinet, writing unit test suites, and simulating blockchain states.",
             "DeFi & Token Standards: Fungible tokens (SIP-010) and Non-Fungible tokens (SIP-009).",
             "Frontend Web3 Integration: Connecting wallets, signing transactions, and reading on-chain states in React/Next.js.",
-            "Production Security: Static analysis, auditing common pitfalls, and deploying to testnet.",
           ],
           callout: {
             type: "important",
-            text: "All code submissions must be submitted as public GitHub repositories with README documentation and automated test suites.",
+            text: "All Skill set Track pathways culminate in a mentor-graded Capstone Project that is permanently showcased on your verified public portfolio.",
           },
-        },
-      ],
-    },
-  },
-  {
-    slug: "track-creative",
-    title: "Creative & Design Track: Web3 UX/UI",
-    category: "curriculum",
-    categoryLabel: "Curriculum & Tracks",
-    summary: "For visual designers, UX researchers, and brand strategists creating intuitive decentralized interfaces.",
-    readTime: "4 min read",
-    updatedAt: "September 2026",
-    tags: ["design", "ui/ux", "figma", "creative"],
-    keyTakeaways: [
-      "Design user experiences that abstract away complex blockchain jargon.",
-      "Master wallet connection flows, transaction pending states, and error recovery.",
-      "Create high-fidelity design systems and interactive Figma prototypes.",
-    ],
-    content: {
-      sections: [
-        {
-          heading: "The Web3 UX Crisis",
-          body: [
-            "The greatest barrier to mainstream Web3 adoption isn't technology — it's terrible user experience. Cryptic hex addresses, confusing gas estimations, and terrifying signature popups alienate everyday users.",
-            "Our Creative & Design Track trains African designers to build user-friendly Web3 products that feel as smooth and welcoming as modern consumer apps.",
-          ],
-        },
-        {
-          heading: "What You Learn to Design",
-          body: [
-            "Scholars build a comprehensive design portfolio covering:",
-          ],
-          bullets: [
-            "Human-Centric Web3 Design: Progressive onboarding, gasless meta-transactions, and seed phrase recovery UX.",
-            "Figma Component Systems: Accessible color palettes, dark/light themes, typography, and state machines.",
-            "Transaction Feedback Design: Pending, confirmed, and reverted state animations.",
-            "Community Branding & Storytelling: Creating compelling visual identities for DAOs and protocols.",
-          ],
-        },
-      ],
-    },
-  },
-  {
-    slug: "track-growth",
-    title: "Growth & Operations Track: Ecosystem Expansion",
-    category: "curriculum",
-    categoryLabel: "Curriculum & Tracks",
-    summary: "Curriculum for community managers, technical writers, growth hackers, and DAO operations leaders.",
-    readTime: "4 min read",
-    updatedAt: "September 2026",
-    tags: ["growth", "community", "marketing", "operations"],
-    keyTakeaways: [
-      "Learn to organize hackathons, campus meetups, and developer workshops.",
-      "Write technical documentation, ecosystem grant applications, and research reports.",
-      "Master decentralized community management on Discord, Telegram, and X.",
-    ],
-    content: {
-      sections: [
-        {
-          heading: "Powering Decentralized Ecosystems",
-          body: [
-            "Decentralized protocols cannot succeed without energetic community leaders, skilled technical writers, and operations specialists who coordinate contributors across the globe.",
-            "The Growth & Operations track equips students with professional strategies to manage developer relations, write competitive ecosystem grant proposals, and scale community engagement.",
-          ],
-        },
-        {
-          heading: "Key Practical Projects",
-          body: [
-            "Students complete hands-on assignments including:",
-          ],
-          bullets: [
-            "Ecosystem Grant Proposal: Research a real protocol need and draft a formal milestone grant application.",
-            "Technical Documentation & Tutorials: Write clear developer guides explaining how to interact with a protocol.",
-            "Campus Meetup Playbook: Plan an in-person university Web3 workshop complete with budget, agenda, and promotional campaign.",
-            "Community Engagement Strategy: Manage community moderation, host live X Spaces, and resolve user issues.",
-          ],
         },
       ],
     },

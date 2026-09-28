@@ -188,7 +188,7 @@ export async function GET(req: NextRequest) {
       required: REFERRALS_REQUIRED,
       completed: referralCompleted,
       code: referralCode,
-      earnedXP: Math.min(effectiveReferredCount, 25) * 20,
+      earnedXP: Math.min(effectiveReferredCount, 50) * 10,
       maxXP: 500,
       invitees: maskedInvitees,
     },

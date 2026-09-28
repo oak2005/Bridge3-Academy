@@ -22,6 +22,7 @@ const BASE_NAV_ITEMS = [
 
 const SETTINGS_ITEM = { label: "Settings", href: "/dashboard/settings" };
 const MENTOR_ITEM = { label: "Mentor", href: "/dashboard/mentor" };
+const ADMIN_ITEM = { label: "Mission Control 🛡️", href: "/dashboard/mission-control" };
 
 function initialsFrom(name: string | null | undefined) {
   if (!name) return "?";
@@ -38,8 +39,11 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const { profile } = useProfile();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
-  const isMentorOrAdmin = profile?.role === "mentor" || profile?.role === "admin";
-  const NAV_ITEMS = isMentorOrAdmin
+  const isAdmin = profile?.role === "admin";
+  const isMentor = profile?.role === "mentor";
+  const NAV_ITEMS = isAdmin
+    ? [...BASE_NAV_ITEMS, MENTOR_ITEM, ADMIN_ITEM, SETTINGS_ITEM]
+    : isMentor
     ? [...BASE_NAV_ITEMS, MENTOR_ITEM, SETTINGS_ITEM]
     : [...BASE_NAV_ITEMS, SETTINGS_ITEM];
 

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
+import { useProfile } from "@/lib/auth/useProfile";
 
 interface ToolCategory {
   id: string;
@@ -26,6 +27,7 @@ interface ToolItem {
 }
 
 export default function StudentToolsPage() {
+  const { profile } = useProfile();
   const [categories, setCategories] = useState<ToolCategory[]>([]);
   const [tools, setTools] = useState<ToolItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -85,15 +87,27 @@ export default function StudentToolsPage() {
   return (
     <div className="mx-auto max-w-content px-6 py-10">
       {/* Header */}
-      <div className="max-w-2xl">
-        <p className="text-xs font-semibold uppercase tracking-wider text-accent">
-          Ecosystem Directory
-        </p>
-        <h1 className="mt-1 font-display text-3xl text-ink">Web3 Tools & Resources</h1>
-        <p className="mt-2 text-sm text-ink-soft">
-          Curated, beginner-friendly tools, wallets, exchanges, and development sandboxes designed
-          to take you from zero to on-chain across Africa and beyond.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="max-w-2xl">
+          <p className="text-xs font-semibold uppercase tracking-wider text-accent">
+            Ecosystem Directory
+          </p>
+          <h1 className="mt-1 font-display text-3xl text-ink">Web3 Tools & Resources</h1>
+          <p className="mt-2 text-sm text-ink-soft">
+            Curated, beginner-friendly tools, wallets, exchanges, and development sandboxes designed
+            to take you from zero to on-chain across Africa and beyond.
+          </p>
+        </div>
+
+        {profile?.role === "admin" && (
+          <Link
+            href="/dashboard/mission-control/tools"
+            className="inline-flex shrink-0 items-center gap-2 rounded-xl border border-accent/40 bg-accent/10 px-4 py-2.5 text-xs font-bold text-accent hover:bg-accent/20 transition-all shadow-sm"
+          >
+            <span>⚙️ Edit Tools & Categories (Admin CMS)</span>
+            <span>→</span>
+          </Link>
+        )}
       </div>
 
       {/* "Start Here" Quick Strip */}

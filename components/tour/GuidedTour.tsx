@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import Link from "next/link";
 import { supabaseBrowser } from "@/lib/supabase/client";
 
 export interface TourStep {
@@ -34,9 +33,9 @@ export const TOUR_STEPS: TourStep[] = [
   {
     id: "tracks",
     targetSelector: '[data-tour="my-courses"]',
-    title: "Structured Learning Tracks",
+    title: "Curriculum Pathways",
     description:
-      "Explore our General Track and specialized ecosystems. Each track is divided into bite-sized modules, video lessons, and interactive challenges.",
+      "Explore our 3 core curriculum tracks: General, Ecosystem or Sponsorship, and Skill set Track. Each track is divided into bite-sized modules, video lessons, and interactive challenges.",
     badge: "Curriculum",
     icon: "🗺️",
   },
@@ -256,14 +255,6 @@ export function GuidedTour({ forceOpen = false, onClose, userCompletedTour = fal
           </div>
 
           <div className="flex items-center gap-3">
-            <Link
-              href="/demo"
-              target="_blank"
-              className="text-xs font-medium text-accent hover:underline flex items-center gap-1"
-            >
-              <span>📺</span>
-              <span>Watch Demo</span>
-            </Link>
             <button
               type="button"
               onClick={completeTour}

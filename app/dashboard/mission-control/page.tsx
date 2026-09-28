@@ -153,6 +153,24 @@ export default function MissionControlPage() {
             <StatCard label="Total signups" value={stats.waitlist.total} />
             <StatCard label="Email confirmed" value={stats.waitlist.confirmed} />
           </div>
+
+          <div className="mt-10 rounded-xl border border-accent/30 bg-paper-raised p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-base">🧰</span>
+                <h3 className="font-display text-base font-bold text-ink">Web3 Tools & Categories CMS</h3>
+              </div>
+              <p className="mt-1 text-xs text-ink-muted">
+                Create categories (e.g. Wallets, CEX, DEX, Explorers, Developer Sandboxes), publish or feature tools, and manage ecosystem links.
+              </p>
+            </div>
+            <Link
+              href="/dashboard/mission-control/tools"
+              className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-accent px-4 py-2 text-xs font-bold text-accent-contrast hover:bg-accent-hover transition-colors shadow-sm"
+            >
+              <span>Manage Tools & Categories →</span>
+            </Link>
+          </div>
         </>
       )}
     </div>

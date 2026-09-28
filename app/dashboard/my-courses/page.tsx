@@ -32,8 +32,8 @@ interface TrackWithModules {
 
 const TYPE_LABELS: Record<TrackWithModules["track_type"], string> = {
   general: "General Track",
-  ecosystem_support: "Ecosystem Support Track",
-  skill_set: "Skill Set Track",
+  ecosystem_support: "Ecosystem or Sponsorship Track",
+  skill_set: "Skill set Track",
 };
 
 export default function MyCoursesPage() {
