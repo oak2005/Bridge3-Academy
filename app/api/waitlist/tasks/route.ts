@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { PublicWaitlistTask, DEFAULT_TASKS } from "@/lib/waitlist/tasks";
+import { isPlaceholderSupabase, getMockTasks } from "@/lib/waitlist/mockStore";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +14,8 @@ export async function GET() {
       .order("display_order", { ascending: true });
 
     if (error || !data || data.length === 0) {
-      return NextResponse.json({ tasks: DEFAULT_TASKS });
+      const fallback = getMockTasks().filter((t) => t.isActive !== false);
+      return NextResponse.json({ tasks: fallback });
     }
 
     const tasks: PublicWaitlistTask[] = data.map((t) => ({
@@ -32,6 +34,7 @@ export async function GET() {
     return NextResponse.json({ tasks });
   } catch (err) {
     console.error("Failed to load waitlist tasks:", err);
-    return NextResponse.json({ tasks: DEFAULT_TASKS });
+    const fallback = getMockTasks().filter((t) => t.isActive !== false);
+    return NextResponse.json({ tasks: fallback });
   }
 }

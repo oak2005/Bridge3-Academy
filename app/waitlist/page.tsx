@@ -94,7 +94,8 @@ function VerificationDashboardInner() {
         if (res.ok) {
           const data = await res.json();
           if (data.tasks && data.tasks.length > 0) {
-            setTasks(data.tasks);
+            const sorted = [...data.tasks].sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
+            setTasks(sorted);
           }
         }
       } catch (e) {

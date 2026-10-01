@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+import { DEFAULT_TASKS, PublicWaitlistTask } from "@/lib/waitlist/tasks";
 
 export interface MockSignup {
   id: string;
@@ -25,6 +26,8 @@ declare global {
   var __mockWaitlistSignups: Map<string, MockSignup> | undefined;
   // eslint-disable-next-line no-var
   var __mockWaitlistSubmissions: MockSubmission[] | undefined;
+  // eslint-disable-next-line no-var
+  var __mockWaitlistTasks: (PublicWaitlistTask & { isActive?: boolean })[] | undefined;
 }
 
 if (!global.__mockWaitlistSignups) {
@@ -35,8 +38,13 @@ if (!global.__mockWaitlistSubmissions) {
   global.__mockWaitlistSubmissions = [];
 }
 
+if (!global.__mockWaitlistTasks) {
+  global.__mockWaitlistTasks = DEFAULT_TASKS.map((t) => ({ ...t, isActive: true }));
+}
+
 export const mockSignups = global.__mockWaitlistSignups;
 export const mockSubmissions = global.__mockWaitlistSubmissions;
+export const mockTasks = global.__mockWaitlistTasks;
 
 export function isPlaceholderSupabase(): boolean {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
@@ -119,4 +127,30 @@ export function addMockSubmission(
 
 export function getMockSubmissionsForSignup(signupId: string): MockSubmission[] {
   return mockSubmissions.filter((s) => s.waitlist_signup_id === signupId);
+}
+
+export function getMockTasks(): (PublicWaitlistTask & { isActive?: boolean })[] {
+  return [...mockTasks].sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+}
+
+export function reorderMockTasks(orderedIds: string[]): (PublicWaitlistTask & { isActive?: boolean })[] {
+  const map = new Map(mockTasks.map((t) => [t.id, t]));
+  const reordered: (PublicWaitlistTask & { isActive?: boolean })[] = [];
+  orderedIds.forEach((id, index) => {
+    const item = map.get(id);
+    if (item) {
+      item.displayOrder = index + 1;
+      reordered.push(item);
+    }
+  });
+  mockTasks.forEach((t) => {
+    if (!orderedIds.includes(t.id)) {
+      t.displayOrder = reordered.length + 1;
+      reordered.push(t);
+    }
+  });
+  // Replace array contents
+  mockTasks.length = 0;
+  mockTasks.push(...reordered);
+  return getMockTasks();
 }

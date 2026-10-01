@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { verifyAdmin, logAdminAction } from "@/lib/auth/verifyAdmin";
 import { DEFAULT_TASKS } from "@/lib/waitlist/tasks";
+import {
+  isPlaceholderSupabase,
+  getMockTasks,
+  reorderMockTasks,
+} from "@/lib/waitlist/mockStore";
 
 export const dynamic = "force-dynamic";
 
@@ -11,13 +16,21 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: auth.error }, { status: auth.status });
   }
 
+  if (isPlaceholderSupabase()) {
+    const tasks = getMockTasks().map((t) => ({
+      ...t,
+      isActive: t.isActive !== false,
+    }));
+    return NextResponse.json({ tasks });
+  }
+
   const { data, error } = await supabaseAdmin
     .from("waitlist_tasks")
     .select("*")
     .order("display_order", { ascending: true });
 
   if (error || !data || data.length === 0) {
-    return NextResponse.json({ tasks: DEFAULT_TASKS.map((t) => ({ ...t, isActive: true })) });
+    return NextResponse.json({ tasks: getMockTasks().map((t) => ({ ...t, isActive: t.isActive !== false })) });
   }
 
   const tasks = data.map((t) => ({
@@ -172,6 +185,37 @@ export async function POST(req: NextRequest) {
     if (error) {
       return NextResponse.json({ error: "Could not update task status." }, { status: 500 });
     }
+
+    return NextResponse.json({ ok: true });
+  }
+
+  if (action === "reorder") {
+    const orderedIds: string[] = body.orderedIds || [];
+    if (!Array.isArray(orderedIds) || orderedIds.length === 0) {
+      return NextResponse.json({ error: "Missing or invalid orderedIds array." }, { status: 400 });
+    }
+
+    if (isPlaceholderSupabase()) {
+      reorderMockTasks(orderedIds);
+      return NextResponse.json({ ok: true });
+    }
+
+    // Persist new display order for each task in Supabase
+    for (let i = 0; i < orderedIds.length; i++) {
+      const id = orderedIds[i];
+      await supabaseAdmin
+        .from("waitlist_tasks")
+        .update({ display_order: i + 1 })
+        .eq("id", id);
+    }
+
+    await logAdminAction({
+      actorId: auth.userId,
+      action: "reordered_waitlist_tasks",
+      targetType: "waitlist_task",
+      targetId: "all",
+      details: `Reordered ${orderedIds.length} waitlist tasks display sequence`,
+    });
 
     return NextResponse.json({ ok: true });
   }
