@@ -1,12 +1,32 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import Link from "next/link";
+import { DEFAULT_SITE_SETTINGS, SiteSettings } from "@/lib/settings/constants";
 
 function SignupContent() {
+  const [siteSettings, setSiteSettings] = useState<SiteSettings>(DEFAULT_SITE_SETTINGS);
+  const [loadingSettings, setLoadingSettings] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    async function loadSettings() {
+      try {
+        const res = await fetch("/api/site-settings");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.settings) setSiteSettings(data.settings);
+        }
+      } catch (e) {
+        console.error("Could not load site settings:", e);
+      } finally {
+        setLoadingSettings(false);
+      }
+    }
+    loadSettings();
+  }, []);
 
   async function signInWithGoogle() {
     setLoading(true);
@@ -22,13 +42,77 @@ function SignupContent() {
     }
   }
 
+  if (loadingSettings) {
+    return (
+      <div className="mx-auto flex max-w-content flex-col items-center px-6 py-24 text-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent" />
+        <p className="mt-4 text-sm text-ink-muted">Checking registration status…</p>
+      </div>
+    );
+  }
+
+  // When registration is NOT officially opened:
+  // Public users and waitlist users cannot access or see the Sign Up button.
+  if (!siteSettings.registrationOpen) {
+    return (
+      <div className="mx-auto flex max-w-content flex-col items-center px-6 py-24">
+        <div className="w-full max-w-md rounded-xl border border-border bg-paper-raised p-8 text-center shadow-sm">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-accent">
+            <span className="text-xl">🔒</span>
+          </div>
+
+          <span className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-accent/20 bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
+            Waitlist Mode Active
+          </span>
+
+          <h1 className="mt-3 font-display text-2xl text-ink">Registration is Currently Closed</h1>
+          
+          <p className="mt-3 text-sm text-ink-soft leading-relaxed">
+            Public student registration has not officially opened yet. Bridge3 Academy operates on a verified waitlist cohort system.
+          </p>
+
+          <div className="mt-6 rounded-lg border border-border bg-paper p-4 text-left">
+            <p className="text-xs font-semibold text-ink">Have you completed Waitlist Verification?</p>
+            <p className="mt-1 text-xs text-ink-muted leading-relaxed">
+              Verified waitlist scholars will receive priority onboarding invitations the moment registration officially launches.
+            </p>
+          </div>
+
+          <div className="mt-6 flex flex-col gap-3">
+            <Link
+              href="/#waitlist"
+              className="flex w-full items-center justify-center rounded bg-accent px-5 py-3 text-sm font-semibold text-accent-contrast transition-colors hover:bg-accent-hover shadow-sm"
+            >
+              Join Waitlist / Check Status →
+            </Link>
+            <Link
+              href="/login"
+              className="flex w-full items-center justify-center rounded border border-border bg-paper px-5 py-2.5 text-xs font-medium text-ink-soft transition-colors hover:border-accent hover:text-ink"
+            >
+              Staff & Mentor Portal Sign In →
+            </Link>
+          </div>
+
+          <p className="mt-6 text-[11px] text-ink-muted">
+            Administrators and Mentors can sign in using their authorized accounts via the Staff Portal above.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // When registration IS officially opened for verified waitlist scholars
   return (
     <div className="mx-auto flex max-w-content flex-col items-center px-6 py-24">
-      <div className="w-full max-w-sm rounded border border-border bg-paper-raised p-8 text-center">
-        <h1 className="font-display text-2xl text-ink">Create your account</h1>
+      <div className="w-full max-w-sm rounded-xl border border-border bg-paper-raised p-8 text-center shadow-sm">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-400">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          Verified Scholar Enrollment Open
+        </span>
+
+        <h1 className="mt-3 font-display text-2xl text-ink">Create your account</h1>
         <p className="mt-2 text-sm text-ink-muted">
-          Continue with Google to create your free Bridge3 Academy account.
-          Your learning journey starts here.
+          Registration is open for verified waitlist scholars. Continue with the Google account associated with your waitlist email.
         </p>
 
         <button
@@ -49,6 +133,15 @@ function SignupContent() {
             Sign in
           </Link>
         </p>
+
+        <div className="mt-6 border-t border-border pt-4">
+          <p className="text-[11px] text-ink-muted">
+            Not verified yet?{" "}
+            <Link href="/waitlist" className="font-semibold text-accent hover:underline">
+              Complete your verification tasks first
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

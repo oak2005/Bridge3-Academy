@@ -18,15 +18,65 @@ export default function AuthCallbackPage() {
       for (let attempt = 0; attempt < 10; attempt++) {
         const { data } = await supabaseBrowser.auth.getSession();
         if (data.session) {
-          const userId = data.session.user.id;
+          const user = data.session.user;
+          const userId = user.id;
+          const userEmail = user.email || "";
+
           const { data: profile } = await supabaseBrowser
             .from("profiles")
-            .select("university, role_interest, onboarding_completed")
+            .select("university, role_interest, onboarding_completed, role, is_active")
             .eq("id", userId)
             .maybeSingle();
 
           if (cancelled) return;
 
+          // 1. If account is deactivated, sign out immediately
+          if (profile && !profile.is_active) {
+            await supabaseBrowser.auth.signOut();
+            router.replace("/login?deactivated=1");
+            return;
+          }
+
+          // 2. Admins and Mentors ALWAYS have access at all times
+          if (profile && (profile.role === "admin" || profile.role === "mentor")) {
+            if (!profile.university || !profile.role_interest) {
+              router.replace("/onboarding/profile");
+            } else if (!profile.onboarding_completed) {
+              router.replace("/onboarding");
+            } else {
+              router.replace("/dashboard");
+            }
+            return;
+          }
+
+          // 3. For student / public users: check registration gate & waitlist verification
+          try {
+            const checkRes = await fetch("/api/auth/check-access", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ userId, email: userEmail }),
+            });
+            const access = await checkRes.json();
+
+            if (!access.allowed) {
+              await supabaseBrowser.auth.signOut();
+              if (access.reason === "registration_closed") {
+                router.replace("/login?error=student_registration_closed");
+              } else if (access.reason === "waitlist_not_verified") {
+                router.replace("/login?error=waitlist_verification_required");
+              } else {
+                router.replace("/login?error=access_denied");
+              }
+              return;
+            }
+          } catch (e) {
+            console.error("Auth check-access verification error:", e);
+            await supabaseBrowser.auth.signOut();
+            router.replace("/login?error=student_registration_closed");
+            return;
+          }
+
+          // 4. Access permitted: continue onboarding or dashboard
           if (!profile || !profile.university || !profile.role_interest) {
             router.replace("/onboarding/profile");
           } else if (!profile.onboarding_completed) {

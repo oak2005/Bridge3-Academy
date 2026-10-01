@@ -25,14 +25,9 @@ export function About() {
 
         <p className="mt-8 text-sm text-ink-muted">
           Ready to start?{" "}
-          <Link href="/signup" className="font-semibold text-accent-hover underline">
-            Create your free account
-          </Link>{" "}
-          or{" "}
           <Link href="/#waitlist" className="font-semibold text-accent-hover underline">
-            join the waitlist
+            Join the waitlist for priority early access →
           </Link>
-          .
         </p>
       </div>
     </section>

@@ -31,6 +31,12 @@ export async function GET(req: NextRequest) {
       heroAnnouncement: data.hero_announcement || DEFAULT_SITE_SETTINGS.heroAnnouncement,
       illustrationUrl: data.illustration_url || "",
       illustrationCaption: data.illustration_caption || DEFAULT_SITE_SETTINGS.illustrationCaption,
+      registrationOpen:
+        data.registration_open !== undefined
+          ? Boolean(data.registration_open)
+          : process.env.NEXT_PUBLIC_REGISTRATION_OPEN === "true"
+          ? true
+          : DEFAULT_SITE_SETTINGS.registrationOpen,
     },
   });
 }
@@ -55,6 +61,7 @@ export async function POST(req: NextRequest) {
     heroAnnouncement,
     illustrationUrl,
     illustrationCaption,
+    registrationOpen,
   } = body;
 
   const payload: Record<string, unknown> = {
@@ -71,6 +78,7 @@ export async function POST(req: NextRequest) {
   if (heroAnnouncement !== undefined) payload.hero_announcement = String(heroAnnouncement).trim();
   if (illustrationUrl !== undefined) payload.illustration_url = String(illustrationUrl).trim();
   if (illustrationCaption !== undefined) payload.illustration_caption = String(illustrationCaption).trim();
+  if (registrationOpen !== undefined) payload.registration_open = Boolean(registrationOpen);
 
   const { error } = await supabaseAdmin
     .from("site_settings")

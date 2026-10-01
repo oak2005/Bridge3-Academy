@@ -26,6 +26,12 @@ export async function GET() {
         heroAnnouncement: data.hero_announcement || DEFAULT_SITE_SETTINGS.heroAnnouncement,
         illustrationUrl: data.illustration_url || "",
         illustrationCaption: data.illustration_caption || DEFAULT_SITE_SETTINGS.illustrationCaption,
+        registrationOpen:
+          data.registration_open !== undefined
+            ? Boolean(data.registration_open)
+            : process.env.NEXT_PUBLIC_REGISTRATION_OPEN === "true"
+            ? true
+            : DEFAULT_SITE_SETTINGS.registrationOpen,
       },
     });
   } catch (err) {

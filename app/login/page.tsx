@@ -2,16 +2,48 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { supabaseBrowser } from "@/lib/supabase/client";
+import { DEFAULT_SITE_SETTINGS, SiteSettings } from "@/lib/settings/constants";
 
 function LoginContent() {
   const searchParams = useSearchParams();
+  const [siteSettings, setSiteSettings] = useState<SiteSettings>(DEFAULT_SITE_SETTINGS);
+  const [loadingSettings, setLoadingSettings] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [deactivated, setDeactivated] = useState(false);
+  const [restrictionError, setRestrictionError] = useState<"registration_closed" | "waitlist_unverified" | "access_denied" | null>(null);
 
   useEffect(() => {
-    if (searchParams.get("deactivated") === "1") setDeactivated(true);
+    async function loadSettings() {
+      try {
+        const res = await fetch("/api/site-settings");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.settings) setSiteSettings(data.settings);
+        }
+      } catch (e) {
+        console.error("Could not load site settings:", e);
+      } finally {
+        setLoadingSettings(false);
+      }
+    }
+    loadSettings();
+  }, []);
+
+  useEffect(() => {
+    if (searchParams.get("deactivated") === "1") {
+      setDeactivated(true);
+    }
+    const err = searchParams.get("error");
+    if (err === "student_registration_closed" || err === "registration_closed") {
+      setRestrictionError("registration_closed");
+    } else if (err === "waitlist_verification_required" || err === "waitlist_not_verified") {
+      setRestrictionError("waitlist_unverified");
+    } else if (err === "access_denied") {
+      setRestrictionError("access_denied");
+    }
   }, [searchParams]);
 
   async function signInWithGoogle() {
@@ -29,17 +61,80 @@ function LoginContent() {
     // On success, the browser redirects to Google — no further code runs here.
   }
 
+  const isClosed = !siteSettings.registrationOpen;
+
   return (
     <div className="mx-auto flex max-w-content flex-col items-center px-6 py-24">
-      <div className="w-full max-w-sm rounded border border-border bg-paper-raised p-8 text-center">
-        <h1 className="font-display text-2xl text-ink">Sign up or log in</h1>
+      <div className="w-full max-w-sm rounded-xl border border-border bg-paper-raised p-8 text-center shadow-sm">
+        {/* Dynamic header badge based on registration gate */}
+        {isClosed ? (
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-500">
+            <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+            Staff & Mentor Portal
+          </span>
+        ) : (
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-400">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            Verified Scholar & Staff Access
+          </span>
+        )}
+
+        <h1 className="mt-3 font-display text-2xl text-ink">
+          {isClosed ? "Staff & Mentor Sign In" : "Sign in to Bridge3"}
+        </h1>
+
         <p className="mt-2 text-sm text-ink-muted">
-          New here? Continue with Google and your account is created automatically.
-          Already have one? Same button.
+          {isClosed
+            ? "Public student registration is closed. Bridge3 Academy Administrators and Mentors can sign in with their authorized Google accounts to access their dashboards."
+            : "Sign in with Google. Access is open for verified waitlist scholars, mentors, and administrators."}
         </p>
 
+        {/* Informative restriction alert if bounced by gate */}
+        {restrictionError === "registration_closed" && (
+          <div className="mt-6 rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-left">
+            <p className="text-xs font-semibold text-amber-500">Student Registration Currently Closed</p>
+            <p className="mt-1 text-xs text-ink-soft leading-relaxed">
+              Only authorized Administrators and Mentors can log in right now. Waitlist scholars will be granted access as soon as cohort enrollment opens.
+            </p>
+            <div className="mt-3">
+              <Link
+                href="/#waitlist"
+                className="inline-block rounded bg-accent px-3 py-1.5 text-xs font-semibold text-accent-contrast transition-colors hover:bg-accent-hover"
+              >
+                Join Waitlist / Check Tasks →
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {restrictionError === "waitlist_unverified" && (
+          <div className="mt-6 rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-left">
+            <p className="text-xs font-semibold text-amber-500">Waitlist Verification Required</p>
+            <p className="mt-1 text-xs text-ink-soft leading-relaxed">
+              Registration is currently restricted to verified waitlist scholars. Please join the waitlist and complete your verification tasks first.
+            </p>
+            <div className="mt-3">
+              <Link
+                href="/waitlist"
+                className="inline-block rounded bg-accent px-3 py-1.5 text-xs font-semibold text-accent-contrast transition-colors hover:bg-accent-hover"
+              >
+                Go to Verification Dashboard →
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {restrictionError === "access_denied" && (
+          <div className="mt-6 rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-left">
+            <p className="text-xs font-semibold text-red-500">Access Restricted</p>
+            <p className="mt-1 text-xs text-ink-soft leading-relaxed">
+              Your account does not have permission to access this portal at this time.
+            </p>
+          </div>
+        )}
+
         {deactivated && (
-          <div className="mt-6 rounded border border-border bg-paper px-4 py-3 text-left">
+          <div className="mt-6 rounded-lg border border-border bg-paper px-4 py-3 text-left">
             <p className="text-sm font-medium text-ink">This account isn&rsquo;t active</p>
             <p className="mt-1 text-xs text-ink-muted">
               Your access has been paused. Reach out to the Bridge3 Academy team
@@ -51,14 +146,32 @@ function LoginContent() {
         <button
           type="button"
           onClick={signInWithGoogle}
-          disabled={loading}
-          className="mt-8 flex w-full items-center justify-center gap-3 rounded border border-border bg-paper px-5 py-3 text-sm font-semibold text-ink transition-colors hover:border-accent disabled:opacity-60"
+          disabled={loading || loadingSettings}
+          className="mt-6 flex w-full items-center justify-center gap-3 rounded border border-border bg-paper px-5 py-3 text-sm font-semibold text-ink transition-colors hover:border-accent disabled:opacity-60 shadow-sm"
         >
           <GoogleIcon />
-          {loading ? "Redirecting…" : "Continue with Google"}
+          {loading ? "Redirecting…" : isClosed ? "Continue with Google (Staff / Mentors)" : "Continue with Google"}
         </button>
 
         {error && <p className="mt-3 text-sm text-red-700">{error}</p>}
+
+        {isClosed ? (
+          <div className="mt-6 border-t border-border pt-4">
+            <p className="text-xs text-ink-muted">
+              Looking for student early access?{" "}
+              <Link href="/#waitlist" className="font-semibold text-accent-hover hover:underline">
+                Join the Waitlist
+              </Link>
+            </p>
+          </div>
+        ) : (
+          <p className="mt-6 text-xs text-ink-muted">
+            New verified scholar?{" "}
+            <Link href="/signup" className="font-semibold text-accent-hover hover:underline">
+              Create your account
+            </Link>
+          </p>
+        )}
       </div>
     </div>
   );

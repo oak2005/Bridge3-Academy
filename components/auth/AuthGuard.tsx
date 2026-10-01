@@ -40,6 +40,21 @@ export function AuthGuard({
       return;
     }
 
+    // Admins and Mentors ALWAYS have access to their dashboards.
+    // If user is a student, verify that registration is open.
+    if (profile.role !== "admin" && profile.role !== "mentor") {
+      fetch("/api/site-settings")
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (data?.settings && !data.settings.registrationOpen) {
+            supabaseBrowser.auth.signOut().then(() => {
+              router.replace("/login?error=student_registration_closed");
+            });
+          }
+        })
+        .catch(() => {});
+    }
+
     if (stage !== "profile" && needsProfileInfo) {
       router.replace("/onboarding/profile");
       return;

@@ -71,6 +71,16 @@ export function findMockSignupById(id: string): MockSignup | undefined {
   return mockSignups.get(id);
 }
 
+export function findMockSignupByEmail(email: string): MockSignup | undefined {
+  const normalized = email.toLowerCase().trim();
+  for (const item of mockSignups.values()) {
+    if (item.email.toLowerCase().trim() === normalized) {
+      return item;
+    }
+  }
+  return undefined;
+}
+
 export function findMockSignupByToken(token: string): MockSignup | undefined {
   for (const item of mockSignups.values()) {
     if (item.confirmation_token === token) {

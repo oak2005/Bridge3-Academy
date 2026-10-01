@@ -2,8 +2,10 @@
 
 import { useEffect, useState, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { PublicWaitlistTask, DEFAULT_TASKS } from "@/lib/waitlist/tasks";
 import { WaitlistLeaderboard } from "@/components/waitlist/WaitlistLeaderboard";
+import { DEFAULT_SITE_SETTINGS, SiteSettings } from "@/lib/settings/constants";
 
 type TaskStatus = "verified" | "pending_review" | "rejected" | null;
 
@@ -67,6 +69,7 @@ function VerificationDashboardInner() {
   const [waitlistId, setWaitlistId] = useState<string | null>(null);
   const [statusData, setStatusData] = useState<StatusResponse | null>(null);
   const [tasks, setTasks] = useState<PublicWaitlistTask[]>(DEFAULT_TASKS);
+  const [siteSettings, setSiteSettings] = useState<SiteSettings>(DEFAULT_SITE_SETTINGS);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
 
@@ -83,7 +86,7 @@ function VerificationDashboardInner() {
     }
   }, [searchParams]);
 
-  // Load dynamic verification tasks
+  // Load dynamic verification tasks and site settings
   useEffect(() => {
     async function loadTasks() {
       try {
@@ -98,7 +101,19 @@ function VerificationDashboardInner() {
         console.error("Could not fetch waitlist tasks, using defaults", e);
       }
     }
+    async function loadSettings() {
+      try {
+        const res = await fetch("/api/site-settings");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.settings) setSiteSettings(data.settings);
+        }
+      } catch (e) {
+        console.error("Could not fetch site settings", e);
+      }
+    }
     loadTasks();
+    loadSettings();
   }, []);
 
   const refreshStatus = useCallback(async (id: string) => {
@@ -207,6 +222,52 @@ function VerificationDashboardInner() {
           <div>
             <p className="text-sm font-semibold">Email Successfully Verified!</p>
             <p className="text-xs text-emerald-400/80">Your priority ranking has been boosted. Complete the tasks below to maximize your scholar score.</p>
+          </div>
+        </div>
+      )}
+
+      {/* Verified Scholar State: If registration is closed, show secured priority status (NO login/signup). If opened, show registration action */}
+      {score >= 100 && !siteSettings.registrationOpen && (
+        <div className="mt-6 rounded-xl border border-accent/30 bg-accent/10 p-5 shadow-sm">
+          <div className="flex items-start gap-3.5">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent text-accent-contrast font-bold text-base">
+              ✓
+            </span>
+            <div>
+              <h2 className="text-base font-display font-semibold text-ink">Waitlist Verification Complete!</h2>
+              <p className="mt-1 text-xs text-ink-soft leading-relaxed max-w-xl">
+                Your verification tasks have been verified and your early scholar priority is secured. Student account registration has not officially opened yet.
+              </p>
+              <div className="mt-3.5 inline-flex items-center gap-2 rounded-full border border-border bg-paper px-3.5 py-1 text-xs text-ink-muted">
+                <span>🔒 Registration opening soon — we will email you when cohort enrollment officially launches!</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {score >= 100 && siteSettings.registrationOpen && (
+        <div className="mt-6 rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-5 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-start gap-3.5">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white font-bold text-base">
+                ✓
+              </span>
+              <div>
+                <h2 className="text-base font-display font-semibold text-ink">Verification Complete — Registration is Now Open!</h2>
+                <p className="mt-1 text-xs text-ink-soft leading-relaxed max-w-xl">
+                  As a verified waitlist scholar, you have earned early access. You can now create your Bridge3 Academy account or sign in to start your Web3 learning journey.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 self-start sm:self-auto shrink-0">
+              <Link
+                href="/signup"
+                className="rounded-lg bg-accent px-5 py-2.5 text-xs font-semibold text-accent-contrast hover:bg-accent-hover transition-colors shadow-sm"
+              >
+                Create Account / Sign In →
+              </Link>
+            </div>
           </div>
         </div>
       )}

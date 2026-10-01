@@ -10,7 +10,7 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
       { label: "About", href: "/#about" },
       { label: "How It Works", href: "/#how-it-works" },
       { label: "Curriculum", href: "/#curriculum" },
-      { label: "Create an account", href: "/signup" },
+      { label: "Join Waitlist", href: "/#waitlist" },
     ],
   },
   {
@@ -37,8 +37,11 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
     ],
   },
   {
-    title: "Contact",
-    links: [{ label: "Bridge3Academy@gmail.com", href: "mailto:Bridge3Academy@gmail.com" }],
+    title: "Access & Contact",
+    links: [
+      { label: "Staff & Mentor Portal", href: "/login" },
+      { label: "Bridge3Academy@gmail.com", href: "mailto:Bridge3Academy@gmail.com" },
+    ],
   },
 ];
 

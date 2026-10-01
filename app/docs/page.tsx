@@ -163,15 +163,15 @@ export default function DocsHomePage() {
               Enroll in a Specialization Track
             </h3>
             <p className="mt-1 text-xs text-ink-muted max-w-lg leading-relaxed">
-              Bridge3 Academy is free for students across Africa. Sign in with Google to access lessons, take quizzes, and build your verified Web3 portfolio.
+              Bridge3 Academy is free for students across Africa. Join the verified waitlist to secure priority cohort onboarding and early course access.
             </p>
           </div>
           <div className="flex shrink-0 items-center gap-3">
             <Link
-              href="/login"
+              href="/#waitlist"
               className="inline-flex items-center justify-center rounded-lg bg-accent px-5 py-2.5 text-xs font-bold text-accent-contrast shadow-sm transition-colors hover:bg-accent-hover"
             >
-              Start Learning Free →
+              Join Waitlist for Early Access →
             </Link>
           </div>
         </div>

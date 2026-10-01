@@ -7,6 +7,7 @@ export interface SiteSettings {
   heroAnnouncement: string;
   illustrationUrl: string;
   illustrationCaption: string;
+  registrationOpen: boolean;
 }
 
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
@@ -19,4 +20,6 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   heroAnnouncement: "Early members receive priority verification and scholarship consideration.",
   illustrationUrl: "",
   illustrationCaption: "Web3 Academy Ecosystem",
+  registrationOpen: false,
 };
+

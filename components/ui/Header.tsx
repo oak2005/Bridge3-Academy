@@ -20,9 +20,11 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const [logo, setLogo] = useState({ text: "Bridge3 Academy", url: "" });
   const [isSignedIn, setIsSignedIn] = useState<boolean | null>(null);
+  const [registrationOpen, setRegistrationOpen] = useState(false);
+  const [isWaitlistVerified, setIsWaitlistVerified] = useState(false);
 
   useEffect(() => {
-    async function loadLogo() {
+    async function loadSettings() {
       try {
         const res = await fetch("/api/site-settings");
         if (res.ok) {
@@ -32,14 +34,30 @@ export function Header() {
               text: data.settings.logoText || "Bridge3 Academy",
               url: data.settings.logoUrl || "",
             });
+            setRegistrationOpen(Boolean(data.settings.registrationOpen));
           }
         }
       } catch {}
     }
-    loadLogo();
+    loadSettings();
+
+    // Check if user has completed waitlist verification
+    if (typeof window !== "undefined") {
+      const waitlistId = localStorage.getItem("b3a_waitlist_id");
+      if (waitlistId) {
+        fetch(`/api/waitlist/status?id=${encodeURIComponent(waitlistId)}`)
+          .then((res) => (res.ok ? res.json() : null))
+          .then((status) => {
+            if (status && (status.score >= 100 || (status.emailConfirmed && Object.values(status.tasks || {}).every((s: unknown) => s === "verified")))) {
+              setIsWaitlistVerified(true);
+            }
+          })
+          .catch(() => {});
+      }
+    }
   }, []);
 
-  // Check auth state so we can show "Dashboard" vs "Sign up / Log in"
+  // Check auth state so we can show "Dashboard" vs public options
   useEffect(() => {
     let active = true;
     (async () => {
@@ -56,6 +74,8 @@ export function Header() {
       listener.subscription.unsubscribe();
     };
   }, []);
+
+  const canAccessLogin = registrationOpen && isWaitlistVerified;
 
   if (pathname?.startsWith("/dashboard") || pathname?.startsWith("/waitlist") || pathname?.startsWith("/video-capture")) {
     return null;
@@ -94,20 +114,22 @@ export function Header() {
               Dashboard
             </Link>
           ) : (
-            <>
-              <Link
-                href="/login"
-                className="text-sm font-medium text-ink-soft transition-colors hover:text-ink"
-              >
-                Sign up / Log in
-              </Link>
+            <div className="flex items-center gap-3">
+              {canAccessLogin && (
+                <Link
+                  href="/login"
+                  className="text-sm font-medium text-ink-soft transition-colors hover:text-ink"
+                >
+                  Sign up / Log in
+                </Link>
+              )}
               <Link
                 href="/#waitlist"
                 className="rounded bg-accent px-5 py-2.5 text-sm font-semibold text-accent-contrast transition-colors hover:bg-accent-hover"
               >
                 Join Waitlist
               </Link>
-            </>
+            </div>
           )}
         </div>
 
@@ -152,14 +174,16 @@ export function Header() {
                 Dashboard
               </Link>
             ) : (
-              <>
-                <Link
-                  href="/login"
-                  onClick={() => setOpen(false)}
-                  className="text-sm font-medium text-ink-soft"
-                >
-                  Sign up / Log in
-                </Link>
+              <div className="flex flex-col gap-3">
+                {canAccessLogin && (
+                  <Link
+                    href="/login"
+                    onClick={() => setOpen(false)}
+                    className="text-sm font-medium text-ink-soft"
+                  >
+                    Sign up / Log in
+                  </Link>
+                )}
                 <Link
                   href="/#waitlist"
                   onClick={() => setOpen(false)}
@@ -167,7 +191,7 @@ export function Header() {
                 >
                   Join Waitlist
                 </Link>
-              </>
+              </div>
             )}
           </div>
         </nav>

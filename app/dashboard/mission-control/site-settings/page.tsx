@@ -16,6 +16,7 @@ interface SettingsForm {
   heroAnnouncement: string;
   illustrationUrl: string;
   illustrationCaption: string;
+  registrationOpen: boolean;
 }
 
 export default function SiteSettingsAdminPage() {
@@ -222,6 +223,70 @@ export default function SiteSettingsAdminPage() {
                 placeholder="Bridge3 Web3 Ecosystem"
                 className="mt-1 w-full rounded-lg border border-border bg-paper px-3 py-2 text-xs text-ink placeholder:text-ink-muted focus:border-accent focus:outline-none"
               />
+            </div>
+          </div>
+
+          {/* 4. Student Registration Gate & Access Control */}
+          <div className="rounded-xl border border-border bg-paper-raised p-5 shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h2 className="font-display text-base text-ink">4. Registration & Waitlist Access Gate</h2>
+                <p className="text-xs text-ink-muted">
+                  Control whether waitlist-verified scholars can access Login and Sign Up options.
+                </p>
+              </div>
+              <span
+                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold self-start sm:self-auto ${
+                  form.registrationOpen
+                    ? "border border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
+                    : "border border-amber-500/30 bg-amber-500/10 text-amber-500"
+                }`}
+              >
+                <span className={`h-1.5 w-1.5 rounded-full ${form.registrationOpen ? "bg-emerald-400 animate-pulse" : "bg-amber-500"}`} />
+                {form.registrationOpen ? "Registration Open (Verified Only)" : "Registration Locked (Waitlist Mode)"}
+              </span>
+            </div>
+
+            {/* Access Rules Overview Card */}
+            <div className="rounded-lg border border-border bg-paper p-4 text-xs space-y-2.5">
+              <div className="font-semibold text-ink">Current Platform Access Rules:</div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-ink-soft">
+                <div className="flex items-center gap-2">
+                  <span className="text-amber-500">🛡️</span>
+                  <span><strong>Admins & Mentors:</strong> Always have Login access</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className={form.registrationOpen ? "text-emerald-400" : "text-amber-500"}>🎓</span>
+                  <span><strong>Verified Waitlist:</strong> {form.registrationOpen ? "Full Login/Sign-up access" : "No access until opened"}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-red-400">🚫</span>
+                  <span><strong>Unverified/Public:</strong> No Login or Sign Up access</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sky-400">📋</span>
+                  <span><strong>Waitlist Enrollment:</strong> Always available on homepage</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Interactive Toggle */}
+            <div className="flex items-center justify-between rounded-lg border border-border bg-paper p-4">
+              <div>
+                <p className="text-xs font-semibold text-ink">Open Registration for Verified Waitlist Scholars</p>
+                <p className="text-[11px] text-ink-muted mt-0.5">
+                  When enabled, scholars who have completed waitlist verification can create accounts and log in.
+                </p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer ml-4">
+                <input
+                  type="checkbox"
+                  checked={form.registrationOpen}
+                  onChange={(e) => setForm({ ...form, registrationOpen: e.target.checked })}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-paper-raised peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent border border-border" />
+              </label>
             </div>
           </div>
 
