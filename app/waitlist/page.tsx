@@ -292,17 +292,20 @@ function VerificationDashboardInner() {
       )}
 
       {/* Task List Suite */}
-      <div data-tour="waitlist-tasks" className="mt-8 flex flex-col gap-5">
-        {tasks.map((task) => {
+      <div className="mt-8 flex flex-col gap-5">
+        {tasks.map((task, idx) => {
+          const isOfficialTourTarget = task.id === "x_twitter" || (idx === 1 && task.id !== "confirm_email" && task.id !== "referral");
+
           if (task.id === "confirm_email") {
             return (
-              <EmailTask
-                key={task.id}
-                task={task}
-                waitlistId={waitlistId}
-                confirmed={statusData?.emailConfirmed ?? false}
-                onResent={() => refreshStatus(waitlistId)}
-              />
+              <div key={task.id} data-tour="waitlist-email">
+                <EmailTask
+                  task={task}
+                  waitlistId={waitlistId}
+                  confirmed={statusData?.emailConfirmed ?? false}
+                  onResent={() => refreshStatus(waitlistId)}
+                />
+              </div>
             );
           }
 
@@ -318,15 +321,24 @@ function VerificationDashboardInner() {
             );
           }
 
-          return (
+          const card = (
             <DynamicTaskCard
-              key={task.id}
               task={task}
               waitlistId={waitlistId}
               status={statusData?.tasks[task.id] ?? null}
               onSubmitted={() => refreshStatus(waitlistId)}
             />
           );
+
+          if (isOfficialTourTarget) {
+            return (
+              <div key={task.id} data-tour="official-channel-task">
+                {card}
+              </div>
+            );
+          }
+
+          return <div key={task.id}>{card}</div>;
         })}
       </div>
 
