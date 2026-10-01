@@ -37,9 +37,9 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
     ],
   },
   {
-    title: "Access & Contact",
+    title: "Sponsors & Contact",
     links: [
-      { label: "Staff & Mentor Portal", href: "/login" },
+      { label: "Sponsor a Cohort", href: "/docs/track-ecosystem" },
       { label: "Bridge3Academy@gmail.com", href: "mailto:Bridge3Academy@gmail.com" },
     ],
   },

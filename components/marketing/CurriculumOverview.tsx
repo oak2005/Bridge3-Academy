@@ -4,19 +4,19 @@ const TRACKS = [
   {
     title: "General Track",
     description:
-      "Two phases. Level 1 covers the fundamentals — blockchain, Bitcoin, Web3, smart contracts, NFTs, DeFi, AI, and the crypto economy. Level 2 moves into practical Web3 usage: essential tools, ecosystem participation, security, communication, and real-world application.",
+      "A complete foundation in blockchain mechanics, Bitcoin, decentralized consensus, smart contracts, digital custody, security best practices, and the everyday tools needed to navigate the Web3 space with confidence.",
     href: "/docs/track-general",
   },
   {
     title: "Ecosystem or Sponsorship Track",
     description:
-      "How blockchain ecosystems and decentralized protocols work — network participation, smart contract integrations, grants, and ecosystem tooling supported by leading Web3 partners.",
+      "Hands-on immersion with leading blockchain networks, developer grants, and protocol integrations. For sponsors, it means reaching students at the exact moment they're learning the habits and tools they'll use for years.",
     href: "/docs/track-ecosystem",
   },
   {
     title: "Skill set Track",
     description:
-      "Career-ready hands-on specializations: Web3 UI/UX Design, Community & Growth, and Smart Contract Development. Each includes project-based assignments and mentor review.",
+      "Practical specializations focused on high-demand modern disciplines: Content creation/writing, Community Management, Designer (UI/UX, Web, Graphics and more), Social Media Manager, Prompt Engineering, Technical/Growth Writing, Developer (Depend on partnership) and much more. Every track produces tangible proof of work and portfolio deliverables.",
     href: "/docs/track-skillset",
   },
 ];

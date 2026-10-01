@@ -4,34 +4,39 @@ import { useState } from "react";
 
 const FAQS = [
   {
-    question: "Is Bridge3 free?",
+    question: "Is Bridge3 free for students?",
     answer:
-      "The General Track is free to join. Some specialized tracks may introduce costs as the platform grows, with scholarship consideration available for early members.",
+      "Yes. The foundational curriculum and waitlist access are completely free for students. Our programs are supported through ecosystem partnerships and sponsors who invest in open public goods education and emerging talent across Africa.",
   },
   {
-    question: "How do I sign up?",
+    question: "How do I join the academy?",
     answer:
-      "Click 'Create an account' or 'Sign up / Log in' and continue with your Google account. Your Bridge3 Academy account is created automatically — no passwords, no extra steps.",
+      "Join our verified waitlist on this page. Once you verify your email and complete your onboarding tasks, you are reserved for early cohort access. Official student registration opens by cohort batch, and verified scholars receive direct notification to begin their studies.",
   },
   {
-    question: "Do I need coding knowledge?",
+    question: "What skills and tracks can I learn?",
     answer:
-      "No. The General Track starts from zero knowledge. Coding is only introduced later, for students who choose a builder-focused path.",
+      "Beyond core blockchain fundamentals, our Skill set Track prepares students for high-demand digital roles: Content creation/writing, Community Management, Designer (UI/UX, Web, Graphics and more), Social Media Manager, Prompt Engineering, Technical/Growth Writing, Developer (Depend on partnership) and much more.",
   },
   {
-    question: "Is certification recognized?",
+    question: "Do I need prior coding experience?",
     answer:
-      "Your certificate is a verifiable on-chain credential issued by Bridge3 Academy, showing exactly what you completed and when. It's not a substitute for formal academic accreditation, but it's built to be checkable and shareable with employers and ecosystem partners.",
+      "No prior coding experience is required. The curriculum begins with practical fundamentals that anyone can follow. Technical development is tailored for those choosing developer pathways, while other tracks focus on creative, operational, and growth roles.",
   },
   {
-    question: "Who is this for?",
+    question: "Why do blockchain ecosystems and protocols sponsor Bridge3?",
     answer:
-      "University students, graduates, self-taught learners, and anyone across Africa looking to move from curious about Web3 to actually participating in it.",
+      "For sponsoring partners, it means reaching students at the exact moment they're learning the habits and tools they'll use for years. Protocols sponsor cohorts to build long-term ecosystem awareness, support university developer communities, and hire verified builders.",
   },
   {
-    question: "How long does it take?",
+    question: "How are certificates verified?",
     answer:
-      "It depends on the track and how much time you put in each week. Exact durations for each track will be published on the docs site.",
+      "Every graduate receives an official certificate backed by a cryptographic verification hash and a public verification link. Employers and partners can independently inspect the student record, completed assignments, and track competencies at any time.",
+  },
+  {
+    question: "Who is eligible to apply?",
+    answer:
+      "University students, recent graduates, self-taught creators, and tech enthusiasts across Africa looking to build genuine competence and verifiable proof of work in the global digital economy.",
   },
 ];
 

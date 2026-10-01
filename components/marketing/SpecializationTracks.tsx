@@ -9,7 +9,7 @@ const TRACKS = [
   {
     title: "Creative",
     description:
-      "Content, design, and storytelling — turning complex Web3 ideas into things people actually understand.",
+      "Content, design, and storytelling that turns complex decentralized ideas into accessible experiences.",
   },
   {
     title: "Operations",

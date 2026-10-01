@@ -5,7 +5,7 @@ import { DOC_CATEGORIES, getArticlesByCategory } from "@/lib/docs/data";
 export const metadata: Metadata = {
   title: "Documentation & Knowledge Base · Bridge3 Academy",
   description:
-    "Comprehensive guides, curriculum architecture, workshop submission rubrics, and certification standards for Bridge3 Academy scholars and mentors.",
+    "Comprehensive guides, curriculum architecture, workshop submission rubrics, and certification standards for Bridge3 Academy students and ecosystem sponsors.",
 };
 
 export default function DocsHomePage() {
@@ -22,7 +22,7 @@ export default function DocsHomePage() {
           Bridge3 Academy Documentation
         </h1>
         <p className="mt-3 max-w-2xl text-sm sm:text-base text-ink-muted leading-relaxed">
-          The single source of truth for prospective scholars, enrolled students, mentors, and ecosystem partners. Explore our curriculum syllabus, workshop rubrics, grading standards, and cryptographic verification specifications.
+          The single source of truth for prospective scholars, enrolled students, and ecosystem partners. Explore our curriculum syllabus, workshop rubrics, grading standards, and cryptographic verification specifications.
         </p>
       </div>
 

@@ -70,23 +70,23 @@ function LoginContent() {
         {isClosed ? (
           <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-500">
             <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
-            Staff & Mentor Portal
+            Authorized Access
           </span>
         ) : (
           <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-400">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            Verified Scholar & Staff Access
+            Verified Scholar Access
           </span>
         )}
 
         <h1 className="mt-3 font-display text-2xl text-ink">
-          {isClosed ? "Staff & Mentor Sign In" : "Sign in to Bridge3"}
+          Sign in to Bridge3
         </h1>
 
         <p className="mt-2 text-sm text-ink-muted">
           {isClosed
-            ? "Public student registration is closed. Bridge3 Academy Administrators and Mentors can sign in with their authorized Google accounts to access their dashboards."
-            : "Sign in with Google. Access is open for verified waitlist scholars, mentors, and administrators."}
+            ? "Public student registration is currently closed. If you have an authorized team account, sign in with your Google account below."
+            : "Sign in with your Google account. Access is open for verified waitlist scholars."}
         </p>
 
         {/* Informative restriction alert if bounced by gate */}
@@ -94,7 +94,7 @@ function LoginContent() {
           <div className="mt-6 rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-left">
             <p className="text-xs font-semibold text-amber-500">Student Registration Currently Closed</p>
             <p className="mt-1 text-xs text-ink-soft leading-relaxed">
-              Only authorized Administrators and Mentors can log in right now. Waitlist scholars will be granted access as soon as cohort enrollment opens.
+              Public student registration has not officially opened yet. Waitlist scholars will be granted access as soon as cohort enrollment opens.
             </p>
             <div className="mt-3">
               <Link
@@ -115,7 +115,7 @@ function LoginContent() {
             </p>
             <div className="mt-3">
               <Link
-                href="/waitlist"
+                href="/#waitlist"
                 className="inline-block rounded bg-accent px-3 py-1.5 text-xs font-semibold text-accent-contrast transition-colors hover:bg-accent-hover"
               >
                 Go to Verification Dashboard →
@@ -128,7 +128,7 @@ function LoginContent() {
           <div className="mt-6 rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-left">
             <p className="text-xs font-semibold text-red-500">Access Restricted</p>
             <p className="mt-1 text-xs text-ink-soft leading-relaxed">
-              Your account does not have permission to access this portal at this time.
+              Your account does not have permission to access the platform at this time.
             </p>
           </div>
         )}
@@ -150,7 +150,7 @@ function LoginContent() {
           className="mt-6 flex w-full items-center justify-center gap-3 rounded border border-border bg-paper px-5 py-3 text-sm font-semibold text-ink transition-colors hover:border-accent disabled:opacity-60 shadow-sm"
         >
           <GoogleIcon />
-          {loading ? "Redirecting…" : isClosed ? "Continue with Google (Staff / Mentors)" : "Continue with Google"}
+          {loading ? "Redirecting…" : isClosed ? "Continue with Authorized Google Account" : "Continue with Google"}
         </button>
 
         {error && <p className="mt-3 text-sm text-red-700">{error}</p>}

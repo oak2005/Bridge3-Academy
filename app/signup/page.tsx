@@ -85,17 +85,7 @@ function SignupContent() {
             >
               Join Waitlist / Check Status →
             </Link>
-            <Link
-              href="/login"
-              className="flex w-full items-center justify-center rounded border border-border bg-paper px-5 py-2.5 text-xs font-medium text-ink-soft transition-colors hover:border-accent hover:text-ink"
-            >
-              Staff & Mentor Portal Sign In →
-            </Link>
           </div>
-
-          <p className="mt-6 text-[11px] text-ink-muted">
-            Administrators and Mentors can sign in using their authorized accounts via the Staff Portal above.
-          </p>
         </div>
       </div>
     );
