@@ -5,13 +5,6 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { DEFAULT_SITE_SETTINGS } from "@/lib/settings/constants";
 
-const CHECKLIST_PREVIEW = [
-  "Join Telegram community",
-  "Follow X (Twitter)",
-  "Invite friends — earn XP for every verified invite",
-  "Confirm email",
-];
-
 export function WaitlistHero() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -179,34 +172,45 @@ export function WaitlistHero() {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-ink/40 px-6"
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm px-6"
         >
-          <div className="w-full max-w-md rounded-md border border-border bg-paper-raised p-8">
-            <h2 className="font-display text-2xl text-ink">You&rsquo;re on the list</h2>
-            <p className="mt-2 text-sm text-ink-soft">
-              To increase your verification priority and secure early access,
-              complete the onboarding tasks below.
+          <div className="w-full max-w-md rounded-2xl border border-border bg-paper-raised p-7 shadow-2xl">
+            <div className="flex items-center gap-2">
+              <span className="text-xl">🎉</span>
+              <span className="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-400 border border-emerald-500/20">
+                You&rsquo;re on the list!
+              </span>
+            </div>
+
+            <h2 className="mt-3 font-display text-2xl text-ink">Follow Official Accounts &amp; Get Verified</h2>
+            <p className="mt-2 text-xs sm:text-sm text-ink-soft leading-relaxed">
+              To secure your early scholar access and priority cohort placement, follow our official channels and complete your assigned verification tasks.
             </p>
 
-            <ul className="mt-6 flex flex-col gap-2">
-              {CHECKLIST_PREVIEW.map((item) => (
-                <li key={item} className="flex items-center gap-2 text-sm text-ink-soft">
-                  <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-                  {item}
-                </li>
-              ))}
-            </ul>
+            <div className="mt-5 space-y-2.5 rounded-xl border border-border/80 bg-paper p-4 text-xs">
+              <div className="flex items-start gap-2.5">
+                <span className="text-sm">📢</span>
+                <div>
+                  <span className="font-semibold text-ink">Follow Official Accounts:</span>
+                  <p className="text-ink-muted mt-0.5">Stay updated on Telegram &amp; X (Twitter) for official cohort announcements.</p>
+                </div>
+              </div>
 
-            <p className="mt-4 text-xs text-ink-muted">
-              Your verification score increases as you complete tasks.
-            </p>
+              <div className="flex items-start gap-2.5 pt-2 border-t border-border/60">
+                <span className="text-sm">⭐</span>
+                <div>
+                  <span className="font-semibold text-ink">Boost Your Verification Score:</span>
+                  <p className="text-ink-muted mt-0.5">Complete verification tasks to maximize your admissions priority.</p>
+                </div>
+              </div>
+            </div>
 
             <button
               type="button"
               onClick={goToDashboard}
-              className="mt-6 w-full rounded bg-accent px-6 py-3 text-sm font-semibold text-accent-contrast transition-colors hover:bg-accent-hover"
+              className="mt-6 w-full rounded-xl bg-accent px-6 py-3 text-sm font-semibold text-accent-contrast shadow-sm transition-all hover:bg-accent-hover hover:shadow-md"
             >
-              Go to Verification Tasks Dashboard
+              Go to Verification Tasks Dashboard →
             </button>
           </div>
         </div>

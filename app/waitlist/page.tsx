@@ -6,6 +6,7 @@ import Link from "next/link";
 import { PublicWaitlistTask, DEFAULT_TASKS } from "@/lib/waitlist/tasks";
 import { WaitlistLeaderboard } from "@/components/waitlist/WaitlistLeaderboard";
 import { DEFAULT_SITE_SETTINGS, SiteSettings } from "@/lib/settings/constants";
+import { WaitlistTour } from "@/components/waitlist/WaitlistTour";
 
 type TaskStatus = "verified" | "pending_review" | "rejected" | null;
 
@@ -72,6 +73,7 @@ function VerificationDashboardInner() {
   const [siteSettings, setSiteSettings] = useState<SiteSettings>(DEFAULT_SITE_SETTINGS);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
+  const [tourForcedOpen, setTourForcedOpen] = useState(false);
 
   // Resolve and sanitize the id: handle accidental whitespace or corrupted hyphens from URLs
   useEffect(() => {
@@ -90,7 +92,7 @@ function VerificationDashboardInner() {
   useEffect(() => {
     async function loadTasks() {
       try {
-        const res = await fetch("/api/waitlist/tasks");
+        const res = await fetch("/api/waitlist/tasks", { cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
           if (data.tasks && data.tasks.length > 0) {
@@ -175,7 +177,10 @@ function VerificationDashboardInner() {
   return (
     <div className="mx-auto max-w-content px-6 py-12 md:py-16">
       {/* Header section with enhanced badge */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-border">
+      <div
+        data-tour="waitlist-header"
+        className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-border"
+      >
         <div>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
             Early Scholar Access
@@ -184,21 +189,34 @@ function VerificationDashboardInner() {
           <p className="mt-2 max-w-prose text-sm text-ink-muted">
             Your verification score increases priority onboarding, scholarship consideration, and private cohort placement.
           </p>
-          <div className="mt-3 flex items-center gap-3">
+          <div className="mt-3 flex flex-wrap items-center gap-3">
             <a
               href="/demo"
               target="_blank"
               rel="noopener noreferrer"
+              data-tour="waitlist-video-btn"
               className="inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-semibold text-accent hover:bg-accent/20 transition-colors"
             >
               <span>▶ Watch Step-by-Step Video Tutorial</span>
               <span>&rarr;</span>
             </a>
+            <button
+              type="button"
+              onClick={() => setTourForcedOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-400 hover:bg-emerald-500/20 transition-colors shadow-sm"
+              title="Launch guided interactive walkthrough"
+            >
+              <span>🧭 Interactive Walkthrough</span>
+              <span className="text-[10px]">💡</span>
+            </button>
           </div>
         </div>
 
         {/* Score Card */}
-        <div className="min-w-[240px] rounded-xl border border-border bg-paper-raised p-4 shadow-sm">
+        <div
+          data-tour="waitlist-progress"
+          className="min-w-[240px] rounded-xl border border-border bg-paper-raised p-4 shadow-sm"
+        >
           <div className="flex items-center justify-between text-xs font-semibold text-ink-soft">
             <span>Verification Progress</span>
             <span className="text-base font-bold text-accent">{score}%</span>
@@ -274,7 +292,7 @@ function VerificationDashboardInner() {
       )}
 
       {/* Task List Suite */}
-      <div className="mt-8 flex flex-col gap-5">
+      <div data-tour="waitlist-tasks" className="mt-8 flex flex-col gap-5">
         {tasks.map((task) => {
           if (task.id === "confirm_email") {
             return (
@@ -290,12 +308,13 @@ function VerificationDashboardInner() {
 
           if (task.id === "referral") {
             return (
-              <ReferralTask
-                key={task.id}
-                task={task}
-                waitlistId={waitlistId}
-                referral={statusData?.referral ?? { count: 0, required: 3, completed: false }}
-              />
+              <div key={task.id} data-tour="waitlist-referral">
+                <ReferralTask
+                  task={task}
+                  waitlistId={waitlistId}
+                  referral={statusData?.referral ?? { count: 0, required: 3, completed: false }}
+                />
+              </div>
             );
           }
 
@@ -313,6 +332,9 @@ function VerificationDashboardInner() {
 
       {/* Top Inviters Leaderboard */}
       <WaitlistLeaderboard waitlistId={waitlistId} />
+
+      {/* Interactive Walkthrough Tour */}
+      <WaitlistTour forceOpen={tourForcedOpen} onClose={() => setTourForcedOpen(false)} />
     </div>
   );
 }

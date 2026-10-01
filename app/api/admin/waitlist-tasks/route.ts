@@ -6,9 +6,41 @@ import {
   isPlaceholderSupabase,
   getMockTasks,
   reorderMockTasks,
+  createMockTask,
+  updateMockTask,
+  deleteMockTask,
 } from "@/lib/waitlist/mockStore";
 
 export const dynamic = "force-dynamic";
+
+async function ensureWaitlistTasksSeeded() {
+  if (isPlaceholderSupabase()) return;
+  try {
+    const { count, error } = await supabaseAdmin
+      .from("waitlist_tasks")
+      .select("*", { count: "exact", head: true });
+
+    if (!error && (count === 0 || count === null)) {
+      for (const t of DEFAULT_TASKS) {
+        await supabaseAdmin.from("waitlist_tasks").upsert({
+          id: t.id,
+          title: t.title,
+          description: t.description,
+          action_url: t.actionUrl,
+          action_label: t.actionLabel,
+          input_type: t.inputType,
+          input_placeholder: t.inputPlaceholder,
+          weight: t.weight,
+          is_active: true,
+          is_system: t.isSystem,
+          display_order: t.displayOrder,
+        });
+      }
+    }
+  } catch (err) {
+    console.warn("Could not check/seed waitlist_tasks in Supabase:", err);
+  }
+}
 
 export async function GET(req: NextRequest) {
   const auth = await verifyAdmin(req.headers.get("authorization"));
@@ -23,6 +55,8 @@ export async function GET(req: NextRequest) {
     }));
     return NextResponse.json({ tasks });
   }
+
+  await ensureWaitlistTasksSeeded();
 
   const { data, error } = await supabaseAdmin
     .from("waitlist_tasks")
@@ -75,23 +109,39 @@ export async function POST(req: NextRequest) {
         .replace(/[^a-z0-9]+/g, "_")
         .replace(/(^_|_$)/g, "") + `_${Date.now().toString(36)}`;
 
-    const { error } = await supabaseAdmin.from("waitlist_tasks").insert({
+    // Always sync into mock store
+    createMockTask({
       id: taskId,
       title: task.title.trim(),
       description: task.description.trim(),
-      action_url: task.actionUrl?.trim() || null,
-      action_label: task.actionLabel?.trim() || null,
-      input_type: task.inputType || "username",
-      input_placeholder: task.inputPlaceholder?.trim() || null,
+      actionUrl: task.actionUrl?.trim() || null,
+      actionLabel: task.actionLabel?.trim() || null,
+      inputType: task.inputType || "username",
+      inputPlaceholder: task.inputPlaceholder?.trim() || null,
       weight: Number(task.weight) || 25,
-      is_active: task.isActive !== false,
-      is_system: false,
-      display_order: Number(task.displayOrder) || 10,
+      isSystem: false,
+      displayOrder: Number(task.displayOrder) || 10,
+      isActive: task.isActive !== false,
     });
 
-    if (error) {
-      console.error("Failed to create task:", error);
-      return NextResponse.json({ error: "Could not create task. Check if table exists." }, { status: 500 });
+    if (!isPlaceholderSupabase()) {
+      const { error } = await supabaseAdmin.from("waitlist_tasks").upsert({
+        id: taskId,
+        title: task.title.trim(),
+        description: task.description.trim(),
+        action_url: task.actionUrl?.trim() || null,
+        action_label: task.actionLabel?.trim() || null,
+        input_type: task.inputType || "username",
+        input_placeholder: task.inputPlaceholder?.trim() || null,
+        weight: Number(task.weight) || 25,
+        is_active: task.isActive !== false,
+        is_system: false,
+        display_order: Number(task.displayOrder) || 10,
+      });
+
+      if (error) {
+        console.error("Failed to create task in Supabase:", error);
+      }
     }
 
     await logAdminAction({
@@ -110,23 +160,39 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Task ID and title are required." }, { status: 400 });
     }
 
-    const { error } = await supabaseAdmin
-      .from("waitlist_tasks")
-      .update({
-        title: task.title.trim(),
-        description: task.description?.trim() || "",
-        action_url: task.actionUrl?.trim() || null,
-        action_label: task.actionLabel?.trim() || null,
-        input_type: task.inputType || "username",
-        input_placeholder: task.inputPlaceholder?.trim() || null,
-        weight: Number(task.weight) || 25,
-        is_active: Boolean(task.isActive),
-        display_order: Number(task.displayOrder) || 0,
-      })
-      .eq("id", task.id);
+    // Always sync into mock store
+    updateMockTask({
+      id: task.id,
+      title: task.title.trim(),
+      description: task.description?.trim() || "",
+      actionUrl: task.actionUrl?.trim() || null,
+      actionLabel: task.actionLabel?.trim() || null,
+      inputType: task.inputType || "username",
+      inputPlaceholder: task.inputPlaceholder?.trim() || null,
+      weight: Number(task.weight) || 25,
+      isActive: Boolean(task.isActive),
+      displayOrder: Number(task.displayOrder) || 0,
+    });
 
-    if (error) {
-      return NextResponse.json({ error: "Could not update task." }, { status: 500 });
+    if (!isPlaceholderSupabase()) {
+      const { error } = await supabaseAdmin
+        .from("waitlist_tasks")
+        .upsert({
+          id: task.id,
+          title: task.title.trim(),
+          description: task.description?.trim() || "",
+          action_url: task.actionUrl?.trim() || null,
+          action_label: task.actionLabel?.trim() || null,
+          input_type: task.inputType || "username",
+          input_placeholder: task.inputPlaceholder?.trim() || null,
+          weight: Number(task.weight) || 25,
+          is_active: Boolean(task.isActive),
+          display_order: Number(task.displayOrder) || 0,
+        });
+
+      if (error) {
+        console.error("Failed to update task in Supabase:", error);
+      }
     }
 
     await logAdminAction({
@@ -156,9 +222,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "System tasks cannot be deleted." }, { status: 400 });
     }
 
-    const { error } = await supabaseAdmin.from("waitlist_tasks").delete().eq("id", task.id);
-    if (error) {
-      return NextResponse.json({ error: "Could not delete task." }, { status: 500 });
+    deleteMockTask(task.id);
+
+    if (!isPlaceholderSupabase()) {
+      const { error } = await supabaseAdmin.from("waitlist_tasks").delete().eq("id", task.id);
+      if (error) {
+        return NextResponse.json({ error: "Could not delete task." }, { status: 500 });
+      }
     }
 
     await logAdminAction({
@@ -177,13 +247,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Task ID is required." }, { status: 400 });
     }
 
-    const { error } = await supabaseAdmin
-      .from("waitlist_tasks")
-      .update({ is_active: Boolean(task.isActive) })
-      .eq("id", task.id);
+    updateMockTask({ id: task.id, isActive: Boolean(task.isActive) });
 
-    if (error) {
-      return NextResponse.json({ error: "Could not update task status." }, { status: 500 });
+    if (!isPlaceholderSupabase()) {
+      const { error } = await supabaseAdmin
+        .from("waitlist_tasks")
+        .update({ is_active: Boolean(task.isActive) })
+        .eq("id", task.id);
+
+      if (error) {
+        return NextResponse.json({ error: "Could not update task status." }, { status: 500 });
+      }
     }
 
     return NextResponse.json({ ok: true });

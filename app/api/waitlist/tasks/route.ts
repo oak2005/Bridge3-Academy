@@ -5,8 +5,46 @@ import { isPlaceholderSupabase, getMockTasks } from "@/lib/waitlist/mockStore";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+async function ensureWaitlistTasksSeeded() {
+  if (isPlaceholderSupabase()) return;
   try {
+    const { count, error } = await supabaseAdmin
+      .from("waitlist_tasks")
+      .select("*", { count: "exact", head: true });
+
+    if (!error && (count === 0 || count === null)) {
+      for (const t of DEFAULT_TASKS) {
+        await supabaseAdmin.from("waitlist_tasks").upsert({
+          id: t.id,
+          title: t.title,
+          description: t.description,
+          action_url: t.actionUrl,
+          action_label: t.actionLabel,
+          input_type: t.inputType,
+          input_placeholder: t.inputPlaceholder,
+          weight: t.weight,
+          is_active: true,
+          is_system: t.isSystem,
+          display_order: t.displayOrder,
+        });
+      }
+    }
+  } catch (err) {
+    console.warn("Could not check/seed waitlist_tasks in Supabase:", err);
+  }
+}
+
+export async function GET() {
+  const headers = {
+    "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+    Pragma: "no-cache",
+  };
+
+  try {
+    if (!isPlaceholderSupabase()) {
+      await ensureWaitlistTasksSeeded();
+    }
+
     const { data, error } = await supabaseAdmin
       .from("waitlist_tasks")
       .select("*")
@@ -15,7 +53,7 @@ export async function GET() {
 
     if (error || !data || data.length === 0) {
       const fallback = getMockTasks().filter((t) => t.isActive !== false);
-      return NextResponse.json({ tasks: fallback });
+      return NextResponse.json({ tasks: fallback }, { headers });
     }
 
     const tasks: PublicWaitlistTask[] = data.map((t) => ({
@@ -31,10 +69,11 @@ export async function GET() {
       displayOrder: Number(t.display_order) || 0,
     }));
 
-    return NextResponse.json({ tasks });
+    return NextResponse.json({ tasks }, { headers });
   } catch (err) {
     console.error("Failed to load waitlist tasks:", err);
     const fallback = getMockTasks().filter((t) => t.isActive !== false);
-    return NextResponse.json({ tasks: fallback });
+    return NextResponse.json({ tasks: fallback }, { headers });
   }
 }
+

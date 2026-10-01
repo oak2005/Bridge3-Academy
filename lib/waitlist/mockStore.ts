@@ -154,3 +154,41 @@ export function reorderMockTasks(orderedIds: string[]): (PublicWaitlistTask & { 
   mockTasks.push(...reordered);
   return getMockTasks();
 }
+
+export function createMockTask(task: PublicWaitlistTask & { isActive?: boolean }): void {
+  const existingIndex = mockTasks.findIndex((t) => t.id === task.id);
+  if (existingIndex >= 0) {
+    mockTasks[existingIndex] = { ...mockTasks[existingIndex], ...task };
+  } else {
+    mockTasks.push(task);
+  }
+}
+
+export function updateMockTask(task: Partial<PublicWaitlistTask> & { id: string; isActive?: boolean }): void {
+  const index = mockTasks.findIndex((t) => t.id === task.id);
+  if (index >= 0) {
+    mockTasks[index] = { ...mockTasks[index], ...task };
+  } else {
+    mockTasks.push({
+      id: task.id,
+      title: task.title || task.id,
+      description: task.description || "",
+      actionUrl: task.actionUrl || null,
+      actionLabel: task.actionLabel || null,
+      inputType: task.inputType || "username",
+      inputPlaceholder: task.inputPlaceholder || null,
+      weight: task.weight || 25,
+      isSystem: false,
+      displayOrder: task.displayOrder || mockTasks.length + 1,
+      isActive: task.isActive !== false,
+    });
+  }
+}
+
+export function deleteMockTask(taskId: string): void {
+  const index = mockTasks.findIndex((t) => t.id === taskId);
+  if (index >= 0) {
+    mockTasks.splice(index, 1);
+  }
+}
+
