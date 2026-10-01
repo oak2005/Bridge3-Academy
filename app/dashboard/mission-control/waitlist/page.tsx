@@ -90,7 +90,7 @@ export default function WaitlistMissionControlPage() {
     const { data: sessionData } = await supabaseBrowser.auth.getSession();
     const token = sessionData.session?.access_token;
     if (!token) return;
-    const res = await fetch("/api/admin/waitlist-tasks", {
+    const res = await fetch(`/api/admin/waitlist-tasks?t=${Date.now()}`, {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
     });

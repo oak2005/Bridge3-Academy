@@ -12,35 +12,8 @@ import {
 } from "@/lib/waitlist/mockStore";
 
 export const dynamic = "force-dynamic";
-
-async function ensureWaitlistTasksSeeded() {
-  if (isPlaceholderSupabase()) return;
-  try {
-    const { count, error } = await supabaseAdmin
-      .from("waitlist_tasks")
-      .select("*", { count: "exact", head: true });
-
-    if (!error && (count === 0 || count === null)) {
-      for (const t of DEFAULT_TASKS) {
-        await supabaseAdmin.from("waitlist_tasks").upsert({
-          id: t.id,
-          title: t.title,
-          description: t.description,
-          action_url: t.actionUrl,
-          action_label: t.actionLabel,
-          input_type: t.inputType,
-          input_placeholder: t.inputPlaceholder,
-          weight: t.weight,
-          is_active: true,
-          is_system: t.isSystem,
-          display_order: t.displayOrder,
-        });
-      }
-    }
-  } catch (err) {
-    console.warn("Could not check/seed waitlist_tasks in Supabase:", err);
-  }
-}
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
 
 export async function GET(req: NextRequest) {
   const auth = await verifyAdmin(req.headers.get("authorization"));
@@ -55,8 +28,6 @@ export async function GET(req: NextRequest) {
     }));
     return NextResponse.json({ tasks });
   }
-
-  await ensureWaitlistTasksSeeded();
 
   const { data, error } = await supabaseAdmin
     .from("waitlist_tasks")

@@ -92,7 +92,7 @@ function VerificationDashboardInner() {
   useEffect(() => {
     async function loadTasks() {
       try {
-        const res = await fetch("/api/waitlist/tasks", { cache: "no-store" });
+        const res = await fetch(`/api/waitlist/tasks?t=${Date.now()}`, { cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
           if (data.tasks && data.tasks.length > 0) {

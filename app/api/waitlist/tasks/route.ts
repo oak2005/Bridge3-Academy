@@ -1,48 +1,22 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { PublicWaitlistTask, DEFAULT_TASKS } from "@/lib/waitlist/tasks";
 import { isPlaceholderSupabase, getMockTasks } from "@/lib/waitlist/mockStore";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
 
-async function ensureWaitlistTasksSeeded() {
-  if (isPlaceholderSupabase()) return;
-  try {
-    const { count, error } = await supabaseAdmin
-      .from("waitlist_tasks")
-      .select("*", { count: "exact", head: true });
-
-    if (!error && (count === 0 || count === null)) {
-      for (const t of DEFAULT_TASKS) {
-        await supabaseAdmin.from("waitlist_tasks").upsert({
-          id: t.id,
-          title: t.title,
-          description: t.description,
-          action_url: t.actionUrl,
-          action_label: t.actionLabel,
-          input_type: t.inputType,
-          input_placeholder: t.inputPlaceholder,
-          weight: t.weight,
-          is_active: true,
-          is_system: t.isSystem,
-          display_order: t.displayOrder,
-        });
-      }
-    }
-  } catch (err) {
-    console.warn("Could not check/seed waitlist_tasks in Supabase:", err);
-  }
-}
-
-export async function GET() {
+export async function GET(req: NextRequest) {
   const headers = {
-    "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+    "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0, s-maxage=0",
     Pragma: "no-cache",
   };
 
   try {
-    if (!isPlaceholderSupabase()) {
-      await ensureWaitlistTasksSeeded();
+    if (isPlaceholderSupabase()) {
+      const fallback = getMockTasks().filter((t) => t.isActive !== false);
+      return NextResponse.json({ tasks: fallback }, { headers });
     }
 
     const { data, error } = await supabaseAdmin
