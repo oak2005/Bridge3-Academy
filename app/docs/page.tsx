@@ -22,7 +22,7 @@ export default function DocsHomePage() {
           Bridge3 Academy Documentation
         </h1>
         <p className="mt-3 max-w-2xl text-sm sm:text-base text-ink-muted leading-relaxed">
-          The single source of truth for prospective scholars, enrolled students, and ecosystem partners. Explore our curriculum syllabus, workshop rubrics, grading standards, and cryptographic verification specifications.
+          The single source of truth for prospective scholars, enrolled students, and ecosystem partners. Explore our curriculum syllabus, workshop guidelines, review process, and certificate verification standards.
         </p>
       </div>
 
@@ -39,7 +39,7 @@ export default function DocsHomePage() {
             New Student? Start Here
           </h3>
           <p className="mt-1 text-xs text-ink-muted leading-relaxed">
-            Understand how our four-step module cadence takes you from foundational theory to approved code.
+            Understand how our module cadence takes you from foundational theory to approved deliverables.
           </p>
           <span className="mt-3 inline-flex items-center text-xs font-semibold text-accent">
             Read Introduction →
@@ -57,7 +57,7 @@ export default function DocsHomePage() {
             Curriculum
           </h3>
           <p className="mt-1 text-xs text-ink-muted leading-relaxed">
-            Detailed breakdowns of our 3 core tracks: General, Ecosystem or Sponsorship, and Skill set Track.
+            Detailed breakdowns of our 3 core tracks: General, Ecosystem Support, and Skill Set Track.
           </p>
           <span className="mt-3 inline-flex items-center text-xs font-semibold text-accent">
             Explore Syllabus →
@@ -75,7 +75,7 @@ export default function DocsHomePage() {
             Certification Standards
           </h3>
           <p className="mt-1 text-xs text-ink-muted leading-relaxed">
-            Learn the graduation criteria, SHA-256 verification engine, and how to verify certificates publicly.
+            Learn the graduation criteria, unique verification code system, and how to verify certificates publicly.
           </p>
           <span className="mt-3 inline-flex items-center text-xs font-semibold text-accent">
             View Standards →

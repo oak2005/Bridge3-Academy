@@ -49,7 +49,7 @@ function LoginContent() {
   async function signInWithGoogle() {
     setLoading(true);
     setError("");
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
+    const siteUrl = typeof window !== "undefined" ? window.location.origin : (process.env.NEXT_PUBLIC_SITE_URL || "");
     const { error: signInError } = await supabaseBrowser.auth.signInWithOAuth({
       provider: "google",
       options: { redirectTo: `${siteUrl}/auth/callback` },

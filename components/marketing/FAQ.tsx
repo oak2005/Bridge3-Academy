@@ -29,9 +29,14 @@ const FAQS = [
       "For sponsoring partners, it means reaching students at the exact moment they're learning the habits and tools they'll use for years. Protocols sponsor cohorts to build long-term ecosystem awareness, support university developer communities, and hire verified builders.",
   },
   {
+    question: "Is certification recognized?",
+    answer:
+      "Your certificate is a verifiable credential issued by Bridge3 Academy, checkable by anyone through a public verification link, showing exactly what you completed and when. It's not a substitute for formal academic accreditation, and it's not on-chain yet — but it's built to be shareable with employers and ecosystem partners today, with on-chain verification planned as the platform grows.",
+  },
+  {
     question: "How are certificates verified?",
     answer:
-      "Every graduate receives an official certificate backed by a cryptographic verification hash and a public verification link. Employers and partners can independently inspect the student record, completed assignments, and track competencies at any time.",
+      "Every graduate receives an official certificate with a unique verification code and a public verification link. Employers and partners can independently inspect the student record, completed assignments, and track competencies at any time without logging in.",
   },
   {
     question: "Who is eligible to apply?",

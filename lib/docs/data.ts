@@ -46,25 +46,25 @@ export const DOC_CATEGORIES: DocCategory[] = [
   {
     id: "curriculum",
     label: "Curriculum",
-    description: "Detailed syllabus breakdown across our 3 main tracks: General, Ecosystem or Sponsorship, and Skill set Track.",
+    description: "Detailed syllabus breakdown across our 3 tracks: General, Ecosystem Support, and Skill Set Track.",
     icon: "📚",
   },
   {
     id: "workshops",
     label: "Workshops & Project Reviews",
-    description: "Project submission guidelines, peer reviews, practical evaluation rubrics, and capstone milestones.",
+    description: "Project submission guidelines, peer reviews, mentor evaluation, and capstone requirements.",
     icon: "🛠️",
   },
   {
     id: "gamification",
     label: "Gamification & Community",
-    description: "Earning XP, unlocking skill badges, leveling up, and building your verified public portfolio.",
+    description: "Earning XP, unlocking milestone badges, platform leaderboard, and your private public portfolio.",
     icon: "🏆",
   },
   {
     id: "certification",
     label: "Certification & Standards",
-    description: "Requirements for graduation, cryptographic verification hashes, and on-chain credentials.",
+    description: "Graduation criteria, public verification links, and our future on-chain credential roadmap.",
     icon: "🎓",
   },
 ];
@@ -76,47 +76,43 @@ export const DOC_ARTICLES: DocArticle[] = [
     title: "Welcome to Bridge3 Academy",
     category: "getting-started",
     categoryLabel: "Getting Started",
-    summary: "An introduction to Bridge3 Academy, our mission for African talent, and how our structured platform empowers builders.",
+    summary: "An introduction to Bridge3 Academy, our guided learning path for students across Africa, and how to get started.",
     readTime: "3 min read",
-    updatedAt: "September 2026",
-    tags: ["introduction", "mission", "africa", "web3"],
+    updatedAt: "October 2026",
+    tags: ["welcome", "introduction", "mission", "africa", "web3"],
     keyTakeaways: [
-      "Bridge3 Academy replaces fragmented tutorials with structured, practical learning paths and verified deliverables.",
-      "Designed specifically for ambitious African students, developers, designers, writers, and growth operators.",
-      "Every milestone is verified through server-graded quizzes, hands-on workshops, and tamper-proof certificates.",
+      "Bridge3 Academy is a free, structured Web3 education platform for students across Africa.",
+      "Follow one guided path: lessons, quizzes, hands-on assignments, and mentor-reviewed capstones.",
+      "Sign in with Google — no separate password, no other sign-in method right now.",
     ],
     content: {
       sections: [
         {
-          heading: "The Bridge to Web3 in Africa",
+          heading: "The Guided Path to Web3 in Africa",
           body: [
-            "Across Africa, millions of brilliant students and builders are eager to participate in the decentralized global economy. However, traditional education systems lack Web3 curriculum, while online learning is plagued by chaotic YouTube playlists, outdated tutorials, and unverified promises.",
-            "Bridge3 Academy was built to replace tutorial chaos with a structured, collegiate-grade learning experience tailored to African university students and emerging builders. We take you from zero foundational knowledge to production-ready competence.",
+            "Bridge3 Academy is a free, structured Web3 education platform for students across Africa. Instead of piecing together scattered YouTube videos, Telegram chats, and random threads, you follow one guided path: lessons, quizzes, hands-on assignments, and (for tracks that require it) a capstone project — reviewed by real mentors, not just auto-graded.",
+            "Across Africa, ambitious students and emerging builders are eager to participate in the decentralized global economy. Bridge3 Academy provides the structured foundation and practical proof of work needed to transition from curious beginner to confident contributor.",
           ],
           callout: {
             type: "note",
-            text: "Bridge3 Academy is 100% free for students. For sponsoring partners, supporting a cohort means reaching students at the exact moment they're learning the habits and tools they'll use for years.",
+            text: "Bridge3 Academy is 100% free for students. Sponsoring partners support cohorts to reach students at the exact moment they are learning the habits and tools they will use for years.",
           },
         },
         {
-          heading: "Our Core Pedagogical Philosophy",
+          heading: "Simple, Frictionless Access",
           body: [
-            "We believe true mastery requires more than watching videos. Bridge3 Academy operates on a four-pillar pedagogical framework:",
-          ],
-          bullets: [
-            "Structured Theory: Bite-sized, progressive lessons that demystify consensus mechanics, cryptography, and modern digital workflows.",
-            "Server-Graded Assessments: Automated quizzes that rigorously test comprehension before permitting module progression.",
-            "Practical Workshop Submissions: Real code, Figma designs, content pieces, and growth proposals submitted for review.",
-            "Rigorous Project Review: Experienced practitioners who evaluate your assignments, give actionable feedback, and approve your milestones.",
+            "Sign in with Google. There is no separate password and no other sign-in method right now. One click connects you directly to your personalized learning headquarters.",
           ],
         },
         {
           heading: "What You Will Achieve",
           body: [
-            "Upon completing your curriculum track, you will possess not just knowledge, but concrete proof of competence:",
-            "• A public on-chain and off-chain verified Portfolio showcasing your approved assignments, XP, and badges.",
-            "• An official, tamper-proof Certificate of Completion with a unique cryptographic verification hash.",
-            "• Direct access to ecosystem bounties, hackathons, and remote job opportunities across top decentralized protocols.",
+            "Upon completing your curriculum track, you will possess concrete proof of competence:",
+          ],
+          bullets: [
+            "A shareable public portfolio showcasing your approved assignments, XP, and badges.",
+            "An official Certificate of Completion with a unique verification code checkable by anyone.",
+            "Practical skills and direct experience ready for hackathons, bounties, and remote opportunities.",
           ],
         },
       ],
@@ -127,49 +123,46 @@ export const DOC_ARTICLES: DocArticle[] = [
     title: "Student Onboarding & Learning Journey",
     category: "getting-started",
     categoryLabel: "Getting Started",
-    summary: "Step-by-step guide to signing in with Google, selecting your specialization track, and tailoring your experience.",
-    readTime: "4 min read",
-    updatedAt: "September 2026",
-    tags: ["auth", "onboarding", "profile", "setup"],
+    summary: "Step-by-step onboarding walkthrough from Google sign-in to profile personalization and dashboard navigation.",
+    readTime: "3 min read",
+    updatedAt: "October 2026",
+    tags: ["onboarding", "google-auth", "profile", "journey"],
     keyTakeaways: [
-      "Authentication uses Google OAuth for secure, frictionless access without passwords.",
-      "Onboarding captures your university, role interests, and primary specialization track.",
-      "You can adjust your profile preferences anytime from Account & Settings.",
+      "Sign in with Google with zero password friction.",
+      "First-time profile setup captures your university and role interest.",
+      "Personalize your path by selecting your current level and track focus.",
+      "Dashboard displays real progress, upcoming milestones, and your next lesson.",
     ],
     content: {
       sections: [
         {
-          heading: "Step 1: One-Click Authentication",
+          heading: "The 4-Step Onboarding Flow",
           body: [
-            "Bridge3 Academy utilizes Google OAuth for secure, frictionless authentication. We deliberately do not store passwords, eliminating credential theft vulnerabilities.",
-            "Verified waitlist scholars sign in with their authorized Google account to access their learning headquarters.",
+            "Getting started on Bridge3 Academy takes less than two minutes. The onboarding flow ensures your curriculum and dashboard reflect your background and goals:",
+          ],
+          bullets: [
+            "1. Sign in with Google: Quick, passwordless authentication using your authorized Google account.",
+            "2. First time only: Tell us your university and what you're most interested in (Developer, Growth, Creative, or Operations) — Google doesn't share this with us.",
+            "3. Personalize your path: Pick your current level (Beginner/Intermediate/Advanced) and a track focus (Growth, Creative, Operations, or Engineering).",
+            "4. Land on your dashboard: Enter your learning headquarters, showing your real progress and your next lesson.",
           ],
           callout: {
             type: "tip",
-            text: "Use the Google account you check regularly so you don't miss project review feedback and live event notifications.",
+            text: "Use the Google account you check regularly so you don't miss reviewer feedback on your workshop assignments.",
           },
         },
         {
-          heading: "Step 2: Profile Customization",
+          heading: "Navigating Your Learning Headquarters",
           body: [
-            "Upon first sign-in, the onboarding wizard will guide you through three quick questions to customize your curriculum:",
+            "From your dashboard, you have quick access to every part of the academy:",
           ],
           bullets: [
-            "University / Institution: Connect with fellow alumni and track your campus's position on the academy leaderboard.",
-            "Experience Level: Choose between Beginner (new to crypto), Intermediate (familiar with wallets & tokens), or Advanced (active developer/builder).",
-            "Curriculum Pathway: Choose your primary focus: General Track, Ecosystem or Sponsorship Track, or Skill set Track.",
-          ],
-        },
-        {
-          heading: "Step 3: Navigating Your Dashboard",
-          body: [
-            "Once onboarded, your dashboard becomes your daily learning headquarters. From the left sidebar, you can navigate:",
-            "• Dashboard: Overview of today's recommended lesson, overall track progress, and upcoming community workshops.",
-            "• My Courses: Complete module syllabus with lesson-by-lesson progress tracking.",
-            "• Workshops: Interactive coding, writing, and design challenges requiring hands-on submissions.",
-            "• Assessments: Module quizzes and capstone project requirements.",
-            "• Portfolio: Your public showcase highlighting verified accomplishments.",
-            "• Certification: Real-time track completion tracking and certificate issuance portal.",
+            "Dashboard: View your overall track progress, next recommended lesson, and recent notifications.",
+            "My Courses: Complete module syllabus with lesson-by-lesson progress tracking.",
+            "Workshops: Submit hands-on assignments and receive written mentor reviews.",
+            "Assessments: Take module quizzes and work on capstone deliverables.",
+            "Portfolio: View and share your unlisted public profile with earned XP and badges.",
+            "Certification: Track graduation requirements and claim your certificate when eligible.",
           ],
         },
       ],
@@ -180,44 +173,41 @@ export const DOC_ARTICLES: DocArticle[] = [
     title: "The Complete Learning Workflow",
     category: "getting-started",
     categoryLabel: "Getting Started",
-    summary: "How lessons, quizzes, workshop assignments, and project reviews connect to build genuine mastery.",
-    readTime: "5 min read",
-    updatedAt: "September 2026",
-    tags: ["workflow", "classroom", "quizzes", "workshops"],
+    summary: "How lessons, server-graded quizzes, hands-on workshop assignments, and mentor reviews connect to form our complete learning cycle.",
+    readTime: "4 min read",
+    updatedAt: "October 2026",
+    tags: ["workflow", "lessons", "quizzes", "assignments", "certification"],
     keyTakeaways: [
-      "Each module follows a 4-step cadence: Study → Quiz → Build → Review.",
-      "Quizzes test recall with an 80% passing threshold and immediate server feedback.",
-      "Workshops require building real artifacts evaluated by experienced practitioners.",
+      "Each module follows a structured cadence: lesson notes/video → instant quiz → practical assignment → mentor feedback.",
+      "Quizzes are graded instantly on the server with immediate score and passing status.",
+      "Audio playback is currently a planned feature, not a live option.",
+      "Complete all lessons, quizzes, assignments, and capstones to unlock your certificate.",
     ],
     content: {
       sections: [
         {
-          heading: "The 4-Step Module Cadence",
+          heading: "The Module Learning Cadence",
           body: [
-            "Education at Bridge3 Academy is organized into modular units. To guarantee retention and real skills, every module follows an identical, battle-tested progression:",
+            "Every module in Bridge3 Academy follows an integrated pedagogical flow designed to turn concepts into verified competence:",
+            "For each module in a track:",
           ],
-          table: {
-            headers: ["Step", "Action", "Requirement", "Outcome"],
-            rows: [
-              ["1. Study", "Read module lessons & interactive guides", "Mark lessons complete", "Unlocks module quiz"],
-              ["2. Assess", "Take timed, server-graded quiz", "Score 80%+ to pass", "Unlocks workshop brief & earns XP"],
-              ["3. Build", "Complete practical workshop assignment", "Submit GitHub repo or live link", "Submitted to Project Review queue"],
-              ["4. Review", "Reviewers inspect submission against rubric", "Review approval", "Module 100% complete; badge awarded"],
-            ],
+          bullets: [
+            "Watch the lesson video (when one is attached) and read the lesson notes.",
+            "Mark it complete to log your progress.",
+            "If the module has a quiz, take it (graded instantly, server-side — you'll see your score and whether you passed).",
+            "If the module has an assignment, submit it (text and/or a file) and wait for mentor feedback.",
+          ],
+          callout: {
+            type: "note",
+            text: "Feature clarification: There is currently no 'listen to audio' option on lesson pages. That is a planned roadmap feature, not a live one — audio playback will be introduced once the feature is fully built.",
           },
         },
         {
-          heading: "Lesson Classroom Features",
+          heading: "Completing a Track & Claiming Certification",
           body: [
-            "Our classroom interface is distraction-free, optimized for both desktop monitors and mobile devices with spotty internet connectivity. Each lesson includes:",
-            "• Code Sandboxes & Syntax Highlighting: Clarity, Solidity, Rust, and JavaScript examples formatted cleanly.",
-            "• Reading Time Estimates: Plan your study schedule with precision.",
-            "• Complete & Next Navigation: Automatic progress syncing to your Supabase student record.",
+            "Once every lesson, quiz, and assignment in a track is done — and the capstone too, for tracks that require one — the track is complete and you can claim your certificate from the Certification page.",
+            "Progress is recorded server-side in real time, so you can learn at your own pace without losing momentum.",
           ],
-          callout: {
-            type: "important",
-            text: "Progress is recorded server-side. If your internet disconnects mid-lesson, your completed progress is preserved upon reconnecting.",
-          },
         },
       ],
     },
@@ -229,35 +219,36 @@ export const DOC_ARTICLES: DocArticle[] = [
     title: "Curriculum Architecture & Philosophy",
     category: "curriculum",
     categoryLabel: "Curriculum",
-    summary: "Comprehensive breakdown of Bridge3 Academy's three tracks: General Track, Ecosystem or Sponsorship Track, and Skill set Track.",
+    summary: "Overview of the three curriculum tracks: General Track, Ecosystem Support Track, and Skill Set Track.",
     readTime: "4 min read",
-    updatedAt: "September 2026",
-    tags: ["curriculum", "general", "ecosystem", "skillset", "overview"],
+    updatedAt: "October 2026",
+    tags: ["curriculum", "tracks", "general", "ecosystem", "skillset"],
     keyTakeaways: [
-      "The General Track establishes complete foundational competence in blockchain mechanics and digital custody.",
-      "The Ecosystem or Sponsorship Track connects students with partner protocols, developer grants, and real tooling.",
-      "The Skill set Track offers practical training for high-demand digital and Web3 roles.",
+      "General Track is the starting point for everyone: Bitcoin, Web3, blockchain fundamentals, and practical usage.",
+      "Ecosystem Support Track explores decentralized application mechanics and ecosystem infrastructure.",
+      "Skill Set Track offers career specializations in Design, Creation, Community & Growth, with Builder coming soon.",
     ],
     content: {
       sections: [
         {
-          heading: "Our Three Core Curriculum Tracks",
+          heading: "Three Core Curriculum Tracks",
           body: [
-            "Bridge3 Academy replaces chaotic playlists and tutorial fragmentation with a structured collegiate curriculum built around three primary tracks:",
-            "1. General Track: Required for all scholars. Establishes core cryptographic principles, decentralized consensus, Bitcoin, wallet custody, and smart contract primitives.",
-            "2. Ecosystem or Sponsorship Track: Built in partnership with leading protocols and foundations. For sponsors, it means reaching students at the exact moment they're learning the habits and tools they'll use for years. Students gain direct experience with partner architectures, grants, and real bounties.",
-            "3. Skill set Track: Practical, career-focused specializations for modern digital careers: Content creation/writing, Community Management, Designer (UI/UX, Web, Graphics and more), Social Media Manager, Prompt Engineering, Technical/Growth Writing, Developer (Depend on partnership) and much more.",
+            "Bridge3 Academy organizes learning across three distinct kinds of tracks:",
+          ],
+          bullets: [
+            "General Track — The starting point for everyone: Bitcoin, Web3, blockchain fundamentals, then practical usage (wallets, security, real-world application).",
+            "Ecosystem Support Track — How blockchain ecosystems actually work, how decentralized applications operate.",
+            "Skill Set Track — Choose a specialization: Designer, Creator, Community & Growth, or Builder (Builder is a planned partnership, not open for enrollment yet — we say so honestly rather than hide it).",
           ],
         },
         {
-          heading: "Tailored for the African Job Market",
+          heading: "Curriculum Philosophy",
           body: [
-            "Web3 companies hire remotely across global time zones. Our curriculum is tailored to prepare African youth for remote roles across engineering, community leadership, visual design, and ecosystem operations.",
-            "Every assignment simulates real deliverables expected by leading decentralized protocols and venture-backed startups.",
+            "We believe that real mastery comes from hands-on application rather than passive viewing. Our curriculum is tailored for the African context, providing actionable knowledge and verified deliverables that translate into real digital opportunities.",
           ],
           callout: {
             type: "tip",
-            text: "All scholars begin with the General Track. Once foundational competencies are verified, you unlock the Ecosystem or Sponsorship Track and your chosen Skill set Track.",
+            text: "All students begin with the General Track to establish foundational literacy before moving into ecosystem infrastructure and career specializations.",
           },
         },
       ],
@@ -268,56 +259,55 @@ export const DOC_ARTICLES: DocArticle[] = [
     title: "General Track: Web3 & Bitcoin Foundations",
     category: "curriculum",
     categoryLabel: "Curriculum",
-    summary: "Foundational syllabus covering blockchain architecture, Bitcoin, Proof of Work, cryptographic hashing, custody, and smart contract primitives.",
-    readTime: "5 min read",
-    updatedAt: "September 2026",
-    tags: ["general", "bitcoin", "cryptography", "foundations"],
+    summary: "Detailed breakdown of Level 1 Foundations and Level 2 Practical Usage, quizzes, assignments, and capstone requirements.",
+    readTime: "4 min read",
+    updatedAt: "October 2026",
+    tags: ["general-track", "bitcoin", "blockchain", "wallets", "capstone"],
     keyTakeaways: [
-      "Explains Byzantine Fault Tolerance and Satoshi Nakamoto's breakthrough.",
-      "Covers public/private key cryptography, mnemonic seed phrases, and self-custody.",
-      "Explores Layer 1 and Layer 2 scaling architectures and smart contract fundamentals.",
+      "Level 1 covers blockchain theory, Bitcoin basics, and smart contracts with a 3-question quiz (100% required to pass at 70% threshold).",
+      "Level 2 covers wallet security and dApp navigation with two practical assignments.",
+      "The General Track requires an approved capstone project to be marked complete.",
     ],
     content: {
       sections: [
         {
-          heading: "What the General Track is For",
+          heading: "What the General Track Covers",
           body: [
-            "The General Track is designed for all incoming students to establish an unshakeable foundation in decentralized systems. It demystifies how blockchains operate, why Bitcoin represents digital scarcity, and how to safely navigate Web3 protocols without relying on third-party custodians.",
-            "Students transition from passive observers to confident practitioners with hands-on understanding of transactions, security models, and wallet hygiene.",
+            "The General Track is the foundational starting point for all scholars. It moves you from zero previous knowledge to confident, safe navigation of decentralized systems, Bitcoin mechanics, and digital custody.",
           ],
         },
         {
-          heading: "Module 1: The Evolution of Money & Bitcoin",
+          heading: "Level 1 — Foundations",
           body: [
-            "Understand why decentralized currency matters, especially in emerging economies facing local currency inflation and cross-border remittance fees:",
+            "Level 1 introduces core blockchain architecture across 3 lessons and 1 quiz:",
           ],
           bullets: [
-            "From commodity money and fiat currencies to digital scarcity.",
-            "The double-spend problem and how Bitcoin solved it with Proof of Work.",
-            "Block headers, Merkle trees, and cryptographic difficulty adjustment.",
-            "Halving cycles, fixed supply economics, and long-term security models.",
-          ],
-        },
-        {
-          heading: "Module 2: Applied Cryptography & Custody",
-          body: [
-            "Hands-on understanding of how blockchain addresses are generated and secured:",
-          ],
-          bullets: [
-            "Elliptic Curve Digital Signature Algorithm (ECDSA) and Schnorr signatures.",
-            "SHA-256 and RIPEMD-160 cryptographic hash functions.",
-            "BIP-39 mnemonic seed phrase generation and derivation paths.",
-            "Hardware wallets, multi-signature vaults, and cold storage best practices.",
+            "Lesson 1: What is Blockchain?",
+            "Lesson 2: Bitcoin Basics",
+            "Lesson 3: Smart Contracts 101",
+            "Level 1 Quiz: 3 questions, 70% passing score — note that with only 3 questions, you need all 3 correct to pass (2 out of 3 rounds to 67%, just under the threshold).",
           ],
           callout: {
-            type: "warning",
-            text: "Security is non-negotiable. Scholars are taught never to store private keys in cloud storage, emails, or unencrypted text files.",
+            type: "important",
+            text: "Take your time on the Level 1 Quiz: because the quiz contains 3 questions with a 70% passing threshold, answering 2 correctly yields 66.7%, which does not pass. All 3 correct answers are required.",
           },
         },
         {
-          heading: "Module 3: Decentralized Networks & Layer 2 Scaling",
+          heading: "Level 2 — Practical Usage",
           body: [
-            "Why the blockchain trilemma (Decentralization, Security, Scalability) exists, and how Layer 2 networks (Rollups, State Channels, and Stacks) scale settlement layers without compromising security.",
+            "Level 2 bridges conceptual understanding into hands-on execution across 2 lessons and 2 assignments:",
+          ],
+          bullets: [
+            "Lesson 1: Setting Up a Wallet Safely",
+            "Lesson 2: Navigating a dApp",
+            "Assignment 1: 'Reflect on What You Learned' — reviewed by a mentor.",
+            "Assignment 2: 'Set Up Your Wallet' — reviewed by a mentor.",
+          ],
+        },
+        {
+          heading: "Capstone Requirement",
+          body: [
+            "This track requires a capstone project to be marked complete. You must submit a completed capstone deliverable and receive mentor approval before claiming your General Track certificate.",
           ],
         },
       ],
@@ -325,149 +315,71 @@ export const DOC_ARTICLES: DocArticle[] = [
   },
   {
     slug: "track-ecosystem",
-    title: "Ecosystem or Sponsorship Track: Protocol Integration & Partner Challenges",
+    title: "Ecosystem Support Track: Protocol Integration",
     category: "curriculum",
     categoryLabel: "Curriculum",
-    summary: "How blockchain ecosystems operate, protocol integrations, sponsored partner challenges, grant funding, and community governance.",
-    readTime: "5 min read",
-    updatedAt: "September 2026",
-    tags: ["ecosystem", "sponsorship", "protocols", "governance"],
+    summary: "How blockchain ecosystems operate, decentralized applications, and our architecture for future sponsor-branded tracks.",
+    readTime: "3 min read",
+    updatedAt: "October 2026",
+    tags: ["ecosystem", "protocols", "infrastructure", "sponsorship"],
     keyTakeaways: [
-      "Explore major Layer 1 and Layer 2 ecosystems and partner protocols.",
-      "Understand protocol grant applications, hackathon bounties, and ecosystem expansion.",
-      "For sponsors, it means reaching students at the exact moment they're learning the habits and tools they'll use for years.",
+      "Current curriculum covers 'How Ecosystems Work' — dApp fundamentals and ecosystem infrastructure.",
+      "The platform is architected to host future sponsor-branded content.",
+      "No sponsor content or 'Partner Challenges' exist yet — they will launch alongside official protocol partnerships.",
     ],
     content: {
       sections: [
         {
-          heading: "What the Ecosystem Track is For",
+          heading: "How Ecosystems Work",
           body: [
-            "The Ecosystem or Sponsorship Track connects students directly with active blockchain networks and protocol partners. For students, it provides practical experience with real protocol architectures, testnets, developer grants, and ecosystem bounties.",
-            "For ecosystem partners and sponsors, supporting a cohort means reaching students at the exact moment they're learning the habits and tools they'll use for years. Instead of passive marketing, sponsors integrate their technologies, developer tooling, and community initiatives directly into student workshops.",
+            "The Ecosystem Support Track explores how decentralized networks operate as coordinated ecosystems of protocols, developers, validators, and decentralized applications (dApps).",
+            "Current live content focuses on 'How Ecosystems Work' — covering decentralized application fundamentals and ecosystem infrastructure basics.",
           ],
         },
         {
-          heading: "Module 1: Protocol Architecture & Ecosystem Participation",
+          heading: "Future Sponsor-Branded Tracks",
           body: [
-            "Decentralized networks thrive on active participant ecosystems. In this module, scholars analyze leading protocol architectures:",
-          ],
-          bullets: [
-            "Bitcoin Layer 2s, Ethereum rollups, and multi-chain interoperability standards.",
-            "Tokenomics design: inflation schedules, staking rewards, and utility sinks.",
-            "Running nodes, RPC endpoints, and block explorers.",
-            "Understanding testnets, faucets, and safe contract verification.",
-          ],
-        },
-        {
-          heading: "Module 2: Sponsored Bounties, Grants & Partner Integration",
-          body: [
-            "Bridge3 partners directly with Web3 foundations and protocols to offer sponsored challenges and real compensation opportunities:",
-          ],
-          bullets: [
-            "How protocol foundation grants work and how to write a winning RFP proposal.",
-            "Deconstructing hackathon judging rubrics and structuring minimum viable products (MVPs).",
-            "Completing sponsored workshops with direct project review.",
+            "This track is intentionally designed to host future sponsor-branded content. The Bridge3 Academy platform architecture already supports flagging a track or module as sponsor-specific, enabling protocol partners to bring curriculum and developer tooling directly to students.",
+            "Clarification on current availability: No sponsor content exists yet. While the underlying system is built for partner challenges, we do not describe 'Partner Challenges' as something students can do today. They will launch as official protocol sponsorships go live.",
           ],
           callout: {
-            type: "tip",
-            text: "Top students completing sponsored workshops are directly introduced to partner talent pipelines for internships and contractor roles.",
+            type: "note",
+            text: "For ecosystem partners: sponsoring a cohort means reaching students at the exact moment they are learning the tools and frameworks they will build with for years.",
           },
-        },
-        {
-          heading: "Module 3: DAO Governance & Decentralized Operations",
-          body: [
-            "Hands-on experience with decentralized autonomous organizations: token-weighted voting, Snapshot proposals, multi-sig treasury management, and community consensus.",
-          ],
         },
       ],
     },
   },
   {
     slug: "track-skillset",
-    title: "Skill set Track: Career Specializations",
+    title: "Skill Set Track: Career Specializations",
     category: "curriculum",
     categoryLabel: "Curriculum",
-    summary: "Career-focused practical specializations: Content creation/writing, Community Management, Designer (UI/UX, Web, Graphics and more), Social Media Manager, Prompt Engineering, Technical/Growth Writing, Developer (Depend on partnership) and much more.",
-    readTime: "6 min read",
-    updatedAt: "September 2026",
-    tags: ["skillset", "design", "growth", "developer", "career"],
+    summary: "Career specializations for high-demand digital and Web3 roles: Designer, Creator, Community & Growth, and Builder (coming soon).",
+    readTime: "4 min read",
+    updatedAt: "October 2026",
+    tags: ["skillset", "designer", "creator", "community", "builder"],
     keyTakeaways: [
-      "Practical tracks mapped directly to active digital and Web3 roles.",
-      "Specializations include Content creation/writing, Community Management, Designer (UI/UX, Web, Graphics and more), Social Media Manager, Prompt Engineering, Technical/Growth Writing, Developer (Depend on partnership) and much more.",
-      "Every student builds a verified portfolio project and capstone deliverable.",
+      "Four distinct career specializations tailored to the global digital economy.",
+      "Designer, Creator, and Community & Growth each feature an introductory module and lesson.",
+      "Builder Track is listed as 'coming soon' — an upcoming partnership, not yet enrollable.",
     ],
     content: {
       sections: [
         {
-          heading: "What the Skill set Track is For",
+          heading: "Four Career Specializations",
           body: [
-            "The Skill set Track turns foundational knowledge into marketable, career-ready competence. The global digital economy requires diverse talent beyond raw protocol development. This track trains students across essential operational, creative, and technical roles:",
-            "• Content creation/writing",
-            "• Community Management",
-            "• Designer (UI/UX, Web, Graphics and more)",
-            "• Social Media Manager",
-            "• Prompt Engineering",
-            "• Technical/Growth Writing",
-            "• Developer (Depend on partnership) and much more.",
-          ],
-        },
-        {
-          heading: "Pathway 1: Content Creation, Growth Writing & Technical Documentation",
-          body: [
-            "Prepares students for roles in Content creation/writing and Technical/Growth Writing. Students learn how to distill complex protocol mechanics into engaging articles, release notes, grant updates, and educational guides:",
+            "The global Web3 ecosystem hires diverse talent across creative, operational, and technical roles. Bridge3 Academy's Skill Set Track provides career specializations, each featuring an introductory module and lesson:",
           ],
           bullets: [
-            "Technical Documentation: Writing clear developer guides, API references, and onboarding walk-throughs.",
-            "Growth & Ecosystem Writing: Crafting case studies, grant applications, and analytical deep dives.",
-            "Editorial Strategy: Managing content calendars, newsletters, and publication workflows.",
-          ],
-        },
-        {
-          heading: "Pathway 2: Community Management & Social Media Strategy",
-          body: [
-            "Prepares students for roles in Community Management and Social Media Manager. Focuses on building active, healthy digital communities across global time zones:",
-          ],
-          bullets: [
-            "Community Operations: Managing Discord, Telegram, and developer community forums.",
-            "Social Media Management: Developing social campaigns, viral storytelling, and live audio events.",
-            "Ambassador Programs: Structuring campus clubs, regional meetups, and student developer chapters.",
-          ],
-        },
-        {
-          heading: "Pathway 3: Designer (UI/UX, Web, Graphics and more)",
-          body: [
-            "The greatest barrier to Web3 adoption is confusing user experience. This pathway trains designers across UI/UX, Web design, and Graphic design to make decentralized apps approachable and delightful:",
-          ],
-          bullets: [
-            "Web3 UX Architecture: Designing intuitive wallet connection flows, transaction modals, and error states.",
-            "Web & Graphic Design: Crafting landing pages, marketing visual systems, and brand guidelines.",
-            "Design Systems: Building accessible component libraries and interactive prototypes in Figma.",
-          ],
-        },
-        {
-          heading: "Pathway 4: Prompt Engineering & AI Workflows",
-          body: [
-            "Equips students with modern Prompt Engineering and AI-assisted workflows to accelerate research, automate repetitive operations, and build intelligent assistants:",
-          ],
-          bullets: [
-            "Structured Prompting: Designing reproducible system prompts, few-shot examples, and evaluation criteria.",
-            "Operational Automation: Integrating AI tooling into content production, community moderation, and documentation.",
-            "Applied AI Tooling: Evaluating model capabilities and deploying agentic workflows.",
-          ],
-        },
-        {
-          heading: "Pathway 5: Developer & Protocol Engineering (Depend on partnership)",
-          body: [
-            "Deep dive for technical builders, structured around specific partner ecosystems and protocols. Curriculum and tooling depend on active ecosystem partnerships:",
-          ],
-          bullets: [
-            "Smart Contract Primitives: State management, authorization models, and token standards.",
-            "Testing & Local Tooling: Running local testnets, writing unit test suites, and simulating blockchain states.",
-            "Frontend Integration: Connecting self-custodial wallets, signing transactions, and reading on-chain data.",
+            "Designer Track: UI/UX design, visual identity, Web3 user experience, and interactive Figma prototyping.",
+            "Creator Track: Content creation, technical writing, growth storytelling, and documentation.",
+            "Community & Growth Track: Community management, social media strategy, ambassador programs, and operational growth.",
+            "Builder Track: Protocol engineering and developer tooling — listed as 'coming soon' (a planned partnership, not yet open for enrollment).",
           ],
           callout: {
-            type: "important",
-            text: "All Skill set Track pathways culminate in a reviewed Capstone Project that is permanently showcased on your verified public portfolio.",
+            type: "note",
+            text: "We list the Builder Track with transparent 'coming soon' status rather than obscuring it. It represents an active partnership initiative and will open once finalized.",
           },
         },
       ],
@@ -480,91 +392,82 @@ export const DOC_ARTICLES: DocArticle[] = [
     title: "Workshop Submission Guidelines",
     category: "workshops",
     categoryLabel: "Workshops & Project Reviews",
-    summary: "Formatting standards, link verification, and quality checklists for submitting assignment deliverables.",
-    readTime: "4 min read",
-    updatedAt: "September 2026",
-    tags: ["workshops", "assignments", "guidelines", "rubric"],
+    summary: "How to submit assignments, unlimited resubmissions, mentor feedback states, and peer discussion threads.",
+    readTime: "3 min read",
+    updatedAt: "October 2026",
+    tags: ["workshops", "submissions", "assignments", "peer-discussions"],
     keyTakeaways: [
-      "Every module has an associated hands-on workshop assignment.",
-      "Submissions accept GitHub links, Figma prototypes, deployed URLs, or markdown reports.",
-      "Ensure all shared links are public and accessible before submitting.",
+      "Submit your work as text, a file, or both.",
+      "Resubmit as many times as you need — your full attempt history is preserved.",
+      "Submissions move from Submitted to either Approved or Needs Revision with mentor feedback.",
+      "Every assignment includes a peer discussion thread visible to all students.",
     ],
     content: {
       sections: [
         {
-          heading: "Acceptable Deliverable Formats",
+          heading: "Submitting Your Assignment",
           body: [
-            "Depending on your track, your workshop brief will specify required submission deliverables:",
+            "Practical workshops give you the chance to apply what you've learned. You can submit your work as text, a file, or both depending on the brief:",
           ],
           bullets: [
-            "Developer Submissions: Public GitHub repository URL. Must include a clear README.md explaining project setup, architecture, and instructions for running tests.",
-            "Design Submissions: Public Figma URL with view/comment access enabled, accompanied by high-res exports or case study link.",
-            "Growth & Operations Submissions: Shared Google Doc, Notion page, or published Medium/Substack link with public viewing permissions.",
+            "Text Submission: Written answers, GitHub repository URLs, Figma links, or deployment URLs.",
+            "File Upload: Supported documents, images, or archives attached directly to your submission.",
+            "Unlimited Resubmissions: You can resubmit as many times as you need — every attempt is kept in your history, nothing gets overwritten.",
           ],
-          callout: {
-            type: "warning",
-            text: "Private repositories or restricted links will be marked 'Needs Revision'. Double-check your link permissions in an incognito browser window before submitting!",
-          },
         },
         {
-          heading: "Pre-Submission Quality Checklist",
+          heading: "Submission Status & Mentor Feedback",
           body: [
-            "Before clicking 'Submit Workshop Assignment', confirm:",
-            "✓ Did you satisfy all criteria listed in the workshop brief?",
-            "✓ Is your code formatted cleanly with proper comments?",
-            "✓ Does your README provide clear attribution and installation instructions?",
-            "✓ Have you provided thoughtful reflection on challenges you overcame?",
+            "Each submission's status moves from Submitted to either Approved or Needs Revision, set by a mentor along with written feedback you'll see directly on the assignment.",
+            "If your submission is marked Needs Revision, read the mentor's notes, refine your work, and submit an updated version.",
           ],
+        },
+        {
+          heading: "Peer Discussion Threads",
+          body: [
+            "Every assignment also has a peer discussion thread underneath it, visible to every student — a place to ask questions or compare notes.",
+          ],
+          callout: {
+            type: "tip",
+            text: "Use the discussion thread to ask cohort peers for help or share resources if you run into blockers on an assignment.",
+          },
         },
       ],
     },
   },
   {
     slug: "mentor-review-process",
-    title: "Project Evaluation & Review Rubrics",
+    title: "Project Evaluation & Review Process",
     category: "workshops",
     categoryLabel: "Workshops & Project Reviews",
-    summary: "How submissions are evaluated, scoring criteria, and actionable revision feedback.",
-    readTime: "5 min read",
-    updatedAt: "September 2026",
-    tags: ["reviews", "grading", "evaluation", "feedback"],
+    summary: "How mentor reviews work through direct qualitative judgment and feedback rather than arbitrary point rubrics.",
+    readTime: "3 min read",
+    updatedAt: "October 2026",
+    tags: ["reviews", "mentors", "feedback", "evaluation"],
     keyTakeaways: [
-      "Every assignment is evaluated against standardized rubrics.",
-      "Reviews result in either 'Approved' or 'Needs Revision' with constructive feedback.",
-      "Revisions are a normal part of the learning cycle and help you build production-ready skills.",
+      "Reviews are direct qualitative judgment calls by experienced mentors.",
+      "There is no formal, published scoring rubric right now — reviews focus on written feedback.",
+      "Outcomes are either Approved or Needs Revision.",
     ],
     content: {
       sections: [
         {
-          heading: "The Submission Review Flow",
+          heading: "Mentor Review Process",
           body: [
-            "When you submit a workshop, your work enters our review queue where experienced practitioners and instructors evaluate each submission against clear rubrics.",
-            "Reviewers examine code cleanliness, architectural correctness, edge-case handling, and clarity of documentation.",
+            "At Bridge3 Academy, project review is conducted by real practitioners who review your submissions individually.",
+            "Clarification on evaluation criteria: There is no formal, published scoring rubric right now. Review is a direct judgment call by a mentor — they read your submission and mark it Approved or Needs Revision with written feedback.",
+            "If a published rubric with specific criteria is introduced in the future, it will be published here. Right now, the process is built honestly on mentor judgment plus actionable feedback, not a points-based rubric.",
           ],
         },
         {
-          heading: "Review Outcomes",
+          heading: "The Revision Cycle",
           body: [
-            "Within 48 hours of submission, you will receive an in-app notification with one of two statuses:",
+            "Receiving 'Needs Revision' is a natural part of the learning process. It gives you the chance to see where your work fell short and learn how to fix it before moving forward.",
+            "Mentors provide clear written feedback explaining what needs adjustment so you can iterate with confidence.",
           ],
-          table: {
-            headers: ["Status", "Meaning", "Next Action"],
-            rows: [
-              [
-                "Approved ✓",
-                "Submission satisfies all rubric requirements with excellence.",
-                "XP awarded; module progress marked 100%; next module unlocked.",
-              ],
-              [
-                "Needs Revision ↺",
-                "Submission has minor defects, missing tests, or broken links.",
-                "Read reviewer notes, update your project, and click 'Resubmit Assignment'.",
-              ],
-            ],
-          },
           callout: {
             type: "tip",
-            text: "Receiving 'Needs Revision' is not a failure. It is the core of practical skill development. Reviewers provide specific feedback so you learn how to produce production-grade deliverables.",
+            text: "Take your mentor's feedback constructively. Making revisions mirrors the professional review process of pull requests and design feedback.",
           },
         },
       ],
@@ -575,28 +478,38 @@ export const DOC_ARTICLES: DocArticle[] = [
     title: "Capstone Project Standards",
     category: "workshops",
     categoryLabel: "Workshops & Project Reviews",
-    summary: "Requirements for final graduation capstones, defenses, and showcase presentations.",
-    readTime: "5 min read",
-    updatedAt: "September 2026",
-    tags: ["capstone", "graduation", "showcase", "projects"],
+    summary: "Capstone project guidelines, track requirements, submission fields, and mentor review process.",
+    readTime: "3 min read",
+    updatedAt: "October 2026",
+    tags: ["capstone", "projects", "general-track", "graduation"],
     keyTakeaways: [
-      "The Capstone is your final graduation project demonstrating end-to-end track mastery.",
-      "Must address a real problem with production-level polish and deployment.",
-      "Approved capstones are featured in the Bridge3 Academy Showcase and shared with partner companies.",
+      "Capstones are required only for tracks that mandate them (currently the General Track).",
+      "Submit a GitHub link, a portfolio description, and optionally an attached file.",
+      "Capstones follow the same resubmission and mentor-review process as regular assignments.",
     ],
     content: {
       sections: [
         {
-          heading: "What is a Capstone Project?",
+          heading: "When a Capstone is Required",
           body: [
-            "The Capstone is the culmination of your journey at Bridge3 Academy. Rather than a contrived classroom exercise, students architect and build a complete, production-grade project.",
-            "For engineers, this means a live deployed dApp with smart contracts on testnet. For designers, a comprehensive design system and audited prototype. For operators, a fully executed community growth campaign or funded grant proposal.",
+            "Capstone projects are required only for tracks that need one (currently the General Track). Tracks that do not require a capstone can be completed by finishing all lessons, quizzes, and assignments.",
           ],
         },
         {
-          heading: "Graduation Defense & Showcase",
+          heading: "Submitting Your Capstone",
           body: [
-            "Once submitted, capstones undergo rigorous review by our evaluation committee. Outstanding projects are invited to present live at our monthly Bridge3 Demo Day, broadcast to partner venture funds, DAOs, and ecosystem hiring managers.",
+            "When submitting your capstone deliverable, provide:",
+          ],
+          bullets: [
+            "GitHub Link: A public repository link containing your code, README documentation, or project assets.",
+            "Portfolio Description: A comprehensive summary explaining the problem solved, architecture used, and key learnings.",
+            "File Attachment (Optional): Any supporting diagrams, presentation slides, or files.",
+          ],
+        },
+        {
+          heading: "Review & Resubmissions",
+          body: [
+            "Capstones use the same resubmission and mentor-review process as regular assignments. Mentors inspect your submission and mark it Approved or Needs Revision with feedback, and you can resubmit whenever needed.",
           ],
         },
       ],
@@ -606,44 +519,50 @@ export const DOC_ARTICLES: DocArticle[] = [
   // 4. Gamification & Community
   {
     slug: "xp-and-levels",
-    title: "XP System & Student Levels",
+    title: "XP System",
     category: "gamification",
     categoryLabel: "Gamification & Community",
-    summary: "How experience points (XP) are calculated across lessons, quizzes, assignments, and campus leaderboards.",
+    summary: "How Experience Points (XP) are awarded across lessons, quizzes, assignments, and capstones, and how the leaderboard works.",
     readTime: "3 min read",
-    updatedAt: "September 2026",
-    tags: ["xp", "gamification", "leaderboard", "levels"],
+    updatedAt: "October 2026",
+    tags: ["xp", "gamification", "leaderboard", "points"],
     keyTakeaways: [
-      "XP measures consistency and rigor across the entire platform.",
-      "Lessons grant base XP, while passed quizzes and approved assignments grant massive multipliers.",
-      "Leaderboards rank students campus-wide and continent-wide.",
+      "There is no 'Levels' system — student progression is tracked purely through XP.",
+      "10 XP per lesson, 25 XP per passed quiz (awarded once).",
+      "15 XP per assignment submitted + 25 bonus on approval (40 XP total).",
+      "20 XP per capstone submitted + 60 bonus on approval (80 XP total).",
+      "The leaderboard shows the top 10 students platform-wide by total XP.",
     ],
     content: {
       sections: [
         {
-          heading: "XP Point Allocation Matrix",
+          heading: "XP System Overview",
           body: [
-            "Bridge3 Academy calculates student XP deterministically based on verified milestones:",
+            "Bridge3 Academy uses Experience Points (XP) to reward consistent learning and verified deliverables.",
+            "Correction from earlier drafts: There is no 'Levels' system — just XP. Progression is measured directly by your accumulated XP points.",
+          ],
+        },
+        {
+          heading: "Current Point Values",
+          body: [
+            "XP is awarded deterministically based on your platform milestones:",
           ],
           table: {
-            headers: ["Activity", "XP Awarded", "Condition"],
+            headers: ["Activity", "XP Awarded", "Rules"],
             rows: [
-              ["Lesson Completion", "+10 XP", "Awarded upon reading lesson to completion"],
-              ["Quiz Passed (80%+)", "+50 XP", "First passing attempt in a module"],
-              ["Quiz Perfect Score (100%)", "+25 Bonus XP", "Answering all questions correctly"],
-              ["Workshop Approved", "+150 XP", "Workshop submission approved"],
-              ["Capstone Approved", "+500 XP", "Successful capstone graduation defense"],
+              ["Lesson Completed", "10 XP", "Awarded upon marking a lesson complete"],
+              ["Quiz Passed", "25 XP", "Awarded once per quiz, not per retake"],
+              ["Assignment Submitted", "15 XP", "Awarded upon submitting assignment"],
+              ["Assignment Approved", "+25 XP Bonus", "Added on top once approved (40 XP total)"],
+              ["Capstone Submitted", "20 XP", "Awarded upon submitting capstone"],
+              ["Capstone Approved", "+60 XP Bonus", "Added on top once approved (80 XP total)"],
             ],
           },
         },
         {
-          heading: "Student Levels & Titles",
+          heading: "Platform Leaderboard",
           body: [
-            "As your XP accumulates, your profile tier advances from Novice to Fellow:",
-            "• Level 1 (0 to 249 XP): Web3 Scholar",
-            "• Level 2 (250 to 749 XP): Active Apprentice",
-            "• Level 3 (750 to 1,499 XP): Certified Builder",
-            "• Level 4 (1,500+ XP): Academy Fellow",
+            "The platform leaderboard shows the top 10 students platform-wide ranked by total accumulated XP. Complete lessons, pass quizzes, and get your assignments approved to climb the rankings.",
           ],
         },
       ],
@@ -654,36 +573,46 @@ export const DOC_ARTICLES: DocArticle[] = [
     title: "Skill Badges & Public Portfolio",
     category: "gamification",
     categoryLabel: "Gamification & Community",
-    summary: "How to showcase verified accomplishments to employers through your public portfolio URL.",
-    readTime: "4 min read",
-    updatedAt: "September 2026",
-    tags: ["portfolio", "badges", "public-profile", "career"],
+    summary: "The eight automated milestone badges and how your unlisted public portfolio link showcases your proof of work.",
+    readTime: "3 min read",
+    updatedAt: "October 2026",
+    tags: ["badges", "portfolio", "proof-of-work", "public-link"],
     keyTakeaways: [
-      "Your public portfolio lives at /portfolio/[studentId] with zero authentication required to view.",
-      "Badges represent verifiable milestone achievements such as First Code Shipped or Quiz Master.",
-      "Share your portfolio link with recruiters and on social profiles.",
+      "Eight badges are earned automatically as you hit milestones and maintain streaks.",
+      "Every student has a public portfolio page shareable by direct link.",
+      "Portfolios are not searchable on Google — visible only to people with your exact link.",
     ],
     content: {
       sections: [
         {
-          heading: "Your Digital Proof of Competence",
+          heading: "The Eight Automated Badges",
           body: [
-            "Traditional resumes are full of buzzwords that cannot be independently audited. Your Bridge3 Academy Portfolio provides unforgeable evidence of what you have built.",
-            "It displays your total earned XP, verified skill badges, links to your approved GitHub repositories, and official certificates.",
+            "Bridge3 Academy features eight skill badges, each earned automatically when you satisfy its condition:",
           ],
+          table: {
+            headers: ["Badge", "Requirement"],
+            rows: [
+              ["First Steps", "Completed your first lesson"],
+              ["Building Momentum", "Completed 5 lessons"],
+              ["Quiz Ace", "Passed your first quiz"],
+              ["Contributor", "Submitted your first assignment"],
+              ["Approved Work", "Had an assignment approved by a mentor"],
+              ["Track Graduate", "Completed every requirement of a full track"],
+              ["Streak Starter", "3-day activity streak"],
+              ["Consistent Learner", "7-day activity streak"],
+            ],
+          },
         },
         {
-          heading: "Earning Skill Badges",
+          heading: "Your Public Portfolio Page",
           body: [
-            "Badges are awarded automatically as you reach key platform milestones:",
+            "Every student has a public portfolio page — shareable by direct link, showing your name, track, XP, badges, and any proof-of-work links you choose to add.",
+            "Privacy by design: It is intentionally not searchable on Google; only someone with your exact link can see it. This gives you complete control over who views your educational achievements.",
           ],
-          bullets: [
-            "🏅 First Step: Complete your very first lesson.",
-            "🏅 Quiz Ace: Score 100% on three consecutive module quizzes.",
-            "🏅 Builder Initiate: Have your first workshop assignment approved.",
-            "🏅 Community Champion: Share constructive feedback and contribute to the community feed.",
-            "🏅 Track Graduate: Fulfill 100% of all requirements for an entire track.",
-          ],
+          callout: {
+            type: "tip",
+            text: "Add your public portfolio link to your CV, GitHub bio, or job applications to prove your completed coursework and mentor approvals.",
+          },
         },
       ],
     },
@@ -693,31 +622,37 @@ export const DOC_ARTICLES: DocArticle[] = [
     title: "Honor Code & Academic Integrity",
     category: "gamification",
     categoryLabel: "Gamification & Community",
-    summary: "Standards of academic honesty, anti-plagiarism policies, and respectful community conduct.",
+    summary: "Expected standards of authentic effort, original deliverables, and upcoming formal academic integrity guidelines.",
     readTime: "3 min read",
-    updatedAt: "September 2026",
-    tags: ["honor-code", "conduct", "integrity", "community"],
+    updatedAt: "October 2026",
+    tags: ["honor-code", "integrity", "community", "conduct"],
     keyTakeaways: [
-      "Zero tolerance for plagiarized code or submitted answers copied from others.",
-      "Community forums must remain respectful, inclusive, and focused on peer support.",
-      "Violations result in assignment rejection or permanent account deactivation.",
+      "Expected standard: authentic independent effort, original submissions, and respectful peer collaboration.",
+      "A formalized academic integrity policy will be published prior to our first cohort launch.",
+      "Mentors review submissions for authenticity and originality.",
     ],
     content: {
       sections: [
         {
-          heading: "The Bridge3 Honor Code",
+          heading: "Authentic Effort & Integrity",
           body: [
-            "We are dedicated to producing elite African technologists with impeccable ethical standards. Real mastery cannot be forged or shortcutted.",
+            "At Bridge3 Academy, true competence cannot be shortcutted. All coursework and deliverables are designed to prepare you for real-world opportunities where originality and understanding are vital.",
           ],
           bullets: [
-            "Independent Work: All quiz answers and workshop submissions must represent your own authentic effort.",
-            "Proper Attribution: If you use third-party libraries or open-source templates, you must clearly cite them in your project documentation.",
-            "No Leaking Answers: Sharing quiz answer keys or completed assignment repos in public channels is strictly forbidden.",
-            "Respectful Collaboration: Treat instructors, reviewers, and fellow scholars with kindness. Constructive criticism should always build peers up, not tear them down.",
+            "Original Work: Quizzes and workshop deliverables must represent your own authentic knowledge and effort.",
+            "Proper Attribution: When using external frameworks, documentation, or code snippets, acknowledge and cite your sources.",
+            "Constructive Peer Community: Treat instructors, mentors, and cohort peers respectfully across all assignment discussion threads.",
+          ],
+        },
+        {
+          heading: "Formal Policy Notice",
+          body: [
+            "Please note: A comprehensive, formal academic integrity policy is currently being developed for our upcoming first cohort launch.",
+            "Rather than presenting placeholder text dressed up as official policy, our team is formalizing clear rules regarding acceptable collaboration, plagiarism definitions, and review consequences in consultation with our mentor community. The finalized policy will be published here before cohort onboarding begins.",
           ],
           callout: {
-            type: "warning",
-            text: "Our automated verification systems check for authenticity and code integrity. Any student caught submitting cloned repos will forfeit all certificates and may be barred from future academy cohorts.",
+            type: "note",
+            text: "If you have questions about whether a particular collaboration or external resource is permitted on an assignment, ask in the assignment discussion thread.",
           },
         },
       ],
@@ -730,37 +665,39 @@ export const DOC_ARTICLES: DocArticle[] = [
     title: "Certification Standards & Issuance",
     category: "certification",
     categoryLabel: "Certification & Standards",
-    summary: "The strict requirements needed to unlock and claim an official Bridge3 Academy Certificate of Completion.",
+    summary: "The strict completion criteria required to unlock your certificate and how manual student claiming works.",
     readTime: "4 min read",
-    updatedAt: "September 2026",
-    tags: ["certificates", "standards", "completion", "verification"],
+    updatedAt: "October 2026",
+    tags: ["certificates", "standards", "completion", "claiming"],
     keyTakeaways: [
-      "Certificates are earned through complete track fulfillment: 100% completion across all modules is mandatory.",
-      "Issuance is guarded by single-source-of-truth server logic.",
-      "Each certificate receives a unique ID (B3A-YYYY-XXXXXX) and a tamper-proof SHA-256 hash.",
+      "A track is complete only when every lesson is done, every quiz is passed, and every assignment is mentor-approved.",
+      "If a track requires a capstone (such as the General Track), the capstone must also be mentor-approved.",
+      "Certificates are claimed manually by the student, not issued automatically.",
+      "Each certificate records your name, track title, completion score, issue date, and unique verification code.",
     ],
     content: {
       sections: [
         {
-          heading: "The Four Graduation Requirements",
+          heading: "Track Completion Criteria",
           body: [
-            "To unlock the 'Claim Certificate' button on your Certification Dashboard, your student profile must satisfy all four criteria:",
+            "A track is complete only when every one of the following is true:",
           ],
           bullets: [
-            "1. 100% Lessons Completed: Every lesson in every module of the track marked finished.",
-            "2. 100% Quizzes Passed: Every module quiz passed with a score of 80% or higher.",
-            "3. 100% Assignments Approved: Every workshop assignment reviewed and approved.",
-            "4. Capstone Defense Approved: If the track requires a capstone, it must be successfully defended and marked approved.",
+            "Every lesson is marked done.",
+            "Every quiz has a passing attempt.",
+            "Every assignment has mentor-approved status (not just submitted).",
+            "For tracks that require one (currently the General Track), the capstone is approved too.",
           ],
           callout: {
             type: "important",
-            text: "There are no exceptions or partial certificates. This strict standard is what gives Bridge3 Academy credentials authentic prestige with international Web3 employers.",
+            text: "All requirements must be fully satisfied. Partial completions do not qualify for certification.",
           },
         },
         {
-          heading: "Issuance & Storage",
+          heading: "Claiming Your Certificate",
           body: [
-            "When you claim your certificate, the issuance endpoint verifies your progress directly against Postgres database records using the service role key. It generates a human-friendly Certificate ID and binds it with a permanent SHA-256 cryptographic verification hash.",
+            "Once complete, you'll see a 'Claim your certificate' button on the Certification page. Certificates aren't issued automatically — you choose when to claim.",
+            "Each certificate shows your name and the track title as they were at the moment you claimed it, a completion score, the issue date, and a unique verification code.",
           ],
         },
       ],
@@ -768,48 +705,50 @@ export const DOC_ARTICLES: DocArticle[] = [
   },
   {
     slug: "cryptographic-verification",
-    title: "Cryptographic Verification Engine",
+    title: "How Certificate Verification Works",
     category: "certification",
     categoryLabel: "Certification & Standards",
-    summary: "How SHA-256 verification hashes guarantee certificate authenticity without relying on paper or unverified PDFs.",
-    readTime: "5 min read",
-    updatedAt: "September 2026",
-    tags: ["cryptography", "sha256", "hash", "verification"],
+    summary: "How unique verification codes allow employers, universities, and partners to verify certificate authenticity directly against our database.",
+    readTime: "3 min read",
+    updatedAt: "October 2026",
+    tags: ["verification", "certificates", "validation", "public-link"],
     keyTakeaways: [
-      "Every certificate is bound to a SHA-256 verification hash: bridge3:studentId:trackId:certNum:timestamp.",
-      "Anyone can verify a certificate at /certificates/[id] without logging in.",
-      "Includes gold seal, printable landscape layout, and social share links.",
+      "Certificates receive a random, unique verification code at the moment of issuance.",
+      "Anyone with the code can view the public verification page at /certificates/[id] without logging in.",
+      "Verification data is pulled directly from our database to confirm authenticity.",
+      "Verification pages are intentionally excluded from search engines to safeguard student privacy.",
     ],
     content: {
       sections: [
         {
-          heading: "How Tamper-Proof Hashing Works",
+          heading: "Verification via Unique Code",
           body: [
-            "Traditional digital certificates are easily forged using image editors. At Bridge3 Academy, every certificate is cryptographically bound to its recipient and completion metadata at the moment of issuance:",
+            "Bridge3 Academy provides an instant, publicly accessible verification method for every issued certificate.",
+            "Clarification on verification technology: The platform uses unique verification codes rather than cryptographic hashing (such as SHA-256). We state this accurately: each certificate gets a random, unique verification code at the moment it's issued.",
           ],
-          codeBlock: {
-            language: "typescript",
-            code: `// Verification hash generation in lib/certificates/adapter.ts
-export function generateVerificationHash(
-  studentId: string,
-  trackId: string,
-  certificateNumber: string,
-  issuedAt: string
-): string {
-  const payload = \`bridge3:\${studentId}:\${trackId}:\${certificateNumber}:\${issuedAt}\`;
-  return crypto.createHash("sha256").update(payload).digest("hex");
-}`,
-          },
         },
         {
-          heading: "Public Verification Portal",
+          heading: "The Public Verification Page",
           body: [
-            "Every certificate has a dedicated public verification page at /certificates/[id]. Anyone, including an employer, a university registrar, or a hackathon organizer, can open the URL to inspect:",
-            "• Student's full name and profile avatar.",
-            "• Track title, description, and completion timestamp.",
-            "• Precise competencies verified (lessons completed, quizzes passed, assignments approved).",
-            "• Cryptographic verification hash confirming authenticity.",
+            "Anyone with that code or link can visit a public page (no login required) and see the real certificate details pulled directly from our database — confirming it's genuine.",
+            "The verification page displays:",
           ],
+          bullets: [
+            "Recipient's full name as recorded at the time of claiming.",
+            "Track title and official completion date.",
+            "Verified competencies: lessons completed, quizzes passed, approved assignments, and capstone status.",
+            "Unique verification code (e.g. B3A-2026-A8F29C).",
+          ],
+        },
+        {
+          heading: "Student Privacy",
+          body: [
+            "This verification page is intentionally not indexed by search engines, so it's shareable by link without a student's name becoming publicly searchable on Google.",
+          ],
+          callout: {
+            type: "tip",
+            text: "You can safely include your verification URL on your resume or LinkedIn profile knowing only those with your direct link can access the verification record.",
+          },
         },
       ],
     },
@@ -819,29 +758,35 @@ export function generateVerificationHash(
     title: "Future On-Chain Credentials & Multi-Chain Vision",
     category: "certification",
     categoryLabel: "Certification & Standards",
-    summary: "How Bridge3 Academy will anchor verified certificates into on-chain Soulbound NFTs across blockchain networks.",
+    summary: "Our architectural roadmap for swappable on-chain certificate minting across Bitcoin and Ethereum Layer 2s.",
     readTime: "4 min read",
-    updatedAt: "September 2026",
-    tags: ["on-chain", "nfts", "multi-chain", "soulbound"],
+    updatedAt: "October 2026",
+    tags: ["roadmap", "on-chain", "credentials", "architecture"],
     keyTakeaways: [
-      "Bridge3 Academy uses an extensible adapter pattern (CertificateAdapter) designed for multi-chain portability.",
-      "Future upgrades will allow scholars to mint their credentials as Soulbound NFTs.",
-      "Scholars will own their credentials permanently in self-custodial Web3 wallets.",
+      "Framed clearly as a future roadmap, not an active feature.",
+      "The certificate system was deliberately built with a swappable adapter design.",
+      "Underlying architecture allows issuing certificates on-chain for sponsor tracks without altering existing links.",
     ],
     content: {
       sections: [
         {
-          heading: "The Multi-Chain Credential Architecture",
+          heading: "Our Future On-Chain Vision",
           body: [
-            "While our verification engine provides immediate cryptographic security off-chain, our platform architecture is built around the CertificateAdapter interface in lib/certificates/adapter.ts.",
-            "This abstraction decouples certificate issuance logic from underlying storage. When we activate on-chain minting, your credentials can be anchored directly to Bitcoin Layer 2 (Stacks SIP-009) or Ethereum Layer 2s (EVM ERC-721/ERC-1155) without modifying student data or breaking existing verification links.",
+            "Important note: On-chain credential issuance is part of our future roadmap, not a currently active feature. Today's certificates use the database verification-code method described on the verification page.",
+            "As Bridge3 Academy expands with partner protocols, graduates will have the option to anchor their verified credentials directly on-chain across Bitcoin Layer 2s (such as Stacks) or Ethereum Layer 2 networks.",
           ],
         },
         {
-          heading: "Soulbound Tokens (Non-Transferable NFTs)",
+          heading: "Swappable Architectural Design",
           body: [
-            "Academic credentials must reflect the individual who performed the work. Future on-chain certificates will be minted as Soulbound tokens: non-transferable credentials that are permanently bound to your Web3 wallet address and cannot be transferred, sold, or stolen.",
+            "What's actually true about the implementation: the certificate system was deliberately built with a swappable design (using the CertificateAdapter interface).",
+            "Today's certificates use the verification-code method, but the underlying code is structured so a future version could issue certificates on-chain for specific ecosystem/sponsor tracks, without needing to rebuild anything else in the platform.",
+            "This is real, intentional architecture — just not yet turned on for anything.",
           ],
+          callout: {
+            type: "note",
+            text: "Because issuance logic is decoupled from data presentation, adding on-chain minting will never break existing verification URLs or database records.",
+          },
         },
       ],
     },

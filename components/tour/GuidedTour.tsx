@@ -17,7 +17,7 @@ export const TOUR_STEPS: TourStep[] = [
     id: "welcome",
     title: "Welcome to Bridge3 Academy! 🚀",
     description:
-      "Your structured, hands-on gateway to Web3 education across Africa. Learn smart contracts, build on Bitcoin, and earn verified on-chain credentials.",
+      "Your structured, hands-on gateway to Web3 education across Africa. Learn smart contracts, build on Bitcoin, and earn verified credentials.",
     badge: "Orientation",
     icon: "🎓",
   },
@@ -35,7 +35,7 @@ export const TOUR_STEPS: TourStep[] = [
     targetSelector: '[data-tour="my-courses"]',
     title: "Curriculum Pathways",
     description:
-      "Explore our 3 core curriculum tracks: General, Ecosystem or Sponsorship, and Skill set Track. Each track is divided into bite-sized modules, video lessons, and interactive challenges.",
+      "Explore our 3 core curriculum tracks: General, Ecosystem Support, and Skill Set Track. Each track is divided into bite-sized modules, video lessons, and interactive challenges.",
     badge: "Curriculum",
     icon: "🗺️",
   },

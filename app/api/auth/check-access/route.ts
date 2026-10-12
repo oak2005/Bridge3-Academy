@@ -66,6 +66,34 @@ export async function POST(req: NextRequest) {
           });
         }
       }
+
+      // Check waitlist_signups in case admin/mentor role was assigned directly in Supabase before profile setup
+      if (email) {
+        try {
+          const { data: waitlistRow } = await supabaseAdmin
+            .from("waitlist_signups")
+            .select("role")
+            .eq("email", email)
+            .maybeSingle();
+
+          if (waitlistRow && (waitlistRow.role === "admin" || waitlistRow.role === "mentor")) {
+            if (profile && profile.role !== waitlistRow.role) {
+              await supabaseAdmin
+                .from("profiles")
+                .update({ role: waitlistRow.role })
+                .eq("id", profile.id);
+            }
+            return NextResponse.json({
+              allowed: true,
+              role: waitlistRow.role,
+              registrationOpen,
+              reason: "staff",
+            });
+          }
+        } catch {
+          // Table or column may not exist yet if migration pending
+        }
+      }
     }
 
     // 3. For student / public users:
